@@ -64,6 +64,21 @@ export class WorkersService {
     );
   }
 
+  uploadVerificationDocs(
+  workerId: string,
+  files: { idFront?: File; idBack?: File; certificate?: File }
+): Observable<Worker> {
+  const formData = new FormData();
+  if (files.idFront) formData.append('idFront', files.idFront);
+  if (files.idBack) formData.append('idBack', files.idBack);
+  if (files.certificate) formData.append('certificate', files.certificate);
+
+  return this.http.post<Worker>(
+    `${environment.apiUrl}/workers/${workerId}/verification-docs`,
+    formData
+  );
+}
+
   /** يزوّد عدد الطلبات المكتملة لصنايعي معين بـ 1 */
   incrementCompletedJobs(workerId: string): Observable<Worker> {
     return this.getById(workerId).pipe(

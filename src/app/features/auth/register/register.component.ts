@@ -2,7 +2,6 @@ import { Component, signal, OnInit, inject, computed } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { switchMap, of } from 'rxjs';
 import { StepIndicatorComponent } from './components/step-indicator/step-indicator.component';
 import { StepAccountInfoComponent } from './components/step-account-info/step-account-info.component';
 import { StepRoleSetupComponent } from './components/step-role-setup/step-role-setup.component';
@@ -12,7 +11,6 @@ import { StepVerificationDocsComponent } from './components/step-verification-do
 import { ScrollRevealDirective } from '../../../shared/directive/scroll-reveal.directive';
 import { AuthService } from '../../../core/services/Auth.service';
 import { WorkersService } from '../../../core/services/workers.service';
-import { User } from '../../../core/models/user.model';
 
 @Component({
   selector: 'app-register',
@@ -110,11 +108,8 @@ export class RegisterComponent implements OnInit {
   }
 
   submit(): void {
-    console.log('submit() called, form valid:', this.form.valid, this.form.value);
-
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      console.log('Form invalid, errors:', this.getFormErrors());
       return;
     }
 
@@ -124,36 +119,43 @@ export class RegisterComponent implements OnInit {
     const v    = this.form.value;
     const role = v.role as 'client' | 'pro';
 
-    // ── تسجيل الـ user ──────────────────────────────────────
-    this.auth.register({ fullName: v.fullName, email: v.email, password: v.password, role }).pipe(
+    // بيانات بروفايل الصنايعي (لو pro) بتتبعت في نفس طلب التسجيل —
+    // السيرفر بيكتب الـ user والـ worker مع بعض في عملية واحدة (atomic)،
+    // فمفيش سيناريو "حساب يتيم" لو أي خطوة فشلت
+    const workerData = role === 'pro' ? {
+      fullName:          v.fullName,
+      trade:             v.trade,
+      tradeLabel:        this.getTradeLabel(v.trade),
+      city:              v.city,
+      hourlyRate:        Number(v.hourlyRate),
+      yearsOfExperience: Number(v.yearsOfExperience),
+      serviceRadius:     Number(v.serviceRadius) || 15,
+      bio:               '',
+      avatarColor:       this.randomColor(),
+    } : undefined;
 
-      // ── لو pro، نضيف بياناته في /workers بعد الـ user ────
-      switchMap((user: User) => {
-        if (role !== 'pro') {
-          return of(user);
-        }
-        return this.workers.createWorker({
-          userId:            user.id,
-          fullName:          v.fullName,
-          trade:             v.trade,
-          tradeLabel:        this.getTradeLabel(v.trade),
-          city:              v.city,
-          hourlyRate:        Number(v.hourlyRate),
-          yearsOfExperience: Number(v.yearsOfExperience),
-          serviceRadius:     Number(v.serviceRadius) || 15,
-          rating:            0,
-          reviewsCount:      0,
-          isAvailable:       true,
-          completedJobs:     0,
-          bio:               '',
-          avatarColor:       this.randomColor(),
-        }).pipe(switchMap(() => of(user)));
-      })
-
+    this.auth.register(
+      { fullName: v.fullName, email: v.email, password: v.password, role },
+      workerData
     ).subscribe({
-      next: () => {
-        console.log('Register success!');
+      next: ({ worker }) => {
         this.loading.set(false);
+
+        // لو صنايعي ومعاه ملفات هوية، ابعتهم دلوقتي — الـ worker.id والتوكن
+        // بقوا موجودين بعد نجاح التسجيل
+        if (role === 'pro' && worker && (v.idFront || v.idBack || v.certificate)) {
+          this.workers.uploadVerificationDocs(worker.id, {
+            idFront: v.idFront,
+            idBack: v.idBack,
+            certificate: v.certificate,
+          }).subscribe({
+            error: () => {
+              // فشل رفع الملفات مايوقفش التسجيل نفسه — الحساب اتعمل بنجاح بالفعل،
+              // ممكن يرفعهم تاني من صفحة الإعدادات بعدين
+            },
+          });
+        }
+
         if (role === 'pro') {
           this.router.navigate(['/login']);
         } else {
@@ -161,7 +163,6 @@ export class RegisterComponent implements OnInit {
         }
       },
       error: (err: Error) => {
-        console.error('Register error:', err);
         this.loading.set(false);
         this.errorMessage.set(err.message);
       },
@@ -192,7 +193,7 @@ export class RegisterComponent implements OnInit {
   }
 
   private randomColor(): string {
-    const colors = ['#1B4F72', '#E8762C', '#3F7A52', '#7A5FA0', '#123550', '#2563EB'];
+    const colors = ['#2563EB', '#F97316', '#16A34A', '#7A5FA0', '#0F172A', '#1D4ED8'];
     return colors[Math.floor(Math.random() * colors.length)];
   }
 

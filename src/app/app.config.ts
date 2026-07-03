@@ -4,10 +4,10 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideToastr } from 'ngx-toastr';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideHttpClient } from '@angular/common/http';
-
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }),provideHttpClient(), provideRouter(routes),provideAnimations(),
+  providers: [provideZoneChangeDetection({ eventCoalescing: true }),provideHttpClient(withInterceptors([authInterceptor])), provideRouter(routes),provideAnimations(),
     provideToastr({
       timeOut: 3500,
       positionClass: 'toast-top-right',

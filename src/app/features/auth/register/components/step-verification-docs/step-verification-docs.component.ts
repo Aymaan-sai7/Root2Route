@@ -29,7 +29,6 @@ export class StepVerificationDocsComponent {
   onFileSelected(event: Event, controlName: 'idFront' | 'idBack' | 'certificate'): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-
     if (!file) return;
 
     this.errorMessage.set(null);
@@ -49,11 +48,10 @@ export class StepVerificationDocsComponent {
       return;
     }
 
-    // نحول الملف لرابط معاينة (Preview URL) باستخدام FileReader
+    // نحول الملف لرابط معاينة (Preview URL) باستخدام FileReader — للعرض بس
     const reader = new FileReader();
     reader.onload = () => {
       const previewUrl = reader.result as string;
-
       if (controlName === 'idFront') {
         this.idFrontPreview.set(previewUrl);
       } else if (controlName === 'idBack') {
@@ -63,8 +61,9 @@ export class StepVerificationDocsComponent {
         this.certificateFileName.set(file.name);
       }
 
-      // نحفظ الملف نفسه + رابط المعاينة جوه الفورم الأساسي
-      this.form().get(controlName)?.setValue({ file, previewUrl });
+      // ⚠️ نحفظ الـ File الحقيقي بس جوه الفورم (مش object ملفوف) —
+      // ده اللي بيتبعت فعليًا لـ workers.uploadVerificationDocs() بعد كده
+      this.form().get(controlName)?.setValue(file);
       this.form().get(controlName)?.markAsTouched();
     };
     reader.readAsDataURL(file);

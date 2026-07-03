@@ -16,4 +16,9 @@ export interface Worker {
   bio: string;
   serviceRadius: number;
   avatarColor: string;
+  // ── جديد ──
+  idFrontUrl?: string;
+  idBackUrl?: string;
+  certificateUrl?: string;
+  verificationStatus?: 'pending' | 'verified' | 'rejected';
 }
