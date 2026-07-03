@@ -105,9 +105,6 @@
   color: #fff;
 }
 
-/* ⚠️ مفيش success.light معرّف في tailwind.config — التباين هيبقى أقل شوية
-   من الأصل فوق الخلفية الغامقة. لو حابب نفس الوضوح، ضيف success.light
-   (مثلاً #4ADE80) وأنا أستخدمه بدل success العادي هنا. */
 .sp-verified {
   display: inline-flex;
   align-items: center;
@@ -121,7 +118,6 @@
   border-radius: 999px;
 }
 
-/* ⚠️ نفس الملاحظة: مفيش danger.light معرّف، فالتباين فوق الغامق أقل من الأصل */
 .sp-avail {
   font-size: 11px;
   font-weight: 600;
@@ -169,11 +165,22 @@
   gap: 24px;
   align-items: start;
 }
+
+/* ⚠️ الإصلاح الأساسي: على الموبايل/التابلت (شاشة عمود واحد)، الـ sticky
+   بتاعة الكارد لازم تتلغي خالص. الـ sticky معمولة عشان الشكل الديسكتوب
+   (عمودين جنب بعض) حيث بيبقى ليها مساحة تتحرك فيها من غير ما تتعدى
+   ارتفاع العمود التاني. لما الليأوت بيبقى عمود واحد، الكارد والتفاصيل
+   بيبقوا في نفس العمود، فالـ sticky بتخلي الكارد "عايمة" فوق باقي
+   المحتوى وقت السكرول بدل ما تاخد مكانها الطبيعي في الترتيب. */
 @media (max-width: 900px) {
   .sp-body {
     grid-template-columns: 1fr;
   }
-  .sp-booking-card { order: -1; }
+  .sp-booking-card {
+    order: -1;
+    position: static;
+    top: auto;
+  }
 }
 
 
