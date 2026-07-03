@@ -1,26 +1,28 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 import { Notification } from '../models/notification.model';
-
-const API = 'http://localhost:3000/notifications';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationsService {
+  private http = inject(HttpClient);
+  private base = `${environment.apiUrl}/notifications`;
+
   /** عدد الإشعارات الغير مقروءة — بيتحدث بالـ polling من notification-bell.component */
   unreadCount = signal(0);
 
-  constructor(private http: HttpClient) {}
-
   getForUser(userId: string, limit = 20): Observable<Notification[]> {
-    return this.http.get<Notification[]>(
-      `${API}?userId=${userId}&_sort=createdAt&_order=desc&_limit=${limit}`
-    );
+    return this.http.get<Notification[]>(this.base, {
+      params: { userId, _sort: 'createdAt', _order: 'desc', _limit: limit },
+    });
   }
 
   getUnread(userId: string): Observable<Notification[]> {
-    return this.http.get<Notification[]>(`${API}?userId=${userId}&isRead=false`);
+    return this.http.get<Notification[]>(this.base, {
+      params: { userId, isRead: 'false' },
+    });
   }
 
   refreshUnreadCount(userId: string): void {
@@ -32,10 +34,10 @@ export class NotificationsService {
   }
 
   markAsRead(id: string): Observable<Notification> {
-    return this.http.patch<Notification>(`${API}/${id}`, { isRead: true });
+    return this.http.patch<Notification>(`${this.base}/${id}`, { isRead: true });
   }
 
-  /** json-server مبيدعمش bulk update، فبنعمل patch لكل عنصر غير مقروء على التوازي */
+  /** بنعمل patch لكل عنصر غير مقروء على التوازي (السيرفر مبيدعمش bulk update) */
   markAllAsRead(userId: string): Observable<Notification[]> {
     return this.getUnread(userId).pipe(
       switchMap((unread) => {
@@ -63,6 +65,6 @@ export class NotificationsService {
       isRead: false,
       createdAt: new Date().toISOString(),
     };
-    return this.http.post<Notification>(API, notification);
+    return this.http.post<Notification>(this.base, notification);
   }
 }
