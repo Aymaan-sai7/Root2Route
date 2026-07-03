@@ -19,25 +19,44 @@
     </div>
   </div>
 
+  <!-- ══════ MOBILE FILTER BAR (تظهر تحت الـ 900px بس) ══════ -->
+  <div class="sl-mobile-bar">
+    <button class="sl-mobile-filter-btn" (click)="openFilters()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
+      </svg>
+      فلترة وترتيب
+      @if (activeFilterCount() > 0) {
+        <span class="sl-mobile-filter-count">{{ activeFilterCount() }}</span>
+      }
+    </button>
+  </div>
+
   <div class="sl-body">
 
-    <!-- ══════ SIDEBAR FILTERS ══════ -->
-    <aside class="sl-filters">
+    <!-- ══════ FILTERS (sidebar على الديسكتوب، drawer على الموبايل) ══════ -->
+    <aside class="sl-filters" [class.sl-filters--open]="filtersOpen()">
+
       <div class="sl-filters-header">
         <h3 class="sl-filters-title">فلترة النتائج</h3>
-        <button class="sl-filters-reset" (click)="resetFilters()">إعادة ضبط</button>
+        <div class="sl-filters-header-actions">
+          @if (activeFilterCount() > 0) {
+            <button class="sl-filters-reset" (click)="resetFilters()">إعادة ضبط</button>
+          }
+          <!-- زرار القفل يظهر جوه الـ drawer بس (على الموبايل) -->
+          <button class="sl-filters-close" (click)="closeFilters()" aria-label="قفل الفلاتر">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+              <path d="M18 6 6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <!-- Sort -->
       <div class="sl-filter-group">
         <label class="sl-filter-label">ترتيب حسب</label>
         <div class="sl-sort-options">
-          @for (opt of [
-            {val: 'rating',    label: 'الأعلى تقييماً'},
-            {val: 'rate_asc',  label: 'السعر: الأقل'},
-            {val: 'rate_desc', label: 'السعر: الأعلى'},
-            {val: 'jobs',      label: 'الأكثر تجربة'}
-          ]; track opt.val) {
+          @for (opt of sortOptions; track opt.val) {
             <button
               class="sl-sort-btn"
               [class.sl-sort-btn--active]="filters().sortBy === opt.val"
@@ -62,7 +81,7 @@
       <div class="sl-filter-group">
         <label class="sl-filter-label">أقل تقييم</label>
         <div class="sl-rating-options">
-          @for (r of [4.5, 4, 3.5]; track r) {
+          @for (r of ratingOptions; track r) {
             <button
               class="sl-rating-btn"
               [class.sl-rating-btn--active]="filters().minRating === r"
@@ -106,16 +125,32 @@
         </div>
       </div>
 
+      <!-- زرار تطبيق يظهر جوه الـ drawer بس (على الموبايل) -->
+      <button class="sl-filters-apply" (click)="applyAndClose()">
+        عرض {{ filteredWorkers().length }} نتيجة
+      </button>
+
     </aside>
+
+    <!-- Backdrop للـ drawer — بيظهر بس لما الفلاتر مفتوحة على الموبايل -->
+    @if (filtersOpen()) {
+      <div class="sl-backdrop" (click)="closeFilters()"></div>
+    }
 
     <!-- ══════ RESULTS ══════ -->
     <div class="sl-results">
 
       <!-- Loading -->
       @if (loading()) {
-        <div class="sl-loading">
-          <div class="sl-spinner"></div>
-          <p>بيجيب الصنايعية...</p>
+        <div class="sl-cards-grid">
+          @for (i of [1,2,3,4]; track i) {
+            <div class="sl-skeleton-card">
+              <div class="sl-skeleton sl-skeleton--avatar"></div>
+              <div class="sl-skeleton sl-skeleton--line" style="width: 60%"></div>
+              <div class="sl-skeleton sl-skeleton--line" style="width: 40%"></div>
+              <div class="sl-skeleton sl-skeleton--block"></div>
+            </div>
+          }
         </div>
       }
 
@@ -138,19 +173,21 @@
 
               <!-- Card Top -->
               <div class="sl-card-top">
-                <div class="sl-card-avatar" [style.background]="worker.avatarColor">
+                <div class="sl-card-avatar" [style.background]="worker.avatarColor" [style.color]="worker.avatarColor">
                   {{ worker.fullName.charAt(0) }}
                 </div>
                 <div class="sl-card-info">
                   <div class="sl-card-name-row">
                     <p class="sl-card-name">{{ worker.fullName }}</p>
-                    <!-- Verified badge -->
-                    <span class="sl-verified">
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                        <path d="M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5l-8-3z"/><path d="m9 12 2 2 4-4"/>
-                      </svg>
-                      موثق
-                    </span>
+                    <!-- Verified badge — يظهر بس لو فعلاً متحقق منه -->
+                    @if (worker.verificationStatus === 'verified') {
+                      <span class="sl-verified">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                          <path d="M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5l-8-3z"/><path d="m9 12 2 2 4-4"/>
+                        </svg>
+                        موثق
+                      </span>
+                    }
                   </div>
                   <p class="sl-card-trade">{{ worker.tradeLabel }}</p>
                 </div>
@@ -162,7 +199,7 @@
               <!-- Stats -->
               <div class="sl-card-stats">
                 <div class="sl-card-stat">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="#F97316" >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="#F97316">
                     <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
                   </svg>
                   <strong>{{ worker.rating }}</strong>
@@ -189,7 +226,9 @@
               </div>
 
               <!-- Bio -->
-              <p class="sl-card-bio">{{ worker.bio }}</p>
+              @if (worker.bio) {
+                <p class="sl-card-bio">{{ worker.bio }}</p>
+              }
 
               <!-- Footer -->
               <div class="sl-card-footer">
