@@ -1,0 +1,96 @@
+/* ============================================================
+   CLIENT FOOTER — نسخة صغيرة وخفيفة (شريط واحد بس)
+   ============================================================ */
+.cf-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: #0F172A; /* ink */
+}
+
+.cf-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+@media (min-width: 768px) {
+  .cf-inner {
+    padding: 16px 32px;
+  }
+}
+
+/* ============================================================
+   BRAND
+   ============================================================ */
+.cf-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.cf-logo {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+.cf-brand-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #FFFFFF; /* paper — ظاهر بوضوح على الخلفية الغامقة */
+  letter-spacing: -0.01em;
+}
+
+/* ============================================================
+   COPYRIGHT
+   ============================================================ */
+.cf-copy {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  order: 3;
+  width: 100%;
+  text-align: center;
+}
+@media (min-width: 640px) {
+  .cf-copy {
+    order: 2;
+    width: auto;
+    text-align: start;
+  }
+}
+
+/* ============================================================
+   LEGAL LINKS
+   ============================================================ */
+.cf-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  order: 2;
+}
+@media (min-width: 640px) {
+  .cf-links {
+    order: 3;
+  }
+}
+.cf-link {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.cf-link:hover {
+  color: #2563EB; /* primary */
+}
+.cf-link-sep {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-link { transition: none; }
+}

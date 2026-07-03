@@ -1,0 +1,35 @@
+<div [formGroup]="form()" class="space-y-4">
+
+  <p class="mb-2 text-sm font-medium text-ink"> إنت هتستخدم صنايعي إزاي؟</p>
+
+  <label
+    class="flex cursor-pointer items-start gap-4 rounded-md border-2 p-4 transition-colors"
+    [class.border-blueprint]="form().get('role')?.value === 'client'"
+    [class.bg-blueprint-faint]="form().get('role')?.value === 'client'"
+    [class.border-line-strong]="form().get('role')?.value !== 'client'"
+  >
+    <input type="radio" formControlName="role" value="client" class="mt-1 accent-blueprint" />
+    <div>
+      <p class="font-display font-semibold text-ink">محتاج صنايعي</p>
+      <p class="mt-1 text-sm text-ink-soft">اختار الخدمة اللي محتاجها واحجز بكل سهولة.</p>
+    </div>
+  </label>
+
+  <label
+    class="flex cursor-pointer items-start gap-4 rounded-md border-2 p-4 transition-colors"
+    [class.border-blueprint]="form().get('role')?.value === 'pro'"
+    [class.bg-blueprint-faint]="form().get('role')?.value === 'pro'"
+    [class.border-line-strong]="form().get('role')?.value !== 'pro'"
+  >
+    <input type="radio" formControlName="role" value="pro" class="mt-1 accent-blueprint" />
+    <div>
+      <p class="font-display font-semibold text-ink">أنا صنايعي</p>
+      <p class="mt-1 text-sm text-ink-soft">اعرض خدماتك واستقبل شغل من عملاء قريبين منك.</p>
+    </div>
+  </label>
+
+  @if (form().get('role')?.invalid && form().get('role')?.touched) {
+    <p class="mt-1 text-xs text-danger">لازم تختار نوع الحساب.</p>
+  }
+
+</div>

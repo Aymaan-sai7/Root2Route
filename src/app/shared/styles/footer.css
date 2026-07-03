@@ -1,0 +1,239 @@
+/* ============================================================
+   TOP GLOW LINE
+   ============================================================ */
+.footer-top-glow {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(37, 99, 235, 0.35) 30%,   /* primary */
+    rgba(37, 99, 235, 0.55) 50%,   /* primary */
+    rgba(37, 99, 235, 0.35) 70%,   /* primary */
+    transparent 100%
+  );
+  animation: glow-line-pulse 4s ease-in-out infinite;
+}
+@keyframes glow-line-pulse {
+  0%, 100% { opacity: 0.7; }
+  50%       { opacity: 1; }
+}
+
+
+/* ============================================================
+   LAYOUT GRID
+   ============================================================ */
+.footer-grid {
+  display: grid;
+  gap: 40px;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+}
+@media (max-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 480px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ============================================================
+   LOGO
+   ============================================================ */
+.footer-logo {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-logo-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+              filter 0.3s ease;
+  filter: drop-shadow(0 0 6px rgba(37, 99, 235, 0)); /* primary */
+}
+.footer-logo:hover .footer-logo-icon {
+  transform: rotate(-6deg) scale(1.1);
+  filter: drop-shadow(0 0 10px rgba(37, 99, 235, 0.4)); /* primary */
+}
+
+.footer-logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  gap: 3px;
+}
+.footer-logo-sub {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
+}
+
+
+/* ============================================================
+   SOCIAL BUTTONS
+   ============================================================ */
+.footer-social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.45);
+  text-decoration: none;
+  transition: background-color 0.2s ease,
+              border-color 0.2s ease,
+              color 0.2s ease,
+              transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.footer-social-btn:hover {
+  background: rgba(37, 99, 235, 0.15); /* primary */
+  border-color: rgba(37, 99, 235, 0.35); /* primary */
+  color: rgba(255, 255, 255, 0.85);
+  transform: translateY(-3px);
+}
+.footer-social-btn:active {
+  transform: translateY(0) scale(0.92);
+}
+
+
+/* ============================================================
+   COLUMN TITLE
+   ============================================================ */
+.footer-col-title {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.3);
+  position: relative;
+  padding-bottom: 10px;
+}
+/* Accent underline under title */
+.footer-col-title::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  bottom: 0;
+  width: 18px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: rgba(37, 99, 235, 0.5); /* primary */
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.footer-col:hover .footer-col-title::after {
+  width: 36px;
+}
+
+
+/* ============================================================
+   FOOTER LINKS
+   ============================================================ */
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  padding: 2px 0;
+  transition: color 0.2s ease, gap 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.footer-link:hover {
+  color: rgba(255, 255, 255, 0.92);
+  gap: 10px;
+}
+
+/* Animated dot */
+.footer-link-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.5); /* primary */
+  flex-shrink: 0;
+  transform: scale(0.6);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+              background-color 0.2s ease;
+}
+.footer-link:hover .footer-link-dot {
+  transform: scale(1.3);
+  background: #F97316; /* accent */
+}
+
+
+/* ============================================================
+   DIVIDER
+   ============================================================ */
+.footer-divider {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 20%,
+    rgba(255, 255, 255, 0.08) 80%,
+    transparent 100%
+  );
+}
+
+
+/* ============================================================
+   BOTTOM BAR
+   ============================================================ */
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer-bottom-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.footer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 10.5px;
+  color: rgba(255, 255, 255, 0.35);
+  transition: border-color 0.2s ease,
+              color 0.2s ease,
+              background-color 0.2s ease,
+              transform 0.2s ease;
+}
+.footer-badge:hover {
+  border-color: rgba(37, 99, 235, 0.3); /* primary */
+  background: rgba(37, 99, 235, 0.07); /* primary */
+  color: rgba(255, 255, 255, 0.65);
+  transform: translateY(-1px);
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-top-glow { animation: none; }
+  .footer-logo-icon,
+  .footer-social-btn,
+  .footer-link,
+  .footer-badge { transition: none; }
+}

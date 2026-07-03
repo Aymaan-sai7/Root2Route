@@ -1,0 +1,37 @@
+.service-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(28, 43, 54, 0.10);
+  border-color: rgba(27, 79, 114, 0.3);
+}
+
+.service-card:active {
+  transform: translateY(-3px) scale(0.98);
+}
+
+.service-card--featured {
+  background: linear-gradient(155deg, #1B4F72 0%, #123550 100%);
+  min-height: 280px;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.service-card--featured:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 36px rgba(18, 53, 80, 0.35);
+}
+
+.service-card--featured:active {
+  transform: translateY(-3px) scale(0.98);
+}
+
+.featured-pattern {
+  background-image:
+    radial-gradient(circle at 85% 15%, rgba(255,255,255,0.08) 0%, transparent 35%),
+    radial-gradient(circle at 15% 85%, rgba(255,255,255,0.05) 0%, transparent 40%),
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: auto, auto, 28px 28px, 28px 28px;
+}

@@ -1,0 +1,239 @@
+<div class="ps-page">
+
+  <!-- Header -->
+  <div class="ps-header">
+    <h1 class="ps-title">الإعدادات</h1>
+    <p class="ps-subtitle">عدّل بيانات بروفايلك وإعدادات الخدمة</p>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="ps-loading">
+      <div class="ps-spinner"></div>
+      <p>بيجيب البيانات...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="ps-error">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      {{ error() }}
+    </div>
+  }
+
+  @if (!loading() && worker()) {
+    <div class="ps-body">
+
+      <!-- Left: Form -->
+      <div class="ps-main">
+
+        <!-- Success toast -->
+        @if (saved()) {
+          <div class="ps-success">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <path d="M20 6 9 17l-5-5"/>
+            </svg>
+            تم حفظ التغييرات بنجاح!
+          </div>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="save()">
+
+          <!-- Section: البيانات الشخصية -->
+          <section class="ps-section">
+            <h2 class="ps-section-title">البيانات الشخصية</h2>
+            <div class="ps-fields">
+
+              <div class="ps-field">
+                <label class="ps-label">الاسم الكامل</label>
+                <input
+                  type="text"
+                  formControlName="fullName"
+                  class="ps-input"
+                  [class.ps-input--error]="form.get('fullName')?.invalid && form.get('fullName')?.touched"
+                  placeholder="اسمك الكامل"
+                />
+                @if (form.get('fullName')?.invalid && form.get('fullName')?.touched) {
+                  <p class="ps-field-error">الاسم مطلوب (3 حروف على الأقل)</p>
+                }
+              </div>
+
+              <div class="ps-field">
+                <label class="ps-label">نبذة عنك</label>
+                <textarea
+                  formControlName="bio"
+                  class="ps-textarea"
+                  rows="3"
+                  placeholder="اكتب نبذة قصيرة عن خبرتك وشغلك..."
+                ></textarea>
+                <p class="ps-char-count">{{ bioLength }} / 300</p>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- Section: بيانات المهنة -->
+          <section class="ps-section">
+            <h2 class="ps-section-title">بيانات المهنة</h2>
+            <div class="ps-fields ps-fields--2col">
+
+              <div class="ps-field">
+                <label class="ps-label">التخصص</label>
+                <select title="التخصص" formControlName="trade" class="ps-select">
+                  @for (t of trades; track t.value) {
+                    <option [value]="t.value">{{ t.label }}</option>
+                  }
+                </select>
+              </div>
+
+              <div class="ps-field">
+                <label class="ps-label">المدينة</label>
+                <select title="المدينة" formControlName="city" class="ps-select">
+                  <option value="">اختار المدينة</option>
+                  @for (c of cities; track c) {
+                    <option [value]="c">{{ c }}</option>
+                  }
+                </select>
+              </div>
+
+              <div class="ps-field">
+                <label class="ps-label">السعر (ج.م / ساعة)</label>
+                <input
+                  type="number"
+                  formControlName="hourlyRate"
+                  class="ps-input"
+                  [class.ps-input--error]="form.get('hourlyRate')?.invalid && form.get('hourlyRate')?.touched"
+                  placeholder="150"
+                  min="1"
+                />
+              </div>
+
+              <div class="ps-field">
+                <label class="ps-label">سنين الخبرة</label>
+                <input
+                  type="number"
+                  formControlName="yearsOfExperience"
+                  class="ps-input"
+                  placeholder="5"
+                  min="0"
+                />
+              </div>
+
+              <div class="ps-field">
+                <label class="ps-label">نطاق الخدمة (كم)</label>
+                <input
+                  type="number"
+                  formControlName="serviceRadius"
+                  class="ps-input"
+                  placeholder="15"
+                  min="1"
+                />
+              </div>
+
+            </div>
+          </section>
+
+          <!-- Section: الإتاحة -->
+          <section class="ps-section">
+            <h2 class="ps-section-title">الإتاحة</h2>
+            <label class="ps-toggle-wrap">
+              <div
+                class="ps-toggle"
+                [class.ps-toggle--on]="form.get('isAvailable')?.value"
+                (click)="form.get('isAvailable')?.setValue(!form.get('isAvailable')?.value)"
+              >
+                <div class="ps-toggle-thumb"></div>
+              </div>
+              <div>
+                <p class="ps-toggle-label">
+                  {{ form.get('isAvailable')?.value ? 'متاح دلوقتي' : 'مش متاح' }}
+                </p>
+                <p class="ps-toggle-desc">
+                  {{ form.get('isAvailable')?.value ? 'بروفايلك ظاهر للعملاء وبيقدروا يحجزوا.' : 'مش هيظهر في نتائج البحث.' }}
+                </p>
+              </div>
+            </label>
+          </section>
+
+          <!-- Save Button -->
+          <div class="ps-save-row">
+            <button type="submit" class="ps-save-btn" [disabled]="saving()">
+              @if (saving()) {
+                <span class="ps-btn-spinner"></span>
+                جاري الحفظ...
+              } @else {
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+                </svg>
+                حفظ التغييرات
+              }
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Right: Profile Preview -->
+      <aside class="ps-sidebar">
+
+        <!-- Profile Card Preview -->
+        <div class="ps-preview-card">
+          <p class="ps-preview-label">معاينة البروفايل</p>
+
+          <div class="ps-preview-avatar" [style.background]="worker()!.avatarColor">
+            {{ worker()!.fullName.charAt(0) }}
+          </div>
+          <p class="ps-preview-name">{{ form.get('fullName')?.value || worker()!.fullName }}</p>
+          <p class="ps-preview-trade">
+            {{ getTradeLabel(form.get('trade')?.value) }}
+            @if (form.get('city')?.value) { · {{ form.get('city')?.value }} }
+          </p>
+
+          <div class="ps-preview-stats">
+            <div class="ps-preview-stat">
+              <p class="ps-preview-stat-val">{{ worker()!.rating }}</p>
+              <p class="ps-preview-stat-lbl">تقييم</p>
+            </div>
+            <div class="ps-preview-stat">
+              <p class="ps-preview-stat-val">{{ worker()!.completedJobs }}</p>
+              <p class="ps-preview-stat-lbl">طلب مكتمل</p>
+            </div>
+            <div class="ps-preview-stat">
+              <p class="ps-preview-stat-val">{{ form.get('yearsOfExperience')?.value || 0 }}</p>
+              <p class="ps-preview-stat-lbl">سنين خبرة</p>
+            </div>
+          </div>
+
+          <div class="ps-preview-price">
+            <span class="ps-preview-price-val">{{ form.get('hourlyRate')?.value || 0 }}</span>
+            <span class="ps-preview-price-unit">ج.م / ساعة</span>
+          </div>
+
+          <div class="ps-preview-avail" [class.ps-preview-avail--on]="form.get('isAvailable')?.value">
+            <div class="ps-avail-dot"></div>
+            {{ form.get('isAvailable')?.value ? 'متاح دلوقتي' : 'مش متاح' }}
+          </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="ps-danger-zone">
+          <p class="ps-danger-title">تسجيل الخروج</p>
+          <p class="ps-danger-desc">هتحتاج تسجل دخول تاني بعدين.</p>
+          <button type="button" class="ps-logout-btn" (click)="logout()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            تسجيل خروج
+          </button>
+        </div>
+
+      </aside>
+    </div>
+  }
+
+</div>

@@ -1,0 +1,129 @@
+<div class="orders-page">
+
+  <!-- ══════ HEADER ══════ -->
+  <div class="orders-header">
+    <div class="orders-header-content">
+      <h1 class="orders-title">طلباتي</h1>
+      <p class="orders-subtitle">تابع كل طلباتك في مكان واحد</p>
+    </div>
+    <a routerLink="/find-services" class="orders-new-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <path d="M12 5v14M5 12h14"/>
+      </svg>
+      طلب جديد
+    </a>
+  </div>
+
+  <!-- ══════ TABS ══════ -->
+  <div class="orders-tabs-wrap">
+    <div class="orders-tabs">
+      @for (tab of tabs; track tab.id) {
+        <button
+          class="orders-tab"
+          [class.orders-tab--active]="activeTab() === tab.id"
+          (click)="setTab(tab.id)"
+        >
+          {{ tab.label }}
+          @if (tabCount(tab.id) > 0) {
+            <span class="orders-tab-count" [class.orders-tab-count--active]="activeTab() === tab.id">
+              {{ tabCount(tab.id) }}
+            </span>
+          }
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- ══════ CONTENT ══════ -->
+  <div class="orders-body">
+
+    <!-- Loading -->
+    @if (loading()) {
+      <div class="orders-loading">
+        <div class="orders-spinner"></div>
+        <p>بيجيب الطلبات...</p>
+      </div>
+    }
+
+    <!-- Error -->
+    @else if (error()) {
+      <div class="orders-error">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ error() }}
+      </div>
+    }
+
+    <!-- Empty -->
+    @else if (filteredOrders().length === 0) {
+      <div class="orders-empty">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+        <p class="orders-empty-title">مفيش طلبات هنا</p>
+        <p class="orders-empty-desc">
+          @if (activeTab() === 'all') { ابدأ أول طلب دلوقتي! }
+          @else { مفيش طلبات بالحالة دي. }
+        </p>
+        @if (activeTab() === 'all') {
+          <a routerLink="/find-services" class="orders-empty-btn">ابحث عن خدمة</a>
+        }
+      </div>
+    }
+
+    <!-- Orders List -->
+    @else {
+      <div class="orders-list">
+        @for (order of filteredOrders(); track order.id) {
+          <div class="order-card" (click)="goToDetails(order.id)">
+
+            <!-- Right: Avatar + Info -->
+            <div class="order-main">
+              <div class="order-avatar" [style.background]="order.workerAvatarColor">
+                {{ order.workerName.charAt(0) }}
+              </div>
+              <div class="order-info">
+                <div class="order-top-row">
+                  <p class="order-worker">{{ order.workerName }}</p>
+                  <span class="order-status" [class]="getStatusClass(order.status)">
+                    {{ getStatusLabel(order.status) }}
+                  </span>
+                </div>
+                <p class="order-desc">{{ order.description }}</p>
+                <div class="order-meta-row">
+                  <span class="order-trade">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                    </svg>
+                    {{ order.workerTrade }}
+                  </span>
+                  <span class="order-dot"></span>
+                  <span class="order-date">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+                    </svg>
+                    {{ order.scheduledAt | date: 'd MMM y' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Left: Amount + Arrow -->
+            <div class="order-aside">
+              <p class="order-amount">{{ order.totalAmount }} <span>ج.م</span></p>
+              <svg class="order-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <path d="M19 12H5M11 18l-6-6 6-6"/>
+              </svg>
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>

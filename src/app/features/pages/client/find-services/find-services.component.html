@@ -1,0 +1,198 @@
+<div class="fs-page">
+
+  <!-- HERO -->
+  <section class="fs-hero">
+    <div class="fs-hero-bg" aria-hidden="true"></div>
+    <div class="fs-hero-content">
+      <div class="fs-hero-text" appScrollReveal>
+        <span class="fs-hero-eyebrow">اطلب، تابع، اتطمن</span>
+        <h1 class="fs-hero-title">ابحث عن الخدمة<br><span class="fs-hero-accent">المناسبة ليك</span></h1>
+        <p class="fs-hero-desc">صنايعية موثقين، أسعار واضحة، وشغل بضمان حقيقي.</p>
+      </div>
+
+      <div class="fs-search-wrap" appScrollReveal>
+        <div class="fs-search-box">
+          <svg class="fs-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input class="fs-search-input" type="text" placeholder="ابحث عن خدمة... كهرباء، سباكة، نجارة" [value]="searchQuery()" (input)="onSearch($event)" (keydown.enter)="submitSearch()">
+          <button class="fs-search-btn" (click)="submitSearch()">ابحث</button>
+        </div>
+        <div class="fs-search-hints">
+          <span class="fs-hint-label">الأكثر طلباً:</span>
+          @for (cat of bentoCategories; track cat.id) {
+            <button class="fs-hint-tag" (click)="goToCategory(cat.trade)">{{ cat.label }}</button>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="fs-body">
+
+    <!-- ══════════════════════════════════════════
+         تصفح حسب الخدمة - Bento Grid
+    ══════════════════════════════════════════ -->
+    <section class="fs-section">
+      <div class="fs-section-header" appScrollReveal>
+        <h2 class="fs-section-title">تصفح حسب الخدمة</h2>
+        <p class="fs-section-desc">اختار التخصص اللي محتاجه</p>
+      </div>
+
+      <div class="fs-bento-grid" appScrollReveal>
+        @for (cat of bentoCategories; track cat.id) {
+          <button class="fs-bento-card fs-bento-card--{{ cat.size }}" [style.background-image]="'url(' + cat.imageUrl + ')'" (click)="goToCategory(cat.trade)">
+            <span class="fs-bento-overlay"></span>
+
+            @if (cat.isMostPopular) {
+              <span class="fs-bento-badge">الأكثر طلبًا</span>
+            }
+
+            <div class="fs-bento-content">
+              <h3 class="fs-bento-title">{{ cat.label }}</h3>
+              <p class="fs-bento-desc">{{ cat.desc }}</p>
+            </div>
+          </button>
+        }
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+         الأقرب ليك
+    ══════════════════════════════════════════ -->
+    <section class="fs-section">
+      <div class="fs-section-header" appScrollReveal>
+        <h2 class="fs-section-title">الأقرب ليك</h2>
+        @if (selectedCity()) {
+          <button class="fs-change-city-btn" (click)="openCityPicker()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            {{ selectedCity() }} — غيّر المنطقة
+          </button>
+        }
+      </div>
+
+      @if (isCityPickerOpen()) {
+        <div class="fs-city-picker" appScrollReveal>
+          <p class="fs-city-picker-label">اختار منطقتك عشان نورّيك أقرب الصنايعية ليك</p>
+          <div class="fs-city-grid">
+            @for (city of availableCities(); track city) {
+              <button class="fs-city-chip" (click)="chooseCity(city)">{{ city }}</button>
+            }
+          </div>
+        </div>
+      } @else if (loadingNearby()) {
+        <div class="fs-recent-grid" appScrollReveal>
+          @for (s of [1,2,3,4]; track s) {
+            <div class="fs-skeleton-card" style="height: 100px;"></div>
+          }
+        </div>
+      } @else if (nearbyWorkers().length === 0) {
+        <p class="fs-section-desc">مفيش صنايعية متاحين في {{ selectedCity() }} دلوقتي.</p>
+      } @else {
+        <div class="fs-nearby-grid" appScrollReveal>
+          @for (w of nearbyWorkers(); track w.id) {
+            <button class="fs-nearby-card" (click)="goToProfile(w.id)">
+              <div class="fs-nearby-avatar" [style.background]="w.avatarColor">
+                {{ w.fullName.charAt(0) }}
+              </div>
+              <p class="fs-nearby-name">{{ w.fullName }}</p>
+              <p class="fs-nearby-trade">{{ w.tradeLabel }}</p>
+              <div class="fs-nearby-rating">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="#F97316 " stroke="none">
+                  <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+                {{ w.rating }}
+              </div>
+              <p class="fs-nearby-price">{{ w.hourlyRate }} ج.م / ساعة</p>
+            </button>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- ══════════════════════════════════════════
+         أحدث الخدمات + أفضل الصنايعية
+    ══════════════════════════════════════════ -->
+    <section class="fs-section">
+      <div class="fs-split-grid" appScrollReveal>
+
+        <!-- أحدث الخدمات (9) -->
+        <div class="fs-split-main">
+          <div class="fs-section-header">
+            <h2 class="fs-section-title">آخر طلباتك</h2>
+            <p class="fs-section-desc">تابع طلباتك اللي عملتها على المنصة</p>
+          </div>
+
+          @if (loadingRecent()) {
+            <div class="fs-recent-grid">
+              @for (s of [1,2]; track s) {
+                <div class="fs-skeleton-card" style="height: 140px;"></div>
+              }
+            </div>
+          } @else if (recentServices().length === 0) {
+            <p class="fs-section-desc">لسه معملتش أي طلب، دور على صنايعي وابدأ أول حجز!</p>
+          } @else {
+            <div class="fs-recent-grid">
+              @for (service of recentServices(); track service.id) {
+                <div class="fs-recent-card">
+                  <div class="fs-recent-avatar" [style.background]="service.workerAvatarColor">
+                    {{ service.workerName.charAt(0) }}
+                  </div>
+                  <div class="fs-recent-info">
+                    <p class="fs-recent-desc">{{ service.description }}</p>
+                    <p class="fs-recent-meta">
+                      <span class="fs-recent-worker">{{ service.workerName }}</span>
+                      <span class="fs-recent-dot"></span>
+                      <span>{{ service.workerTrade }}</span>
+                    </p>
+                  </div>
+                  <span class="fs-recent-status fs-recent-status--{{ service.status }}">
+                    {{ statusLabel(service.status) }}
+                  </span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- توب اسبشيالست (3) -->
+        <div class="fs-split-side">
+          <div class="fs-section-header">
+            <h2 class="fs-section-title">توب سبشلست</h2>
+          </div>
+
+          <div class="fs-top-list">
+            @if (loadingTopSpecialists()) {
+              @for (s of [1,2,3]; track s) {
+                <div class="fs-skeleton-card" style="height: 56px;"></div>
+              }
+            } @else {
+              @for (specialist of topSpecialists(); track specialist.id; let rank = $index) {
+                <button class="fs-top-item" (click)="goToProfile(specialist.id)">
+                  <span class="fs-top-rank">{{ rank + 1 }}</span>
+                  <div class="fs-top-avatar" [style.background]="specialist.avatarColor">
+                    {{ specialist.fullName.charAt(0) }}
+                  </div>
+                  <div class="fs-top-info">
+                    <p class="fs-top-name">{{ specialist.fullName }}</p>
+                    <p class="fs-top-trade">{{ specialist.tradeLabel }}</p>
+                  </div>
+                  <span class="fs-top-rating">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="#F97316" stroke="none">
+                      <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
+                    </svg>
+                    {{ specialist.rating }}
+                  </span>
+                </button>
+              }
+            }
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+</div>

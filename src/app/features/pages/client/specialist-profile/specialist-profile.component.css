@@ -1,0 +1,435 @@
+/* ============================================================
+   PAGE
+   ============================================================ */
+.sp-page {
+  min-height: 100vh;
+  background: #F7F9FC; /* surface-alt */
+}
+
+.sp-loading, .sp-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 60vh;
+  color: #64748B; /* steel */
+  font-size: 14px;
+}
+.sp-spinner {
+  width: 36px; height: 36px;
+  border: 3px solid rgba(37,99,235,0.15); /* primary */
+  border-top-color: #2563EB; /* primary */
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.sp-header {
+  position: relative;
+  background: #0F172A; /* ink */
+  padding: 24px 0 36px;
+  overflow: hidden;
+}
+.sp-header-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 50% 80% at 10% 50%, rgba(37,99,235,0.15), transparent 60%), /* primary */
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: auto, 28px 28px, 28px 28px;
+  pointer-events: none;
+}
+.sp-header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.sp-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 20px;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+.sp-back:hover { color: rgba(255,255,255,0.8); }
+
+.sp-profile-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+@media (max-width: 640px) {
+  .sp-profile-top { flex-direction: column; align-items: center; text-align: center; }
+}
+
+.sp-avatar {
+  width: 88px; height: 88px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.15), 0 8px 24px rgba(15,23,42,0.3); /* ink */
+}
+
+.sp-profile-info { flex: 1; }
+
+.sp-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.sp-name {
+  font-family: var(--font-display, inherit);
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ⚠️ مفيش success.light معرّف في tailwind.config — التباين هيبقى أقل شوية
+   من الأصل فوق الخلفية الغامقة. لو حابب نفس الوضوح، ضيف success.light
+   (مثلاً #4ADE80) وأنا أستخدمه بدل success العادي هنا. */
+.sp-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #16A34A; /* success */
+  background: rgba(22,163,74,0.12); /* success */
+  border: 1px solid rgba(22,163,74,0.25); /* success */
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+/* ⚠️ نفس الملاحظة: مفيش danger.light معرّف، فالتباين فوق الغامق أقل من الأصل */
+.sp-avail {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(220,38,38,0.15); /* danger */
+  color: #DC2626; /* danger */
+}
+.sp-avail--on {
+  background: rgba(22,163,74,0.12); /* success */
+  color: #16A34A; /* success */
+}
+
+.sp-trade {
+  font-size: 14px;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 16px;
+}
+
+.sp-quick-stats {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.sp-quick-stat {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+}
+.sp-quick-stat strong { color: #fff; font-weight: 600; }
+
+
+/* ============================================================
+   BODY LAYOUT
+   ============================================================ */
+.sp-body {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .sp-body {
+    grid-template-columns: 1fr;
+  }
+  .sp-booking-card { order: -1; }
+}
+
+
+/* ============================================================
+   DETAIL CARDS
+   ============================================================ */
+.sp-details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sp-card {
+  background: #fff;
+  border: 1px solid rgba(37,99,235,0.1); /* primary */
+  border-radius: 14px;
+  padding: 24px;
+}
+.sp-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0F172A; /* ink */
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(37,99,235,0.08); /* primary */
+}
+
+.sp-bio {
+  font-size: 14px;
+  color: #64748B; /* steel */
+  line-height: 1.75;
+}
+
+/* Skills */
+.sp-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.sp-skill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(37,99,235,0.06); /* primary */
+  border: 1px solid rgba(37,99,235,0.12); /* primary */
+  color: #2563EB; /* primary */
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Certs */
+.sp-certs { display: flex; flex-direction: column; gap: 12px; }
+.sp-cert-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 10px;
+  background: rgba(37,99,235,0.03); /* primary */
+  border: 1px solid rgba(37,99,235,0.08); /* primary */
+}
+.sp-cert-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: rgba(37,99,235,0.08); /* primary */
+  color: #2563EB; /* primary */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.sp-cert-name { font-size: 13px; font-weight: 600; color: #0F172A; } /* ink */
+.sp-cert-desc { font-size: 12px; color: #64748B; margin-top: 2px; } /* steel */
+.sp-cert-badge {
+  margin-inline-start: auto;
+  font-size: 11px;
+  font-weight: 600;
+  color: #16A34A; /* success */
+  background: rgba(22,163,74,0.1); /* success */
+  border: 1px solid rgba(22,163,74,0.2); /* success */
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Reviews */
+.sp-no-reviews { font-size: 13px; color: #64748B; } /* steel */
+.sp-reviews { display: flex; flex-direction: column; gap: 16px; }
+.sp-review {
+  padding: 16px;
+  border-radius: 10px;
+  background: rgba(37,99,235,0.03); /* primary */
+  border: 1px solid rgba(37,99,235,0.08); /* primary */
+}
+.sp-review-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.sp-review-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: #2563EB; /* primary */
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.sp-review-name { font-size: 13px; font-weight: 600; color: #0F172A; } /* ink */
+.sp-review-stars { display: flex; gap: 2px; margin-top: 3px; }
+.sp-review-comment { font-size: 13px; color: #64748B; line-height: 1.65; } /* steel */
+
+
+/* ============================================================
+   BOOKING CARD
+   ============================================================ */
+.sp-booking-card {
+  background: #fff;
+  border: 1px solid rgba(37,99,235,0.12); /* primary */
+  border-radius: 16px;
+  padding: 28px;
+  position: sticky;
+  top: 88px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: 0 4px 20px rgba(37,99,235,0.08); /* primary */
+}
+
+.sp-booking-price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(37,99,235,0.08); /* primary */
+}
+.sp-price-val  { font-size: 32px; font-weight: 800; color: #0F172A; } /* ink */
+.sp-price-unit { font-size: 13px; color: #64748B; } /* steel */
+
+.sp-booking-info {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sp-booking-info li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #64748B; /* steel */
+}
+.sp-booking-info li svg { flex-shrink: 0; color: #64748B; } /* steel */
+.sp-booking-info li strong { color: #0F172A; } /* ink */
+
+.sp-booking-avail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(220,38,38,0.07); /* danger */
+  border: 1px solid rgba(220,38,38,0.15); /* danger */
+  font-size: 13px;
+  color: #DC2626; /* danger */
+  font-weight: 500;
+}
+.sp-booking-avail--on {
+  background: rgba(22,163,74,0.07); /* success */
+  border-color: rgba(22,163,74,0.2); /* success */
+  color: #16A34A; /* success */
+}
+.sp-avail-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #DC2626; /* danger */
+  flex-shrink: 0;
+  position: relative;
+}
+.sp-booking-avail--on .sp-avail-dot {
+  background: #16A34A; /* success */
+}
+.sp-booking-avail--on .sp-avail-dot::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: #16A34A; /* success */
+  animation: pulse 1.8s ease-out infinite;
+}
+@keyframes pulse {
+  0%   { transform: scale(1);   opacity: 0.7; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+
+.sp-book-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: #2563EB; /* primary */
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.3); /* primary */
+}
+.sp-book-btn:hover:not(:disabled) {
+  background: #1D4ED8; /* primary.deep */
+  transform: translateY(-1px);
+}
+.sp-book-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sp-msg-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(37,99,235,0.25); /* primary */
+  background: transparent;
+  color: #2563EB; /* primary */
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.sp-msg-btn:hover { background: rgba(37,99,235,0.05); } /* primary */
+
+.sp-trust-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 11.5px;
+  color: #64748B; /* steel */
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sp-spinner, .sp-avail-dot::before { animation: none; }
+}

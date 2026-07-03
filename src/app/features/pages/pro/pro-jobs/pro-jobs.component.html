@@ -1,0 +1,154 @@
+<div class="pj-page">
+
+  <!-- Header -->
+  <div class="pj-header">
+    <div>
+      <h1 class="pj-title">الشغل</h1>
+      <p class="pj-subtitle">تابع شغلك الجاري والمكتمل</p>
+    </div>
+    <!-- Earnings summary -->
+    @if (!loading() && totalEarnings() > 0) {
+      <div class="pj-earnings">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+        <span>إجمالي الأرباح: <strong>{{ totalEarnings() }} ج.م</strong></span>
+      </div>
+    }
+  </div>
+
+  <!-- Tabs -->
+  <div class="pj-tabs-wrap">
+    <div class="pj-tabs">
+      @for (tab of tabs; track tab.id) {
+        <button
+          class="pj-tab"
+          [class.pj-tab--active]="activeTab() === tab.id"
+          (click)="setTab(tab.id)"
+        >
+          {{ tab.label }}
+          @if (tabCount(tab.id) > 0) {
+            <span class="pj-tab-count" [class.pj-tab-count--active]="activeTab() === tab.id">
+              {{ tabCount(tab.id) }}
+            </span>
+          }
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="pj-body">
+
+    @if (loading()) {
+      <div class="pj-loading">
+        <div class="pj-spinner"></div>
+        <p>بيجيب الشغل...</p>
+      </div>
+    }
+
+    @else if (error()) {
+      <div class="pj-error">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ error() }}
+      </div>
+    }
+
+    @else if (filtered().length === 0) {
+      <div class="pj-empty">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+        </svg>
+        <p class="pj-empty-title">
+          @if (activeTab() === 'active') { مفيش شغل جاري دلوقتي }
+          @else { مفيش شغل مكتمل لسه }
+        </p>
+      </div>
+    }
+
+    @else {
+      <div class="pj-list">
+        @for (job of filtered(); track job.id) {
+          <div class="pj-card" [class.pj-card--active]="job.status === 'active'">
+
+            <!-- Status indicator -->
+            <div class="pj-card-indicator" [class.pj-card-indicator--active]="job.status === 'active'"></div>
+
+            <div class="pj-card-body">
+
+              <!-- Top -->
+              <div class="pj-card-top">
+                <div class="pj-avatar" [style.background]="getAvatarColor(job.clientName)">
+  {{ (job.clientName || '؟').charAt(0) }}
+</div>
+                <div class="pj-card-info">
+                  <p class="pj-card-client">{{ job.clientName }}</p>
+                  <p class="pj-card-desc">{{ job.description }}</p>
+                </div>
+                <div class="pj-card-amount">
+                  <span class="pj-amount-val">{{ job.totalAmount }}</span>
+                  <span class="pj-amount-unit">ج.م</span>
+                </div>
+              </div>
+
+              <!-- Meta -->
+              <div class="pj-card-meta">
+                <div class="pj-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+                  </svg>
+                  {{ job.scheduledAt | date: 'd MMM y' }}
+                </div>
+                <div class="pj-meta-item">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                  </svg>
+                  {{ job.workerTrade }}
+                </div>
+                @if (job.status === 'completed') {
+                  <div class="pj-meta-item pj-meta-item--success">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                      <path d="M20 6 9 17l-5-5"/>
+                    </svg>
+                    تم الإنهاء
+                  </div>
+                }
+              </div>
+
+              <!-- Action لو جاري -->
+              @if (job.status === 'active') {
+                <button class="pj-complete-btn" (click)="completeJob(job.id, job.workerId)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/>
+                  </svg>
+                  تأكيد إنهاء الشغل
+                </button>
+              }
+
+              <!-- Message -->
+              <button class="pj-message-btn" (click)="openChat(job)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                ابعت رسالة
+              </button>
+
+              <!-- Delete -->
+              <button class="pj-delete-btn" (click)="deleteJob(job.id)" title="حذف الطلب">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+                حذف
+              </button>
+
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>

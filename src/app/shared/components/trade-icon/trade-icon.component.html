@@ -1,0 +1,25 @@
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  @switch (name()) {
+    @case ('electric') {
+      <path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"></path>
+    }
+    @case ('plumbing') {
+      <path d="M6 3v6a3 3 0 003 3h0a3 3 0 003-3V3M9 12v9M16 9h3a2 2 0 012 2v2a2 2 0 01-2 2h-1m-2 4v-8"></path>
+    }
+    @case ('carpentry') {
+      <path d="M3 21l7-7M11 5l8 8-3 3-8-8 3-3zM14 8l2-2M3 3l3 3"></path>
+    }
+    @case ('painting') {
+      <path d="M12 2c-4 4-6 7-6 10a6 6 0 0012 0c0-3-2-6-6-10z"></path>
+    }
+    @case ('ac') {
+      <rect x="3" y="6" width="18" height="8" rx="2"></rect>
+      <path d="M7 18v2M12 18v2M17 18v2M3 10h18"></path>
+    }
+    @case ('more') {
+      <circle cx="5" cy="12" r="1.5"></circle>
+      <circle cx="12" cy="12" r="1.5"></circle>
+      <circle cx="19" cy="12" r="1.5"></circle>
+    }
+  }
+</svg>

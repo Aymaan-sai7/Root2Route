@@ -1,0 +1,140 @@
+<div class="pd-page">
+
+  <!-- Header -->
+  <div class="pd-header">
+    <h1 class="pd-title">أهلاً، {{ worker()?.fullName }} 👋</h1>
+    <p class="pd-subtitle">نظرة عامة على شغلك النهاردة</p>
+  </div>
+
+  @if (loading()) {
+    <div class="pd-loading">
+      <div class="pd-spinner"></div>
+      <p>بيجيب بيانات الداشبورد...</p>
+    </div>
+  }
+
+  @else if (error()) {
+    <div class="pd-error">{{ error() }}</div>
+  }
+
+  @else {
+
+    <!-- Stats Cards -->
+    <div class="pd-stats-grid">
+      <div class="pd-stat-card">
+        <div class="pd-stat-icon pd-stat-icon--success">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div>
+          <p class="pd-stat-value">{{ totalEarnings() }} ج.م</p>
+          <p class="pd-stat-label">إجمالي الأرباح</p>
+        </div>
+      </div>
+
+      <div class="pd-stat-card">
+        <div class="pd-stat-icon pd-stat-icon--accent">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div>
+          <p class="pd-stat-value">{{ pendingCount() }}</p>
+          <p class="pd-stat-label">طلبات معلقة</p>
+        </div>
+      </div>
+
+      <div class="pd-stat-card">
+        <div class="pd-stat-icon pd-stat-icon--primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+          </svg>
+        </div>
+        <div>
+          <p class="pd-stat-value">{{ activeCount() }}</p>
+          <p class="pd-stat-label">شغل جاري</p>
+        </div>
+      </div>
+
+      <div class="pd-stat-card">
+        <div class="pd-stat-icon pd-stat-icon--warning">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+        <div>
+          <p class="pd-stat-value">{{ worker()?.rating ?? 0 }} <span class="pd-stat-sub">({{ worker()?.reviewsCount ?? 0 }})</span></p>
+          <p class="pd-stat-label">التقييم</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="pd-charts-grid">
+      <div class="pd-chart-card">
+        <h3 class="pd-chart-title">الأرباح آخر 7 أيام</h3>
+        <apx-chart
+          [series]="earningsChartSeries"
+          [chart]="earningsChartOptions.chart!"
+          [xaxis]="earningsChartOptions.xaxis!"
+          [colors]="earningsChartOptions.colors!"
+          [dataLabels]="earningsChartOptions.dataLabels"
+          [plotOptions]="earningsChartOptions.plotOptions"
+          [grid]="earningsChartOptions.grid"
+        ></apx-chart>
+      </div>
+
+      <div class="pd-chart-card">
+        <h3 class="pd-chart-title">توزيع الحجوزات</h3>
+        @if (allJobs().length > 0) {
+          <apx-chart
+            [series]="statusChartSeries"
+            [chart]="statusChartOptions.chart"
+            [labels]="statusChartOptions.labels"
+            [colors]="statusChartOptions.colors"
+            [legend]="statusChartOptions.legend"
+            [dataLabels]="statusChartOptions.dataLabels"
+            [stroke]="statusChartOptions.stroke"
+          ></apx-chart>
+        } @else {
+          <p class="pd-chart-empty">مفيش بيانات كفاية لعرض الرسم</p>
+        }
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="pd-recent">
+      <h3 class="pd-chart-title">آخر النشاطات</h3>
+
+      @if (recentJobs().length === 0) {
+        <p class="pd-chart-empty">مفيش طلبات لسه</p>
+      } @else {
+        <div class="pd-recent-list">
+          @for (job of recentJobs(); track job.id) {
+            <div class="pd-recent-card">
+              <div class="pd-avatar" [style.background]="getAvatarColor(job.clientName)">
+                {{ (job.clientName || '؟').charAt(0) }}
+              </div>
+              <div class="pd-recent-info">
+                <div class="pd-recent-top">
+                  <p class="pd-recent-name">{{ job.clientName }}</p>
+                  <span class="status-badge" [class]="getStatusClass(job.status)">
+                    {{ getStatusLabel(job.status) }}
+                  </span>
+                </div>
+                <p class="pd-recent-desc">{{ job.description }}</p>
+              </div>
+              <div class="pd-recent-right">
+                <p class="pd-recent-amount">{{ job.totalAmount }} ج.م</p>
+                <p class="pd-recent-date">{{ job.createdAt | date: 'd MMM' }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+  }
+
+</div>

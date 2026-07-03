@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #FFFFFF;
+  scroll-behavior: smooth;
+}
+
+html[dir='rtl'] body {
+  font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
+}
+
+html[dir='ltr'] body {
+  font-family: 'Inter', 'IBM Plex Sans Arabic', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+:focus-visible {
+  outline: 2px solid #F97316;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Signature element: measuring-tape divider */
+/* ============================================================
+   TAPE RULE — نسخة "شريط القياس" الهادية
+   استخدام: <div class="tape-rule"></div>
+   ============================================================ */
+.tape-rule {
+  position: relative;
+  height: 24px;
+  width: 100%;
+}
+
+/* الخط الأساسي — بيدوب تدريجياً من الطرفين */
+.tape-rule::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    #E2E8F0 15%,   /* line */
+    #E2E8F0 85%,   /* line */
+    transparent 100%
+  );
+  transform: translateY(-50%);
+}
+
+/* علامات قياس خفيفة جداً حوالين النص — إشارة مهموسة لهوية شريط القياس */
+.tape-rule::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120px;
+  max-width: 40%;
+  height: 8px;
+  transform: translate(-50%, -50%);
+  background-image: repeating-linear-gradient(
+    to right,
+    #CBD5E1 0,      /* line.strong */
+    #CBD5E1 1px,
+    transparent 1px,
+    transparent 12px
+  );
+  background-position: center;
+  background-repeat: repeat-x;
+  background-size: 12px 8px;
+  opacity: 0.5;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 25%, #000 75%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 25%, #000 75%, transparent 100%);
+}
+
+/* نقطة الـ accent المركزية فوق العلامات */
+.tape-rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tape-rule > .tape-rule-mark {
+  position: relative;
+  z-index: 1;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #F97316; /* accent */
+  box-shadow: 0 0 0 4px #FFFFFF; /* paper */
+}
+
+html[dir='rtl'] .tape-rule {
+  background-image: repeating-linear-gradient(
+    to left,
+    #CBD5E1 0,
+    #CBD5E1 1px,
+    transparent 1px,
+    transparent 24px
+  );
+}
+
+.bg-blueprint-faint {
+  background-image:
+    linear-gradient(rgba(37, 99, 235, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ---------------------------------------------------------------- */
+/* Subtle animations                                                */
+/* ---------------------------------------------------------------- */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.6s ease-out both;
+}
+
+/* خلفية أبيض نضيفة + نقط زرقاء خفيفة بس، بدون أي تدرجات ألوان إضافية */
+.bg-blueprint-faint-animated {
+  position: relative;
+  background-color: #FFFFFF;
+}
+
+.bg-blueprint-faint-animated::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 10% 20%, rgba(37, 99, 235, 0.35), transparent),
+    radial-gradient(1.5px 1.5px at 25% 65%, rgba(37, 99, 235, 0.25), transparent),
+    radial-gradient(2px 2px at 40% 15%, rgba(37, 99, 235, 0.3), transparent),
+    radial-gradient(1.5px 1.5px at 55% 80%, rgba(37, 99, 235, 0.2), transparent),
+    radial-gradient(2px 2px at 70% 35%, rgba(37, 99, 235, 0.28), transparent),
+    radial-gradient(1.5px 1.5px at 85% 60%, rgba(37, 99, 235, 0.35), transparent),
+    radial-gradient(1.5px 1.5px at 15% 85%, rgba(37, 99, 235, 0.2), transparent),
+    radial-gradient(2px 2px at 60% 50%, rgba(37, 99, 235, 0.25), transparent),
+    radial-gradient(1.5px 1.5px at 90% 10%, rgba(37, 99, 235, 0.3), transparent),
+    radial-gradient(1.5px 1.5px at 35% 40%, rgba(37, 99, 235, 0.3), transparent);
+  background-size: 100% 100%;
+  animation: twinkle 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.4; }
+  25% { opacity: 0.9; }
+  50% { opacity: 0.5; }
+  75% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .bg-blueprint-faint-animated::before {
+    animation: none;
+  }
+}

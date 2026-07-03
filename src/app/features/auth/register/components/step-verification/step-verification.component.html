@@ -1,0 +1,68 @@
+<div class="space-y-5">
+
+  <p class="text-sm text-ink-soft">راجع بياناتك، ولو كله تمام اضغط تأكيد.</p>
+
+  <div class="space-y-3 rounded-md border border-line bg-paper-dim p-5">
+
+    <div class="flex items-center justify-between border-b border-line pb-3">
+      <span class="text-sm text-steel">الاسم</span>
+      <span class="text-sm font-medium text-ink">{{ form().get('fullName')?.value || '—' }}</span>
+    </div>
+
+    <div class="flex items-center justify-between border-b border-line pb-3">
+      <span class="text-sm text-steel">البريد الإلكتروني</span>
+      <span class="text-sm font-medium text-ink">{{ form().get('email')?.value || '—' }}</span>
+    </div>
+
+    <div class="flex items-center justify-between">
+      <span class="text-sm text-steel">نوع الحساب</span>
+      <span class="text-sm font-medium text-ink">
+        @if (form().get('role')?.value === 'client') {
+          عميل (عايز يوظف صنايعي)
+        } @else if (form().get('role')?.value === 'pro') {
+          صنايعي (عايز يشتغل)
+        } @else {
+          —
+        }
+      </span>
+    </div>
+
+  </div>
+@if (form().get('role')?.value === 'pro') {
+    <div class="mt-3 space-y-3 rounded-md border border-line bg-paper-dim p-5">
+      <div class="flex items-center justify-between border-b border-line pb-3">
+        <span class="text-sm text-steel">التخصص</span>
+        <span class="text-sm font-medium text-ink">{{ form().get('trade')?.value || '—' }}</span>
+      </div>
+      <div class="flex items-center justify-between border-b border-line pb-3">
+        <span class="text-sm text-steel">السعر بالساعة</span>
+        <span class="text-sm font-medium text-ink">{{ form().get('hourlyRate')?.value || '—' }} ج.م</span>
+      </div>
+      <div class="flex items-center justify-between border-b border-line pb-3">
+        <span class="text-sm text-steel">سنين الخبرة</span>
+        <span class="text-sm font-medium text-ink">{{ form().get('yearsOfExperience')?.value || '—' }}</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-steel">المنطقة</span>
+        <span class="text-sm font-medium text-ink">{{ form().get('city')?.value || '—' }}</span>
+      </div>
+    </div>
+  }
+  @if (form().get('role')?.value === 'pro') {
+  <div class="mt-3 flex items-center justify-between rounded-md border border-success/30 bg-success/5 px-4 py-3">
+    <span class="flex items-center gap-2 text-sm font-medium text-success">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+      تم رفع مستندات التوثيق
+    </span>
+    @if (form().get('certificate')?.value) {
+      <span class="text-xs text-steel">+ شهادة تخصص مرفقة</span>
+    }
+  </div>
+}
+  <label class="flex items-start gap-3">
+    <input type="checkbox" class="mt-1 accent-blueprint" />
+    <span class="text-sm text-ink-soft">موافق على الشروط والأحكام وسياسة الخصوصية.</span>
+  </label>
+
+
+</div>

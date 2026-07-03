@@ -1,0 +1,24 @@
+<div class="flex items-center justify-center gap-2 md:gap-4">
+  @for (step of steps(); track step.number) {
+    <div class="flex items-center gap-2">
+      <div
+        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 font-mono text-sm font-semibold transition-colors"
+        [class.border-blueprint]="step.number <= currentStep()"
+        [class.bg-blueprint]="step.number <= currentStep()"
+        [class.text-white]="step.number <= currentStep()"
+        [class.border-line-strong]="step.number > currentStep()"
+        [class.text-steel]="step.number > currentStep()"
+      >
+        {{ step.number }}
+      </div>
+      @if (step.number === currentStep()) {
+        <span class="hidden text-sm font-medium text-ink sm:inline">
+          {{ step.label }}
+        </span>
+      }
+    </div>
+    @if (step.number < steps().length) {
+      <div class="h-px w-4 shrink-0 bg-line-strong md:w-8"></div>
+    }
+  }
+</div>

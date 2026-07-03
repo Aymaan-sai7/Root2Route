@@ -1,0 +1,167 @@
+<div class="pr-page">
+
+  <!-- Header -->
+  <div class="pr-header">
+    <h1 class="pr-title">الطلبات</h1>
+    <p class="pr-subtitle">تابع وأدر كل طلبات الشغل بتاعتك</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="pr-tabs-wrap">
+    <div class="pr-tabs">
+      @for (tab of tabs; track tab.id) {
+        <button
+          class="pr-tab"
+          [class.pr-tab--active]="activeTab() === tab.id"
+          (click)="setTab(tab.id)"
+        >
+          {{ tab.label }}
+          @if (tabCount(tab.id) > 0) {
+            <span class="pr-tab-count" [class.pr-tab-count--active]="activeTab() === tab.id">
+              {{ tabCount(tab.id) }}
+            </span>
+          }
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="pr-body">
+
+    @if (loading()) {
+      <div class="pr-loading">
+        <div class="pr-spinner"></div>
+        <p>بيجيب الطلبات...</p>
+      </div>
+    }
+
+    @else if (error()) {
+      <div class="pr-error">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ error() }}
+      </div>
+    }
+
+    @else if (filtered().length === 0) {
+      <div class="pr-empty">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        <p class="pr-empty-title">مفيش طلبات هنا</p>
+        <p class="pr-empty-desc">
+          @switch (activeTab()) {
+            @case ('pending')   { مفيش طلبات معلقة دلوقتي. }
+            @case ('active')    { مفيش شغل جاري دلوقتي. }
+            @case ('completed') { مفيش طلبات مكتملة لسه. }
+            @case ('cancelled') { مفيش طلبات ملغية. }
+          }
+        </p>
+      </div>
+    }
+
+    @else {
+      <div class="pr-list">
+        @for (job of filtered(); track job.id) {
+          <div class="pr-card">
+
+            <!-- Card Top -->
+            <div class="pr-card-top">
+              <div class="pr-avatar" [style.background]="getAvatarColor(job.clientName)">
+  {{ (job.clientName || '؟').charAt(0) }}
+</div>
+              <div class="pr-card-info">
+                <div class="pr-card-name-row">
+                  <p class="pr-card-client">{{ job.clientName }}</p>
+                  <span class="status-badge" [class]="getStatusClass(job.status)">
+                    {{ getStatusLabel(job.status) }}
+                  </span>
+                </div>
+                <p class="pr-card-desc">{{ job.description }}</p>
+              </div>
+            </div>
+
+            <!-- Card Meta -->
+            <div class="pr-card-meta">
+              <div class="pr-meta-item">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+                </svg>
+                {{ job.scheduledAt | date: 'd MMM y' }}
+              </div>
+              <div class="pr-meta-item">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                {{ job.totalAmount }} ج.م
+              </div>
+              <div class="pr-meta-item">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                </svg>
+                {{ job.workerTrade }}
+              </div>
+            </div>
+
+            <!-- Actions حسب الحالة -->
+            @if (job.status === 'pending') {
+              <div class="pr-actions">
+                <button class="pr-btn pr-btn--accept" (click)="acceptJob(job.id)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <path d="M20 6 9 17l-5-5"/>
+                  </svg>
+                  قبول الطلب
+                </button>
+                <button class="pr-btn pr-btn--reject" (click)="rejectJob(job.id)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <path d="M18 6 6 18M6 6l12 12"/>
+                  </svg>
+                  رفض
+                </button>
+              </div>
+            }
+
+            @if (job.status === 'active') {
+              <div class="pr-actions">
+                <button class="pj-complete-btn" (click)="completeJob(job.id, job.workerId)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/>
+                  </svg>
+                  تأكيد إنهاء الشغل
+                </button>
+              </div>
+            }
+
+            <!-- Message -->
+            @if (job.status !== 'cancelled') {
+              <div class="pr-actions">
+                <button class="pr-btn pr-btn--message" (click)="openChat(job)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                  </svg>
+                  ابعت رسالة
+                </button>
+              </div>
+            }
+
+            <!-- Delete -->
+            <div class="pr-actions pr-actions--danger">
+              <button class="pr-delete-btn" (click)="deleteJob(job.id)" title="حذف الطلب">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+                حذف
+              </button>
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>

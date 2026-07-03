@@ -1,0 +1,51 @@
+<header
+  class="sticky top-0 z-50 border-b border-line bg-paper/90 backdrop-blur-sm transition-transform duration-300 ease-in-out will-change-transform"
+  [class.-translate-y-full]="!showNavbar()"
+>
+  <nav class="mx-auto flex max-w-content items-center justify-between px-5 py-3.5 md:px-8">
+
+    <a routerLink="/" class="flex items-center gap-2 shrink-0">
+      <img
+    src="/sanaye3i_nav.png"
+    alt="Sanaye3i Logo"
+    class="h-11 w-auto object-contain"
+  />
+      <span class="font-display text-xl font-bold tracking-tight text-blueprint">صنايعي</span>
+    </a>
+
+    <div class="hidden items-center gap-8 md:flex">
+      <a href="#services" class="text-sm font-medium text-ink-soft transition-colors hover:text-blueprint">دور على صنايعي</a>
+      <a href="#how-it-works" class="text-sm font-medium text-ink-soft transition-colors hover:text-blueprint">إزاي بيشتغل</a>
+      <a href="#become-pro" class="text-sm font-medium text-ink-soft transition-colors hover:text-blueprint">اشتغل معانا</a>
+    </div>
+
+    <div class="hidden items-center gap-3 md:flex">
+      <a routerLink="/login" class="text-sm font-medium text-ink-soft transition-colors hover:text-blueprint">تسجيل دخول</a>
+      <a routerLink="/register" class="rounded-sm bg-signal px-4 py-2 text-sm font-semibold text-white shadow-card transition-colors hover:bg-signal-deep">إنشاء حساب </a>
+    </div>
+
+    <button type="button" class="flex items-center justify-center rounded-sm border border-line-strong p-2 md:hidden" (click)="toggleMobile()" aria-label="Toggle menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        @if (!mobileOpen()) {
+          <path d="M3 6h18M3 12h18M3 18h18"></path>
+        } @else {
+          <path d="M6 6l12 12M18 6L6 18"></path>
+        }
+      </svg>
+    </button>
+
+  </nav>
+
+  @if (mobileOpen()) {
+    <div class="border-t border-line bg-paper px-5 py-4 md:hidden">
+      <div class="flex flex-col gap-4">
+        <a href="#services" class="text-sm font-medium text-ink-soft" (click)="toggleMobile()">دور على صنايعي</a>
+        <a href="#how-it-works" class="text-sm font-medium text-ink-soft" (click)="toggleMobile()">إزاي بيشتغل</a>
+        <a href="#become-pro" class="text-sm font-medium text-ink-soft" (click)="toggleMobile()">اشتغل معانا</a>
+        <div class="tape-rule"></div>
+        <a routerLink="/login" class="text-sm font-medium text-ink-soft">تسجيل دخول</a>
+        <a routerLink="/register" class="rounded-sm bg-signal px-4 py-2.5 text-center text-sm font-semibold text-white">اطلب صنايعي</a>
+      </div>
+    </div>
+  }
+</header>

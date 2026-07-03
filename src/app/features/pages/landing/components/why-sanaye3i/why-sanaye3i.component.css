@@ -1,0 +1,309 @@
+/* ===========================
+   Dark Grid Background
+   =========================== */
+.dark-grid {
+  position: relative;
+}
+
+.dark-grid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.7) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.5) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.6) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.4) 1px, transparent 1px);
+  background-size: 60px 60px, 90px 90px, 75px 75px, 110px 110px;
+  background-position: 0 0, 20px 35px, 45px 10px, 70px 60px;
+  animation: star-twinkle 7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.9; }
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.35; }
+  20% { opacity: 0.9; }
+  45% { opacity: 0.4; }
+  70% { opacity: 1; }
+  85% { opacity: 0.5; }
+}
+
+
+/* ===========================
+   Focus Cards
+   =========================== */
+.focus-card {
+  background-color: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+  transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+  min-width: 0;
+}
+.focus-card.is-active {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(37, 99, 235, 0.5);
+  transform: translateY(-4px);
+}
+.why-icon-wrap {
+  border-color: rgba(37, 99, 235, 0.4);
+  background-color: rgba(37, 99, 235, 0.15);
+  transition: transform 0.4s ease;
+}
+.focus-card.is-active .why-icon-wrap {
+  transform: scale(1.08);
+}
+.why-icon-glow {
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.5) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.focus-card.is-active .why-icon-glow {
+  opacity: 1;
+  animation: icon-pulse 1.6s ease-in-out infinite;
+}
+@keyframes icon-pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.3); }
+}
+
+
+/* ===========================
+   Comparison Section Layout
+   =========================== */
+.comparison-section {
+  position: relative;
+}
+
+/* الحاوية الرئيسية: ثلاث أعمدة — كارت | VS | كارت */
+.comparison-layout {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0;
+  /* منع الكارتين من الطلوع برا لما بيتحركوا */
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+
+/* ===========================
+   Comparison Cards
+   =========================== */
+.comparison-card {
+  padding: 32px 28px;
+  min-height: 220px;
+  position: relative;
+}
+
+/* كارت "من غير صنايعي" — يجي من الشمال */
+.comparison-card--without {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-inline-end: none;
+  border-radius: 10px 0 0 10px;
+}
+
+/* كارت "مع صنايعي" — يجي من اليمين */
+.comparison-card--with {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.4), rgba(232, 118, 44, 0.14));
+  border: 1px solid rgba(37, 99, 235, 0.4);
+  border-inline-start: none;
+  border-radius: 0 10px 10px 0;
+  box-shadow: 0 20px 50px rgba(37, 99, 235, 0.18);
+}
+
+/* الهيدر في الكارت */
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+/* أيقونة الكارت */
+.card-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.card-icon-wrap--danger  { background: rgba(220, 53, 69, 0.15); color: #e05566; }
+.card-icon-wrap--success { background: rgba(40, 167, 69, 0.2);  color: #44cc77; }
+
+/* عنوان الكارت */
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.card-title--muted  { color: rgba(255, 255, 255, 0.6); }
+.card-title--bright { color: rgba(255, 255, 255, 0.97); }
+
+/* قائمة العناصر */
+.card-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.card-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  transition: transform 0.25s ease;
+}
+.comparison-card--without:hover .card-list li { transform: translateX(2px); }
+.comparison-card--with:hover    .card-list li { transform: translateX(-2px); }
+
+/* النقطة */
+.card-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+.card-dot--danger  { background: rgba(220, 53, 69, 0.7); }
+.card-dot--success { background: #44cc77; }
+
+/* النص */
+.card-text {
+  font-size: 13px;
+  line-height: 1.6;
+}
+.card-text--muted  { color: rgba(255, 255, 255, 0.48); }
+.card-text--bright { color: rgba(255, 255, 255, 0.88); }
+
+
+/* ===========================
+   VS Center Column
+   =========================== */
+.vs-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  /* عشان الـ VS يبقى فوق كل حاجة تانية */
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+/* زرار VS */
+.vs-btn {
+  position: relative;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #2563EB, #F97316);
+  box-shadow: 0 0 0 7px #0F172A, 0 8px 28px rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  padding: 0;
+}
+.vs-btn:hover { transform: scale(1.1); }
+.vs-btn:active { transform: scale(0.92); }
+.vs-btn--open { transform: rotate(180deg); }
+.vs-btn--open:hover { transform: rotate(180deg) scale(1.1); }
+
+/* نص VS */
+.vs-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+  position: relative;
+  z-index: 1;
+}
+
+/* الأسهم على جنبي الزرار */
+.vs-arrow {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.85);
+  transition: transform 0.3s ease;
+}
+.vs-arrow--start {
+  inset-inline-start: -20px;
+}
+.vs-arrow--end {
+  inset-inline-end: -20px;
+}
+.vs-btn:hover .vs-arrow--start { transform: translateX(-3px); }
+.vs-btn:hover .vs-arrow--end   { transform: translateX(3px); }
+
+/* نص التلميح */
+.vs-hint {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+  animation: hint-bounce 2s ease-in-out infinite;
+}
+@keyframes hint-bounce {
+  0%, 100% { transform: translateY(0);   opacity: 0.55; }
+  50%       { transform: translateY(3px); opacity: 1;    }
+}
+
+
+/* ===========================
+   Responsive — Mobile
+   =========================== */
+@media (max-width: 640px) {
+  .comparison-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    overflow: visible;
+    border-radius: 0;
+  }
+
+  .comparison-card--without {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px 10px 0 0;
+    border-bottom: none;
+  }
+
+  .comparison-card--with {
+    border: 1px solid rgba(37, 99, 235, 0.4);
+    border-radius: 0 0 10px 10px;
+    border-top: none;
+  }
+
+  .vs-center {
+    padding: 12px 0;
+    background: #0F172A;
+    border-inline: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .vs-arrow { display: none; }
+
+  .comparison-card--without:hover .card-list li,
+  .comparison-card--with:hover    .card-list li {
+    transform: none;
+  }
+}
+
+
+/* ===========================
+   Reduced Motion
+   =========================== */
+@media (prefers-reduced-motion: reduce) {
+  .dark-grid::before,
+  .focus-card.is-active .why-icon-glow,
+  .vs-hint {
+    animation: none;
+  }
+}

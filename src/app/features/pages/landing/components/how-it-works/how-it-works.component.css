@@ -1,0 +1,183 @@
+.step-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  animation: card-enter 0.45s ease-out both;
+}
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.step-icon-wrap {
+  transition: transform 0.4s ease;
+}
+
+.step-card--search {
+  background-image: radial-gradient(circle at 90% 0%, rgba(27, 79, 114, 0.05) 0%, transparent 45%);
+}
+
+.step-card--calendar {
+  background-image: radial-gradient(circle at 90% 0%, rgba(232, 118, 44, 0.05) 0%, transparent 45%);
+}
+
+.step-card--shield {
+  background-image: radial-gradient(circle at 90% 0%, rgba(63, 122, 82, 0.06) 0%, transparent 45%);
+}
+
+.ghost-number {
+  line-height: 1;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* === السهم الموجّه === */
+.guide-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: #C2B9A6;
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+
+.guide-arrow.is-pulsing {
+  color: #E8762C;
+  transform: scale(1.25);
+}
+
+/* === الكتابة المتحركة === */
+.typing-text::before {
+  content: "اسم المشكله...";
+  animation: typing 3.4s steps(20, end) infinite;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: bottom;
+  width: 0;
+}
+
+.typing-cursor {
+  display: inline-block;
+  width: 1.5px;
+  height: 12px;
+  background: #1B4F72;
+  margin-inline-start: 2px;
+  animation: blink 0.9s step-end infinite;
+}
+
+@keyframes typing {
+  0%, 8% { width: 0; }
+  55%, 80% { width: 11.5em; }
+  95%, 100% { width: 0; }
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* === Step Progress (دوائر مرقمة) === */
+.step-progress-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid #D9D2C3;
+  background: #FAF8F3;
+  color: #7A8B99;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  opacity: 0;
+  animation: dot-appear 0.4s ease-out forwards;
+}
+
+.step-progress-dot.is-done {
+  border-color: #3F7A52;
+  background: #3F7A52;
+  color: white;
+}
+
+.step-progress-dot.is-current {
+  border-color: #1B4F72;
+  background: #1B4F72;
+  color: white;
+  animation: dot-appear 0.4s ease-out forwards, dot-current-pulse 1.6s ease-in-out infinite 0.5s;
+}
+
+.step-progress-line {
+  width: 18px;
+  height: 2px;
+  background: #3F7A52;
+  transform: scaleX(0);
+  transform-origin: right center;
+  animation: line-grow 0.3s ease-out forwards;
+}
+
+html[dir='ltr'] .step-progress-line {
+  transform-origin: left center;
+}
+
+@keyframes dot-appear {
+  from { opacity: 0; transform: scale(0.6); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes dot-current-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(27, 79, 114, 0.4); }
+  50% { box-shadow: 0 0 0 5px rgba(27, 79, 114, 0); }
+}
+
+@keyframes line-grow {
+  to { transform: scaleX(1); }
+}
+
+/* === دائرة التقدم (الخطوة 3) === */
+.progress-ring__fill {
+  stroke-dasharray: 97.4;
+  stroke-dashoffset: 97.4;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  animation: ring-fill 1.4s ease-out forwards;
+  animation-delay: 0.2s;
+}
+
+@keyframes ring-fill {
+  to { stroke-dashoffset: 0; }
+}
+
+/* === مؤشرات Carousel الصغيرة تحت === */
+.progress-tick {
+  width: 22px;
+  height: 3px;
+  border-radius: 2px;
+  background: #D9D2C3;
+  transition: background-color 0.3s ease, width 0.3s ease;
+}
+
+.progress-tick.is-active {
+  background: #1B4F72;
+  width: 34px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step-card,
+  .guide-arrow,
+  .typing-text::before,
+  .typing-cursor,
+  .step-progress-dot,
+  .step-progress-line,
+  .progress-ring__fill {
+    animation: none;
+  }
+}

@@ -1,0 +1,413 @@
+<div class="od-page">
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="od-loading">
+      <div class="od-spinner"></div>
+      <p>بيجيب تفاصيل الطلب...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="od-error">
+      <p>{{ error() }}</p>
+      <button (click)="goBack()">ارجع للطلبات</button>
+    </div>
+  }
+
+  @if (order(); as o) {
+
+    <!-- ══════ HEADER ══════ -->
+    <div class="od-header">
+      <div class="od-header-bg" aria-hidden="true"></div>
+      <div class="od-header-content">
+        <button class="od-back" (click)="goBack()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M19 12H5M11 18l-6-6 6-6"/>
+          </svg>
+          طلباتي
+        </button>
+
+        <div class="od-header-main">
+          <div>
+            <p class="od-order-id">طلب #{{ o.id }}</p>
+            <h1 class="od-title">{{ o.description }}</h1>
+            <p class="od-trade">{{ o.workerTrade }}</p>
+          </div>
+          <span class="od-status-badge" [class]="getStatusClass(o.status)">
+            {{ getStatusLabel(o.status) }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ BODY ══════ -->
+    <div class="od-body">
+
+      <!-- LEFT COLUMN -->
+      <div class="od-main">
+
+        <!-- Timeline -->
+        @if (o.status !== 'cancelled') {
+          <section class="od-card">
+            <h2 class="od-card-title">تتبع الطلب</h2>
+            <div class="od-timeline">
+              @for (step of getTimeline(o.status); track step.status; let last = $last) {
+                <div class="od-timeline-item" [class.od-timeline-item--done]="step.done" [class.od-timeline-item--active]="step.active">
+                  <div class="od-timeline-left">
+                    <div class="od-timeline-dot">
+                      @if (step.done) {
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                          <path d="M20 6 9 17l-5-5"/>
+                        </svg>
+                      } @else if (step.active) {
+                        <div class="od-dot-pulse"></div>
+                      }
+                    </div>
+                    @if (!last) {
+                      <div class="od-timeline-line" [class.od-timeline-line--done]="step.done"></div>
+                    }
+                  </div>
+                  <div class="od-timeline-content">
+                    <p class="od-timeline-label">{{ step.label }}</p>
+                    <p class="od-timeline-desc">{{ step.desc }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+        }
+
+        <!-- Order Info -->
+        <section class="od-card">
+          <div class="od-card-header-row">
+            <h2 class="od-card-title">تفاصيل الطلب</h2>
+            @if (o.status === 'pending' && !isEditing()) {
+              <button class="od-edit-btn" (click)="startEdit()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                تعديل
+              </button>
+            }
+          </div>
+
+          @if (!isEditing()) {
+            <div class="od-info-grid">
+              <div class="od-info-item od-info-item--full">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M4 6h16M4 12h16M4 18h10"/>
+                </svg>
+                <div>
+                  <p class="od-info-label">وصف الشغل</p>
+                  <p class="od-info-value">{{ o.description }}</p>
+                </div>
+              </div>
+              <div class="od-info-item">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+                </svg>
+                <div>
+                  <p class="od-info-label">الميعاد</p>
+                  <p class="od-info-value">{{ o.scheduledAt | date: 'EEEE، d MMMM y، h:mm a' }}</p>
+                </div>
+              </div>
+              <div class="od-info-item">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                <div>
+                  <p class="od-info-label">المبلغ الإجمالي</p>
+                  <p class="od-info-value od-info-value--amount">{{ o.totalAmount }} ج.م</p>
+                </div>
+              </div>
+              <div class="od-info-item">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <div>
+                  <p class="od-info-label">حالة الدفع</p>
+                  <p class="od-info-value">
+                    @if (o.status === 'completed') { تم الدفع كاش }
+                    @else { يُدفع كاش بعد إتمام الشغل }
+                  </p>
+                </div>
+              </div>
+              <div class="od-info-item">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                </svg>
+                <div>
+                  <p class="od-info-label">تاريخ الطلب</p>
+                  <p class="od-info-value">{{ o.createdAt | date: 'd MMM y' }}</p>
+                </div>
+              </div>
+            </div>
+          } @else {
+            <!-- Edit Mode -->
+            <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="od-edit-form">
+              <div class="od-field">
+                <label class="od-label">وصف الشغل</label>
+                <textarea
+                title="وصف الشغل"
+                  formControlName="description"
+                  rows="4"
+                  class="od-textarea"
+                  [class.od-input--error]="descriptionControl?.invalid && descriptionControl?.touched"
+                ></textarea>
+                @if (descriptionControl?.invalid && descriptionControl?.touched) {
+                  <p class="od-error-text">لازم الوصف يكون 15 حرف على الأقل</p>
+                }
+              </div>
+
+              <div class="od-edit-grid">
+                <div class="od-field">
+                  <label class="od-label">التاريخ</label>
+                  <input
+                    title="التاريخ"
+                    type="date"
+                    formControlName="scheduledDate"
+                    [min]="minDate()"
+                    class="od-input"
+                    [class.od-input--error]="dateControl?.invalid && dateControl?.touched"
+                  />
+                </div>
+                <div class="od-field">
+                  <label class="od-label">الوقت</label>
+                  <input
+                    title="الوقت"
+                    type="time"
+                    formControlName="scheduledTime"
+                    class="od-input"
+                    [class.od-input--error]="timeControl?.invalid && timeControl?.touched"
+                  />
+                </div>
+              </div>
+
+              <div class="od-edit-actions">
+                <button type="button" class="od-btn od-btn--outline" (click)="cancelEdit()" [disabled]="isSaving()">
+                  إلغاء
+                </button>
+                <button type="submit" class="od-btn od-btn--primary" [disabled]="isSaving()">
+                  @if (isSaving()) { جاري الحفظ... } @else { حفظ التعديلات }
+                </button>
+              </div>
+            </form>
+          }
+        </section>
+
+        <!-- Location -->
+        <section class="od-card">
+          <h2 class="od-card-title">الموقع</h2>
+          <div class="od-location">
+
+            <!-- Client Address -->
+            <button
+              class="od-location-item od-location-item--clickable"
+              type="button"
+              (click)="openInMaps(clientAddressText())"
+            >
+              <div class="od-location-icon od-location-icon--client">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                  <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="3"/>
+                </svg>
+              </div>
+              <div class="od-location-text">
+                <p class="od-location-label">عنوان الحجز</p>
+                <p class="od-location-value">{{ clientAddressText() || 'العنوان غير محدد' }}</p>
+                @if (o.address?.notes) {
+                  <p class="od-location-notes">ملاحظة: {{ o.address.notes }}</p>
+                }
+              </div>
+              <svg class="od-location-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
+            </button>
+
+            @if (worker(); as w) {
+              <div class="od-location-connector" aria-hidden="true"></div>
+
+              <!-- Worker Location -->
+              <button
+                class="od-location-item od-location-item--clickable"
+                type="button"
+                (click)="openInMaps(w.city)"
+              >
+                <div class="od-location-icon od-location-icon--worker">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                  </svg>
+                </div>
+                <div class="od-location-text">
+                  <p class="od-location-label">منطقة الصنايعي</p>
+                  <p class="od-location-value">{{ w.city }} — نطاق {{ w.serviceRadius }} كم</p>
+                </div>
+                <svg class="od-location-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
+              </button>
+            }
+          </div>
+        </section>
+<!-- Review -->
+        @if (o.status === 'completed') {
+          <section class="od-card">
+            <h2 class="od-card-title">تقييمك للشغل</h2>
+
+            @if (!existingReview() || isReviewEditing()) {
+              <!-- Review Form -->
+              <div class="od-review-form">
+                <p class="od-review-label">قيّم تجربتك مع الصنايعي</p>
+                <div class="od-stars">
+                  @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <button
+                    title="stars"
+                      type="button"
+                      class="od-star-btn"
+                      (click)="setRating(star)"
+                    >
+                      <svg width="26" height="26" viewBox="0 0 24 24" [attr.fill]="star <= selectedRating() ? '#F97316 ' : 'none'" stroke="#F97316 " stroke-width="1.5">
+                        <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                      </svg>
+                    </button>
+                  }
+                </div>
+
+                <textarea
+                  [value]="reviewComment()"
+                  (input)="reviewComment.set($any($event.target).value)"
+                  rows="3"
+                  placeholder="اكتب تعليق عن تجربتك (اختياري)"
+                  class="od-textarea"
+                ></textarea>
+
+                <div class="od-review-actions">
+                  @if (isReviewEditing()) {
+                    <button type="button" class="od-btn od-btn--outline" (click)="cancelReviewEdit()" [disabled]="isSubmittingReview()">
+                      إلغاء
+                    </button>
+                  }
+                  <button type="button" class="od-btn od-btn--primary" (click)="submitReview()" [disabled]="isSubmittingReview()">
+                    @if (isSubmittingReview()) { جاري الإرسال... } @else { إرسال التقييم }
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <!-- Existing Review Summary -->
+              <div class="od-review-summary">
+                <div class="od-stars od-stars--readonly">
+                  @for (star of [1, 2, 3, 4, 5]; track star) {
+                    <svg width="20" height="20" viewBox="0 0 24 24" [attr.fill]="star <= existingReview()!.rating ? '#E8762C' : 'none'" stroke="#E8762C" stroke-width="1.5">
+                      <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                    </svg>
+                  }
+                </div>
+                @if (existingReview()!.comment) {
+                  <p class="od-review-comment">{{ existingReview()!.comment }}</p>
+                }
+                @if (canEditReview()) {
+                  <button type="button" class="od-edit-btn od-review-edit-btn" (click)="startReviewEdit()">
+                    تعديل التقييم
+                  </button>
+                }
+              </div>
+            }
+          </section>
+        }
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <aside class="od-sidebar">
+
+        <!-- Worker Card -->
+        @if (worker(); as w) {
+          <section class="od-card od-worker-card">
+            <h2 class="od-card-title">الصنايعي</h2>
+            <div class="od-worker-top">
+              <div class="od-worker-avatar" [style.background]="w.avatarColor">
+                {{ w.fullName.charAt(0) }}
+              </div>
+              <div>
+                <p class="od-worker-name">{{ w.fullName }}</p>
+                <p class="od-worker-trade">{{ w.tradeLabel }}</p>
+                <div class="od-worker-rating">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#E8762C">
+                    <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                  </svg>
+                  {{ w.rating }} · {{ w.reviewsCount }} تقييم
+                </div>
+              </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="od-contact">
+              <div class="od-contact-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.77 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+                <span>01xxxxxxxxx</span>
+              </div>
+              <div class="od-contact-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span>{{ w.city }}</span>
+              </div>
+            </div>
+
+            <a [routerLink]="['/specialist', w.id]" class="od-view-profile">
+              عرض البروفايل الكامل
+            </a>
+          </section>
+        }
+
+        <!-- Actions -->
+        <section class="od-card od-actions-card">
+          <h2 class="od-card-title">الإجراءات</h2>
+          <div class="od-actions">
+
+            @if (o.status === 'completed') {
+              <!-- Re-order -->
+              <button class="od-btn od-btn--primary" (click)="reOrder()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>
+                </svg>
+                احجز تاني
+              </button>
+            }
+
+            @if (o.status === 'pending') {
+              <!-- Cancel -->
+              <button class="od-btn od-btn--danger" (click)="cancelOrder()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/>
+                </svg>
+                إلغاء الطلب
+              </button>
+            }
+
+            <!-- Message -->
+            <button class="od-btn od-btn--outline" (click)="openChat()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              ابعت رسالة
+            </button>
+
+          </div>
+
+          <!-- Trust note -->
+          <div class="od-trust">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            فلوسك محفوظة لحد ما توافق على الشغل
+          </div>
+        </section>
+
+      </aside>
+    </div>
+  }
+
+</div>

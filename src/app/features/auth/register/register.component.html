@@ -1,0 +1,85 @@
+<section class="relative flex min-h-screen items-center justify-center overflow-hidden bg-blueprint-faint-animated px-5 py-12">
+  <div class="relative z-10 w-full max-w-lg rounded-md border border-line bg-paper p-6 shadow-card md:p-8" appScrollReveal>
+
+    <a routerLink="/" class="mb-6 flex items-center justify-center gap-2">
+        <img
+    src="/sanaye3i_nav.png"
+    alt="Sanaye3i Logo"
+    class="h-9 w-auto object-contain flex-shrink-0"
+  />
+      <span class="font-display text-lg font-semibold tracking-tight text-blueprint">Sanaye3i</span>
+    </a>
+@if (errorMessage()) {
+  <div class="mb-4 rounded-sm border border-danger/30 bg-danger/10 p-3 text-sm text-danger">
+    {{ errorMessage() }}
+  </div>
+}
+    <app-step-indicator [currentStep]="currentStep()" [totalSteps]="totalSteps()" />
+    <div class="tape-rule my-6"></div>
+
+    @switch (currentStep()) {
+  @case (1) {
+    <app-step-account-info [form]="form" />
+  }
+  @case (2) {
+    <app-step-role-setup [form]="form" />
+  }
+  @case (3) {
+    @if (totalSteps() === 5) {
+      <app-step-pro-details [form]="form" />
+    } @else {
+      <app-step-verification [form]="form" />
+    }
+  }
+  @case (4) {
+    @if (totalSteps() === 5) {
+      <app-step-verification-docs [form]="form" />
+    }
+  }
+  @case (5) {
+    <app-step-verification [form]="form" />
+  }
+}
+
+    <div class="mt-8 flex items-center justify-between">
+      @if (currentStep() > 1) {
+        <button
+          type="button"
+          (click)="goBack()"
+          class="rounded-sm border border-line-strong px-5 py-2.5 text-sm font-medium text-ink-soft transition-colors hover:border-blueprint hover:text-blueprint"
+        >
+          السابق
+        </button>
+      } @else {
+        <span></span>
+      }
+
+      @if (currentStep() < totalSteps()) {
+        <button
+          type="button"
+          (click)="goNext()"
+          class="rounded-sm bg-blueprint px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blueprint-deep"
+        >
+          التالي
+        </button>
+      } @else {
+        <button
+  type="button"
+  (click)="submit()"
+  [disabled]="loading()"
+  class="rounded-sm bg-signal px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-signal-deep disabled:opacity-60"
+>
+  {{ loading() ? 'جاري التسجيل...' : 'تأكيد التسجيل' }}
+</button>
+      }
+    </div>
+
+    @if (currentStep() === 1) {
+  <p class="mt-6 text-center text-sm text-ink-soft">
+    عندك حساب بالفعل؟
+    <a routerLink="/login" class="font-semibold text-blueprint hover:underline">سجل دخول</a>
+  </p>
+}
+
+  </div>
+</section>

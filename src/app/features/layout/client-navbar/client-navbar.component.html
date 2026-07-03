@@ -1,0 +1,232 @@
+<header
+  class="client-navbar transition-transform duration-300 ease-in-out will-change-transform"
+  [class.-translate-y-full]="!showNavbar()"
+>
+  <nav class="mx-auto flex max-w-content items-center justify-between px-5 py-3.5 md:px-8">
+
+    <!-- Logo -->
+    <a routerLink="/find-services" class="navbar-logo">
+      <img
+        src="/sanaye3i_nav.png"
+        alt="Sanaye3i Logo"
+        class="h-11 w-auto object-contain"
+      />
+      <span class="font-display text-xl font-bold tracking-tight text-blueprint">صنايعي</span>
+    </a>
+
+    <!-- Desktop Links -->
+    <div class="hidden items-center gap-8 md:flex">
+      <a
+        routerLink="/find-services"
+        routerLinkActive="navbar-link--active"
+        class="navbar-link"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        ابحث عن خدمة
+      </a>
+
+      <a
+        routerLink="/orders"
+        routerLinkActive="navbar-link--active"
+        class="navbar-link"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+        طلباتي
+      </a>
+    </div>
+
+    <!-- Desktop Actions -->
+    <div class="hidden items-center gap-3 md:flex">
+
+      <!-- Notification Bell ← جديد: قبل أيقونة الرسايل مباشرة -->
+      <app-notification />
+
+      <!-- Messages Icon -->
+      <div class="relative">
+        <button
+          type="button"
+          class="messages-btn"
+          (click)="toggleMessages()"
+          [class.messages-btn--open]="messagesOpen()"
+          aria-label="الرسائل"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          @if (unreadCount() > 0) {
+            <span class="messages-badge">{{ unreadCount() > 9 ? '9+' : unreadCount() }}</span>
+          }
+        </button>
+
+        <!-- Messages Dropdown -->
+        @if (messagesOpen()) {
+          <div class="messages-dropdown" (mouseleave)="closeMessages()">
+            <div class="dropdown-header">
+              <p class="dropdown-name">الرسائل</p>
+            </div>
+            <div class="dropdown-divider"></div>
+
+            @if (loadingMessages()) {
+              <div class="messages-loading">
+                <div class="messages-spinner"></div>
+              </div>
+            } @else if (conversations().length === 0) {
+              <p class="messages-empty">مفيش رسائل لسه</p>
+            } @else {
+              <div class="messages-list">
+                @for (conv of conversations(); track conv.conversationId) {
+                  <button class="message-item" (click)="openConversation(conv)">
+                    <div class="message-avatar" [style.background]="conv.otherColor">
+                      {{ conv.otherName.charAt(0) }}
+                    </div>
+                    <div class="message-info">
+                      <p class="message-name">{{ conv.otherName }}</p>
+                      <p class="message-preview">{{ conv.lastMessage || 'ابدأ المحادثة' }}</p>
+                    </div>
+                    @if (conv.unreadCount > 0) {
+                      <span class="message-unread-dot"></span>
+                    }
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- User Menu -->
+      <div class="relative">
+        <button
+          type="button"
+          class="user-menu-btn"
+          (click)="toggleDropdown()"
+          [class.user-menu-btn--open]="dropdownOpen()"
+        >
+          <div class="user-avatar">
+            {{ auth.currentUser()?.fullName?.charAt(0) ?? 'م' }}
+          </div>
+          <span class="user-name">{{ auth.currentUser()?.fullName }}</span>
+          <svg
+            width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            class="user-chevron"
+            [class.user-chevron--open]="dropdownOpen()"
+          >
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+
+        <!-- Dropdown -->
+        @if (dropdownOpen()) {
+          <div class="user-dropdown" (mouseleave)="closeDropdown()">
+            <div class="dropdown-header">
+              <p class="dropdown-name">{{ auth.currentUser()?.fullName }}</p>
+              <p class="dropdown-email">{{ auth.currentUser()?.email }}</p>
+            </div>
+            <div class="dropdown-divider"></div>
+            <button type="button" class="dropdown-item dropdown-item--danger" (click)="logout()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+              تسجيل خروج
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Mobile Toggle -->
+    <button
+      type="button"
+      class="flex items-center justify-center rounded-sm border border-line-strong p-2 md:hidden"
+      (click)="toggleMobile()"
+      aria-label="Toggle menu"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        @if (!mobileOpen()) {
+          <path d="M3 6h18M3 12h18M3 18h18"/>
+        } @else {
+          <path d="M6 6l12 12M18 6L6 18"/>
+        }
+      </svg>
+    </button>
+
+  </nav>
+
+  <!-- Mobile Menu -->
+  @if (mobileOpen()) {
+    <div class="mobile-menu">
+      <a routerLink="/find-services" class="mobile-link" (click)="toggleMobile()">
+        ابحث عن خدمة
+      </a>
+      <a routerLink="/orders" class="mobile-link" (click)="toggleMobile()">
+        طلباتي
+      </a>
+
+      <!-- Notification Bell ← جديد: صف مستقل زي الرسايل بالظبط -->
+      <div class="mobile-link mobile-messages-link">
+        <span>الإشعارات</span>
+        <app-notification />
+      </div>
+
+      <button type="button" class="mobile-link mobile-messages-link" (click)="toggleMessages()">
+        <span>الرسائل</span>
+        @if (unreadCount() > 0) {
+          <span class="mobile-messages-badge">{{ unreadCount() > 9 ? '9+' : unreadCount() }}</span>
+        }
+      </button>
+
+      @if (messagesOpen()) {
+        <div class="mobile-messages-panel">
+          @if (loadingMessages()) {
+            <div class="messages-loading"><div class="messages-spinner"></div></div>
+          } @else if (conversations().length === 0) {
+            <p class="messages-empty">مفيش رسائل لسه</p>
+          } @else {
+            @for (conv of conversations(); track conv.conversationId) {
+              <button class="message-item" (click)="openConversation(conv); toggleMobile()">
+                <div class="message-avatar" [style.background]="conv.otherColor">
+                  {{ conv.otherName.charAt(0) }}
+                </div>
+                <div class="message-info">
+                  <p class="message-name">{{ conv.otherName }}</p>
+                  <p class="message-preview">{{ conv.lastMessage || 'ابدأ المحادثة' }}</p>
+                </div>
+                @if (conv.unreadCount > 0) {
+                  <span class="message-unread-dot"></span>
+                }
+              </button>
+            }
+          }
+        </div>
+      }
+
+      <div class="tape-rule"></div>
+      <div class="mobile-user">
+        <div class="user-avatar">{{ auth.currentUser()?.fullName?.charAt(0) ?? 'م' }}</div>
+        <div>
+          <p class="text-sm font-semibold text-ink">{{ auth.currentUser()?.fullName }}</p>
+          <p class="text-xs text-steel">{{ auth.currentUser()?.email }}</p>
+        </div>
+      </div>
+      <button type="button" class="mobile-logout" (click)="logout()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        تسجيل خروج
+      </button>
+    </div>
+  }
+
+</header>

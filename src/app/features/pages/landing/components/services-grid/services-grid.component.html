@@ -1,0 +1,78 @@
+<section id="services" class="relative overflow-hidden bg-blueprint-faint-animated py-20 md:py-28">
+  <div class="mx-auto max-w-content px-5 md:px-8">
+
+    <div class="mx-auto max-w-xl text-center" appScrollReveal>
+      <span class="text-xs font-semibold uppercase tracking-wide text-signal">التخصصات</span>
+      <h2 class="mt-3 font-display text-3xl font-semibold text-ink md:text-4xl">كل صنايعي ليه شغلانته</h2>
+      <p class="mt-3 text-ink-soft">دور على المتخصص اللي يحل مشكلتك، من أبسط صيانة لأعقد تركيب.</p>
+    </div>
+
+    <div class="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2" appScrollReveal>
+
+      @for (cat of categories; track cat.id) {
+
+        @if (cat.featured) {
+          <!-- الكارت الكبير المميز -->
+<a
+            [routerLink]="['/specialists']"
+            [queryParams]="{ category: cat.id }"
+            class="service-card service-card--featured group relative col-span-1 row-span-2 overflow-hidden rounded-lg sm:col-span-2 lg:col-span-1"
+          >
+            <div class="featured-pattern absolute inset-0"></div>
+            <div class="absolute -bottom-8 -end-8 text-blueprint-deep/40 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6">
+              <app-trade-icon [name]="cat.icon" />
+              <svg width="180" height="180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.6" class="absolute inset-0">
+                <path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" />
+              </svg>
+            </div>
+
+            <div class="relative z-10 flex h-full flex-col justify-between p-7">
+              <div class="flex h-12 w-12 items-center justify-center rounded-md bg-white/15 text-white backdrop-blur-sm">
+                <app-trade-icon [name]="cat.icon" />
+              </div>
+
+              <div>
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-xs font-medium text-white/90 backdrop-blur-sm">
+                  <span class="h-1.5 w-1.5 rounded-full bg-success"></span>
+                  {{ cat.proCount }}
+                </span>
+                <h3 class="mt-4 font-display text-2xl font-semibold text-white">{{ cat.title }}</h3>
+                <p class="mt-2 max-w-xs text-sm leading-relaxed text-white/75">{{ cat.desc }}</p>
+
+                <span class="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-white">
+                  دور على صنايعي
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </a>
+        } @else {
+          <!-- الكروت العادية -->
+<a
+            [routerLink]="['/specialists']"
+            [queryParams]="{ category: cat.id }"
+            class="service-card group relative overflow-hidden rounded-lg border border-line bg-paper p-6"
+          >
+            <div class="flex items-start justify-between">
+              <div class="flex h-11 w-11 items-center justify-center rounded-sm bg-blueprint/8 text-blueprint transition-colors duration-300 group-hover:bg-blueprint group-hover:text-paper">
+                <app-trade-icon [name]="cat.icon" />
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="text-line-strong opacity-0 transition-all duration-300 group-hover:translate-x-0.5 group-hover:opacity-100 rtl:rotate-180 rtl:group-hover:-translate-x-0.5">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </div>
+
+            <h3 class="mt-4 font-display text-lg font-semibold text-ink">{{ cat.title }}</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-ink-soft">{{ cat.desc }}</p>
+
+            <span class="mt-3 inline-block text-xs font-medium text-steel">{{ cat.proCount }}</span>
+          </a>
+        }
+
+      }
+
+    </div>
+  </div>
+</section>

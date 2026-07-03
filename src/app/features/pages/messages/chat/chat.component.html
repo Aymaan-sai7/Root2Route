@@ -1,0 +1,82 @@
+<div class="min-h-screen bg-paper flex flex-col">
+
+  <!-- Header -->
+  <div class="bg-white border-b border-steel/20 px-4 py-3 flex items-center gap-3 sticky top-0 z-10">
+    <button (click)="goBack()" class="text-steel hover:text-ink transition-colors" title="رجوع">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <path d="M19 12H5M11 18l-6-6 6-6"/>
+      </svg>
+    </button>
+    <div
+      class="w-10 h-10 rounded-full flex items-center justify-center text-paper font-bold flex-shrink-0"
+      [style.background-color]="avatarColor()"
+    >
+      {{ otherName().charAt(0) }}
+    </div>
+    <h2 class="font-bold text-ink text-sm">{{ otherName() }}</h2>
+  </div>
+
+  <!-- Messages -->
+  <div class="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+
+    @if (isLoading()) {
+      <div class="flex justify-center items-center py-20">
+        <div class="w-8 h-8 border-4 border-blueprint border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }
+
+    @if (!isLoading() && messages().length === 0) {
+      <div class="flex flex-col items-center justify-center py-20 text-center">
+        <p class="text-steel text-sm">مفيش رسائل لسه، ابدأ المحادثة!</p>
+      </div>
+    }
+
+    @for (msg of messages(); track msg.id) {
+      <div class="flex" [class.justify-end]="isMine(msg)" [class.justify-start]="!isMine(msg)">
+        <div
+          class="max-w-[75%] rounded-2xl px-4 py-2 text-sm"
+          [class.bg-blueprint]="isMine(msg)"
+          [class.text-paper]="isMine(msg)"
+          [class.bg-white]="!isMine(msg)"
+          [class.text-ink]="!isMine(msg)"
+          [class.border]="!isMine(msg)"
+          [class.border-steel]="!isMine(msg)"
+        >
+          <p class="whitespace-pre-wrap break-words">{{ msg.text }}</p>
+          <p class="text-[10px] mt-1 opacity-70" [class.text-right]="isMine(msg)">
+            {{ msg.createdAt | date: 'h:mm a' }}
+          </p>
+        </div>
+      </div>
+    }
+
+    <div #scrollAnchor></div>
+  </div>
+
+  <!-- Input -->
+  <div class="bg-white border-t border-steel/20 px-4 py-3 flex items-center gap-2">
+    <input
+      title="اكتب رسالة"
+      type="text"
+      [ngModel]="newMessageText()"
+      (ngModelChange)="newMessageText.set($event)"
+      (keydown.enter)="send()"
+      placeholder="اكتب رسالتك..."
+      class="flex-1 border border-steel/30 rounded-full px-4 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-blueprint/40"
+    />
+    <button
+      (click)="send()"
+      [disabled]="!newMessageText().trim() || isSending()"
+      class="w-10 h-10 rounded-full bg-blueprint text-paper flex items-center justify-center hover:bg-blueprint/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+      title="إرسال"
+    >
+      @if (isSending()) {
+        <div class="w-4 h-4 border-2 border-paper border-t-transparent rounded-full animate-spin"></div>
+      } @else {
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="transform: rotate(180deg)">
+          <path d="M2 21l21-9L2 3v7l15 2-15 2z"/>
+        </svg>
+      }
+    </button>
+  </div>
+</div>

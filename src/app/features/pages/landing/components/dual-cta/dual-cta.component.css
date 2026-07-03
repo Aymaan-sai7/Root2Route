@@ -1,0 +1,439 @@
+/* ============================================================
+   SECTION
+   ============================================================ */
+.dual-cta-section {
+  background: #FFFFFF;
+  position: relative;
+}
+
+.dual-cta-section-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Subtle dot grid */
+.dual-cta-section-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(37,99,235,0.09) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Section label pill */
+.dual-cta-section-label {
+  display: inline-block;
+  padding: 6px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(37,99,235,0.18);
+  background: rgba(37,99,235,0.06);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #2563EB;
+}
+
+
+/* ============================================================
+   CARD BASE
+   ============================================================ */
+.cta-card {
+  display: block;
+  text-decoration: none;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.35s ease;
+  will-change: transform;
+}
+.cta-card:hover  { transform: translateY(-8px); }
+.cta-card:active { transform: translateY(-3px) scale(0.985); }
+
+
+/* ==================== Client card ==================== */
+.cta-card--client {
+  background: #ffffff;
+  border-color: rgba(37,99,235,0.14);
+  box-shadow:
+    0 2px 8px rgba(37,99,235,0.06),
+    0 0 0 0 rgba(37,99,235,0);
+}
+.cta-card--client:hover {
+  box-shadow:
+    0 20px 50px rgba(37,99,235,0.16),
+    0 0 0 1px rgba(37,99,235,0.1);
+}
+
+/* ==================== Pro card ==================== */
+.cta-card--pro {
+  background: #0F172A;
+  border-color: rgba(255,255,255,0.1);
+  box-shadow:
+    0 2px 12px rgba(0,0,0,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.cta-card--pro:hover {
+  box-shadow:
+    0 20px 50px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 0 0 1px rgba(249,115,22,0.2);
+}
+
+
+/* ============================================================
+   GLOW (animated radial behind content)
+   ============================================================ */
+.cta-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  will-change: opacity, transform;
+  animation: glow-breathe 4s ease-in-out infinite;
+}
+.cta-card:hover .cta-glow { opacity: 1; }
+
+.cta-glow--client {
+  width: 320px; height: 320px;
+  inset-inline-start: -80px;
+  top: -80px;
+  background: radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 65%);
+}
+.cta-glow--pro {
+  width: 320px; height: 320px;
+  inset-inline-end: -80px;
+  bottom: -80px;
+  background: radial-gradient(circle, rgba(249,115,22,0.18) 0%, transparent 65%);
+}
+@keyframes glow-breathe {
+  0%,100% { transform: scale(1); }
+  50%      { transform: scale(1.12); }
+}
+
+
+/* ============================================================
+   FLOATING BACKGROUND ICONS
+   ============================================================ */
+.cta-float-icons {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.cta-float-icon {
+  position: absolute;
+  width: 52px; height: 52px;
+  animation: float-drift linear infinite;
+  will-change: transform, opacity;
+}
+
+/* Client card icons — blueprint tint */
+.cta-card--client .cta-float-icon {
+  color: rgba(37,99,235,0.1);
+}
+/* Pro card icons — white tint */
+.cta-card--pro .cta-float-icon {
+  color: rgba(255,255,255,0.08);
+}
+
+/* Scale up on card hover */
+.cta-card:hover .cta-float-icon {
+  color: rgba(37,99,235,0.16);
+}
+.cta-card--pro:hover .cta-float-icon {
+  color: rgba(255,255,255,0.13);
+}
+
+/* Individual positions + timings */
+.cta-float-icon--1 {
+  inset-inline-end: 28px; top: 28px;
+  width: 68px; height: 68px;
+  animation-duration: 9s;
+  animation-delay: 0s;
+}
+.cta-float-icon--2 {
+  inset-inline-end: 100px; bottom: 32px;
+  width: 44px; height: 44px;
+  animation-duration: 11s;
+  animation-delay: -3s;
+}
+.cta-float-icon--3 {
+  inset-inline-start: 24px; bottom: 40px;
+  width: 36px; height: 36px;
+  animation-duration: 8s;
+  animation-delay: -5s;
+}
+.cta-float-icon--4 {
+  inset-inline-start: 50%;
+  top: 24px;
+  width: 30px; height: 30px;
+  animation-duration: 13s;
+  animation-delay: -7s;
+}
+
+@keyframes float-drift {
+  0%   { transform: translateY(0px)   rotate(0deg); }
+  30%  { transform: translateY(-10px) rotate(4deg); }
+  60%  { transform: translateY(6px)   rotate(-3deg); }
+  100% { transform: translateY(0px)   rotate(0deg); }
+}
+
+
+/* ============================================================
+   SHIMMER SWEEP
+   ============================================================ */
+.cta-shimmer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+.cta-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 60%;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255,255,255,0.07) 50%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  transition: none;
+}
+.cta-card:hover .cta-shimmer::after {
+  animation: shimmer-sweep 0.7s ease forwards;
+}
+@keyframes shimmer-sweep {
+  from { transform: translateX(-120%); }
+  to   { transform: translateX(220%); }
+}
+
+
+/* ============================================================
+   BADGE (top label)
+   ============================================================ */
+.cta-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.cta-badge--client {
+  background: rgba(37,99,235,0.09);
+  color: #2563EB;
+  border: 1px solid rgba(37,99,235,0.18);
+}
+.cta-badge--pro {
+  background: rgba(249,115,22,0.15);
+  color: #F97316;
+  border: 1px solid rgba(249,115,22,0.25);
+}
+
+
+/* ============================================================
+   HEADING ACCENT
+   ============================================================ */
+.cta-heading-accent {
+  display: inline-block;
+  position: relative;
+}
+.cta-heading-accent--client {
+  color: #2563EB;
+}
+.cta-heading-accent--pro {
+  color: #F97316;
+}
+/* Underline animation */
+.cta-heading-accent::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  bottom: 1px;
+  height: 3px;
+  width: 0;
+  border-radius: 2px;
+  transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cta-heading-accent--client::after { background: #2563EB; }
+.cta-heading-accent--pro::after    { background: #F97316; }
+.cta-card:hover .cta-heading-accent::after { width: 100%; }
+
+
+/* ============================================================
+   AVATARS
+   ============================================================ */
+.cta-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+.cta-avatar--more {
+  background: rgba(37,99,235,0.12);
+  color: #2563EB;
+  border-color: rgba(37,99,235,0.2);
+  font-size: 9px;
+  letter-spacing: -0.5px;
+}
+.cta-card:hover .cta-avatar { transform: translateY(-2px); }
+.cta-card:hover .cta-avatar:nth-child(2) { transition-delay: 0.04s; }
+.cta-card:hover .cta-avatar:nth-child(3) { transition-delay: 0.08s; }
+.cta-card:hover .cta-avatar:nth-child(4) { transition-delay: 0.12s; }
+
+
+/* ============================================================
+   STATS STRIP
+   ============================================================ */
+.cta-stats-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+.cta-stats-strip--client {
+  background: rgba(37,99,235,0.05);
+  border: 1px solid rgba(37,99,235,0.1);
+  color: #5a6a78;
+}
+.cta-stats-strip--pro {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.6);
+}
+.cta-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+.cta-stat--pro { color: rgba(255,255,255,0.6); }
+
+.cta-stat-divider {
+  width: 1px;
+  height: 22px;
+  background: rgba(37,99,235,0.15);
+  flex-shrink: 0;
+}
+.cta-stat-divider--pro {
+  background: rgba(255,255,255,0.12);
+}
+
+
+/* ============================================================
+   LIVE DOT
+   ============================================================ */
+.cta-live-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  font-size: 11px;
+  color: rgba(255,255,255,0.75);
+}
+
+.live-dot {
+  position: relative;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #44cc77;
+  flex-shrink: 0;
+}
+.live-dot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: inherit;
+  animation: pulse-ring 1.8s ease-out infinite;
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.7; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+
+
+/* ============================================================
+   CTA BUTTON
+   ============================================================ */
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 22px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: background-color 0.2s ease,
+              transform 0.2s ease,
+              box-shadow 0.2s ease;
+}
+.cta-btn--client {
+  background: #2563EB;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+}
+.cta-btn--pro {
+  background: #F97316;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(249,115,22,0.3);
+}
+.cta-card--client:hover .cta-btn--client {
+  background: #1D4ED8;
+  box-shadow: 0 6px 20px rgba(37,99,235,0.4);
+  transform: translateX(-2px);
+}
+.cta-card--pro:hover .cta-btn--pro {
+  background: #EA580C;
+  box-shadow: 0 6px 20px rgba(249,115,22,0.4);
+  transform: translateX(-2px);
+}
+
+/* Arrow nudge */
+.cta-btn-arrow {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.cta-card:hover .cta-btn-arrow {
+  transform: translateX(4px) rotate(0deg);
+}
+/* RTL fix */
+html[dir='rtl'] .cta-card:hover .cta-btn-arrow {
+  transform: translateX(-4px) rotate(180deg);
+}
+
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .dual-cta-section-blob,
+  .cta-float-icon,
+  .cta-glow,
+  .live-dot::before {
+    animation: none;
+  }
+  .cta-card,
+  .cta-btn {
+    transition: none;
+  }
+}

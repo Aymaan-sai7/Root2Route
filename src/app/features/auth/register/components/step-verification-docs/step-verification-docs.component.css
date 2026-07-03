@@ -1,0 +1,9 @@
+.upload-dropzone {
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.upload-preview img,
+.upload-dropzone {
+  user-select: none;
+  -webkit-user-select: none;
+}

@@ -1,0 +1,47 @@
+<div class="pm-page">
+  <div class="pm-header">
+    <h1 class="pm-title">رسائلي</h1>
+    <p class="pm-subtitle">كل المحادثات بينك وبين عملاءك</p>
+  </div>
+
+  <div class="pm-body">
+    @if (loading()) {
+      <div class="pm-loading">
+        <div class="pm-spinner"></div>
+        <p>بيجيب الرسائل...</p>
+      </div>
+    } @else if (error()) {
+      <div class="pm-error">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ error() }}
+      </div>
+    } @else if (conversations().length === 0) {
+      <div class="pm-empty">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <p class="pm-empty-title">مفيش رسائل لسه</p>
+        <p class="pm-empty-desc">هنا هتلاقي محادثاتك مع العملاء لما حد يبعتلك</p>
+      </div>
+    } @else {
+      <div class="pm-list">
+        @for (conv of conversations(); track conv.conversationId) {
+          <button class="pm-item" (click)="openConversation(conv)">
+            <div class="pm-avatar" [style.background]="conv.otherColor">
+              {{ conv.otherName.charAt(0) }}
+            </div>
+            <div class="pm-info">
+              <p class="pm-name">{{ conv.otherName }}</p>
+              <p class="pm-preview">{{ conv.lastMessage || 'ابدأ المحادثة' }}</p>
+            </div>
+            @if (conv.unreadCount > 0) {
+              <span class="pm-unread-badge">{{ conv.unreadCount }}</span>
+            }
+          </button>
+        }
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,24 @@
+<footer class="cf-footer">
+  <div class="cf-inner">
+
+    <!-- Brand -->
+    <a href="/find-services" class="cf-brand">
+      <img src="/sanaye3i_nav.png" alt="Sanaye3i Logo" class="cf-logo" />
+      <span class="cf-brand-name">صنايعي</span>
+    </a>
+
+    <!-- Copyright -->
+    <p class="cf-copy">© {{ currentYear }} صنايعي. كل الحقوق محفوظة.</p>
+
+    <!-- Legal links -->
+    <div class="cf-links">
+      @for (link of legalLinks; track link.label; let last = $last) {
+        <a [href]="link.href" class="cf-link">{{ link.label }}</a>
+        @if (!last) {
+          <span class="cf-link-sep">•</span>
+        }
+      }
+    </div>
+
+  </div>
+</footer>

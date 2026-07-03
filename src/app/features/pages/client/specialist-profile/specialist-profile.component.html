@@ -1,0 +1,252 @@
+<div class="sp-page">
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="sp-loading">
+      <div class="sp-spinner"></div>
+      <p>بيجيب البيانات...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="sp-error">
+      <p>{{ error() }}</p>
+      <button (click)="goBack()">ارجع</button>
+    </div>
+  }
+
+  @if (worker(); as w) {
+
+    <!-- ══════ HEADER ══════ -->
+    <div class="sp-header">
+      <div class="sp-header-bg" aria-hidden="true"></div>
+      <div class="sp-header-content">
+        <button class="sp-back" (click)="goBack()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M19 12H5M11 18l-6-6 6-6"/>
+          </svg>
+          رجوع
+        </button>
+
+        <div class="sp-profile-top">
+          <div class="sp-avatar" [style.background]="w.avatarColor">
+            {{ w.fullName.charAt(0) }}
+          </div>
+          <div class="sp-profile-info">
+            <div class="sp-name-row">
+              <h1 class="sp-name">{{ w.fullName }}</h1>
+              <span class="sp-verified">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  <path d="M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5l-8-3z"/><path d="m9 12 2 2 4-4"/>
+                </svg>
+                موثق
+              </span>
+              <span class="sp-avail" [class.sp-avail--on]="w.isAvailable">
+                {{ w.isAvailable ? 'متاح دلوقتي' : 'مشغول' }}
+              </span>
+            </div>
+            <p class="sp-trade">{{ w.tradeLabel }} · {{ w.city }}</p>
+
+            <!-- Quick Stats -->
+            <div class="sp-quick-stats">
+              <div class="sp-quick-stat">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#F97316">
+                  <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+                <strong>{{ w.rating }}</strong>
+                <span>({{ w.reviewsCount }} تقييم)</span>
+              </div>
+              <div class="sp-quick-stat">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/>
+                </svg>
+                <strong>{{ w.completedJobs }}</strong>
+                <span>طلب مكتمل</span>
+              </div>
+              <div class="sp-quick-stat">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                </svg>
+                <strong>{{ w.yearsOfExperience }}</strong>
+                <span>سنين خبرة</span>
+              </div>
+              <div class="sp-quick-stat">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="3"/>
+                </svg>
+                <strong>{{ w.serviceRadius }} كم</strong>
+                <span>نطاق الخدمة</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ BODY ══════ -->
+    <div class="sp-body">
+
+      <!-- LEFT: Details -->
+      <div class="sp-details">
+
+        <!-- About -->
+        <section class="sp-card">
+          <h2 class="sp-card-title">نبذة عن الصنايعي</h2>
+          <p class="sp-bio">{{ w.bio }}</p>
+        </section>
+
+        <!-- Core Skills -->
+        <section class="sp-card">
+          <h2 class="sp-card-title">المهارات الأساسية</h2>
+          <div class="sp-skills">
+            @for (skill of getSkills(w.trade); track skill) {
+              <span class="sp-skill-tag">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  <path d="M20 6 9 17l-5-5"/>
+                </svg>
+                {{ skill }}
+              </span>
+            }
+          </div>
+        </section>
+
+        <!-- Certifications -->
+        <section class="sp-card">
+          <h2 class="sp-card-title">الشهادات والتوثيق</h2>
+          <div class="sp-certs">
+            <div class="sp-cert-item">
+              <div class="sp-cert-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5l-8-3z"/><path d="m9 12 2 2 4-4"/>
+                </svg>
+              </div>
+              <div>
+                <p class="sp-cert-name">هوية موثقة</p>
+                <p class="sp-cert-desc">تم التحقق من بطاقة الهوية</p>
+              </div>
+              <span class="sp-cert-badge">✓ موثق</span>
+            </div>
+            <div class="sp-cert-item">
+              <div class="sp-cert-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                </svg>
+              </div>
+              <div>
+                <p class="sp-cert-name">خبرة مهنية</p>
+                <p class="sp-cert-desc">{{ w.yearsOfExperience }} سنين في المجال</p>
+              </div>
+              <span class="sp-cert-badge">✓ مؤكد</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Reviews -->
+        <section class="sp-card">
+          <h2 class="sp-card-title">التقييمات ({{ reviews().length }})</h2>
+
+          @if (reviews().length === 0) {
+            <p class="sp-no-reviews">مفيش تقييمات لسه.</p>
+          } @else {
+            <div class="sp-reviews">
+              @for (review of reviews(); track review.id) {
+                <div class="sp-review">
+                  <div class="sp-review-header">
+                    <div class="sp-review-avatar">م</div>
+                    <div class="sp-review-meta">
+                      <p class="sp-review-name">عميل</p>
+                      <div class="sp-review-stars">
+                        @for (filled of getStars(review.rating); track $index) {
+                          <svg width="12" height="12" viewBox="0 0 24 24" [attr.fill]="filled ? '#F97316' : '#e2e2e2'" stroke="none">
+                            <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                          </svg>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                  <p class="sp-review-comment">{{ review.comment }}</p>
+                </div>
+              }
+            </div>
+          }
+        </section>
+
+      </div>
+
+      <!-- RIGHT: Booking Card -->
+      <aside class="sp-booking-card">
+
+        <!-- Price -->
+        <div class="sp-booking-price">
+          <span class="sp-price-val">{{ w.hourlyRate }}</span>
+          <span class="sp-price-unit">ج.م / ساعة</span>
+        </div>
+
+        <!-- Info List -->
+        <ul class="sp-booking-info">
+          <li>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span>المنطقة: <strong>{{ w.city }}</strong></span>
+          </li>
+          <li>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+            </svg>
+            <span>نطاق الخدمة: <strong>{{ w.serviceRadius }} كم</strong></span>
+          </li>
+          <li>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/>
+            </svg>
+            <span>طلبات مكتملة: <strong>{{ w.completedJobs }}</strong></span>
+          </li>
+          <li>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="#F97316">
+              <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+            </svg>
+            <span>التقييم: <strong>{{ w.rating }} / 5</strong></span>
+          </li>
+        </ul>
+
+        <!-- Availability -->
+        <div class="sp-booking-avail" [class.sp-booking-avail--on]="w.isAvailable">
+          <div class="sp-avail-dot"></div>
+          <span>{{ w.isAvailable ? 'متاح دلوقتي للحجز' : 'مشغول حالياً' }}</span>
+        </div>
+
+        <!-- Actions -->
+        <button
+          class="sp-book-btn"
+          [disabled]="!w.isAvailable"
+          (click)="bookNow()"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+          </svg>
+          احجز ميعاد
+        </button>
+
+        <button class="sp-msg-btn" (click)="sendMessage()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          ابعت رسالة
+        </button>
+
+        <!-- Trust note -->
+        <p class="sp-trust-note">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          فلوسك محفوظة لحد ما توافق على الشغل
+        </p>
+
+      </aside>
+
+    </div>
+  }
+
+</div>

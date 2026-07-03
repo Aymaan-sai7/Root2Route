@@ -1,0 +1,213 @@
+<div class="sl-page">
+
+  <!-- ══════ HEADER ══════ -->
+  <div class="sl-header">
+    <div class="sl-header-content">
+      <div>
+        <a routerLink="/find-services" class="sl-breadcrumb">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M19 12H5M11 18l-6-6 6-6"/>
+          </svg>
+          الخدمات
+        </a>
+        <h1 class="sl-title">صنايعية {{ tradeLabel }}</h1>
+        <p class="sl-subtitle">
+          @if (loading()) { بيجيب البيانات... }
+          @else { {{ filteredWorkers().length }} صنايعي متاح }
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sl-body">
+
+    <!-- ══════ SIDEBAR FILTERS ══════ -->
+    <aside class="sl-filters">
+      <div class="sl-filters-header">
+        <h3 class="sl-filters-title">فلترة النتائج</h3>
+        <button class="sl-filters-reset" (click)="resetFilters()">إعادة ضبط</button>
+      </div>
+
+      <!-- Sort -->
+      <div class="sl-filter-group">
+        <label class="sl-filter-label">ترتيب حسب</label>
+        <div class="sl-sort-options">
+          @for (opt of [
+            {val: 'rating',    label: 'الأعلى تقييماً'},
+            {val: 'rate_asc',  label: 'السعر: الأقل'},
+            {val: 'rate_desc', label: 'السعر: الأعلى'},
+            {val: 'jobs',      label: 'الأكثر تجربة'}
+          ]; track opt.val) {
+            <button
+              class="sl-sort-btn"
+              [class.sl-sort-btn--active]="filters().sortBy === opt.val"
+              (click)="setFilter('sortBy', opt.val)"
+            >{{ opt.label }}</button>
+          }
+        </div>
+      </div>
+
+      <!-- City -->
+      <div class="sl-filter-group">
+        <label class="sl-filter-label">المدينة</label>
+        <select title="select" class="sl-select" [value]="filters().city" (change)="setFilter('city', $any($event.target).value)">
+          <option value="">كل المدن</option>
+          @for (city of cities; track city) {
+            <option [value]="city">{{ city }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Rating -->
+      <div class="sl-filter-group">
+        <label class="sl-filter-label">أقل تقييم</label>
+        <div class="sl-rating-options">
+          @for (r of [4.5, 4, 3.5]; track r) {
+            <button
+              class="sl-rating-btn"
+              [class.sl-rating-btn--active]="filters().minRating === r"
+              (click)="setFilter('minRating', filters().minRating === r ? null : r)"
+            >
+              ★ {{ r }}+
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Available Only -->
+      <div class="sl-filter-group">
+        <label class="sl-toggle-wrap">
+          <div class="sl-toggle" [class.sl-toggle--on]="filters().availableOnly" (click)="setFilter('availableOnly', !filters().availableOnly)">
+            <div class="sl-toggle-thumb"></div>
+          </div>
+          <span class="sl-filter-label" style="margin-bottom:0">متاح دلوقتي بس</span>
+        </label>
+      </div>
+
+      <!-- Price Range -->
+      <div class="sl-filter-group">
+        <label class="sl-filter-label">نطاق السعر (ج.م / ساعة)</label>
+        <div class="sl-price-inputs">
+          <input
+            type="number"
+            class="sl-price-input"
+            placeholder="من"
+            [value]="filters().minRate ?? ''"
+            (change)="setFilter('minRate', +$any($event.target).value || null)"
+          />
+          <span class="sl-price-sep">—</span>
+          <input
+            type="number"
+            class="sl-price-input"
+            placeholder="إلى"
+            [value]="filters().maxRate ?? ''"
+            (change)="setFilter('maxRate', +$any($event.target).value || null)"
+          />
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ══════ RESULTS ══════ -->
+    <div class="sl-results">
+
+      <!-- Loading -->
+      @if (loading()) {
+        <div class="sl-loading">
+          <div class="sl-spinner"></div>
+          <p>بيجيب الصنايعية...</p>
+        </div>
+      }
+
+      <!-- Empty -->
+      @else if (filteredWorkers().length === 0) {
+        <div class="sl-empty">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <p>مفيش نتائج بالفلاتر دي</p>
+          <button class="sl-empty-btn" (click)="resetFilters()">إعادة ضبط الفلاتر</button>
+        </div>
+      }
+
+      <!-- Cards -->
+      @else {
+        <div class="sl-cards-grid">
+          @for (worker of filteredWorkers(); track worker.id) {
+            <div class="sl-card">
+
+              <!-- Card Top -->
+              <div class="sl-card-top">
+                <div class="sl-card-avatar" [style.background]="worker.avatarColor">
+                  {{ worker.fullName.charAt(0) }}
+                </div>
+                <div class="sl-card-info">
+                  <div class="sl-card-name-row">
+                    <p class="sl-card-name">{{ worker.fullName }}</p>
+                    <!-- Verified badge -->
+                    <span class="sl-verified">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                        <path d="M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5l-8-3z"/><path d="m9 12 2 2 4-4"/>
+                      </svg>
+                      موثق
+                    </span>
+                  </div>
+                  <p class="sl-card-trade">{{ worker.tradeLabel }}</p>
+                </div>
+                <span class="sl-avail-badge" [class.sl-avail-badge--on]="worker.isAvailable">
+                  {{ worker.isAvailable ? 'متاح' : 'مشغول' }}
+                </span>
+              </div>
+
+              <!-- Stats -->
+              <div class="sl-card-stats">
+                <div class="sl-card-stat">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="#F97316" >
+                    <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                  </svg>
+                  <strong>{{ worker.rating }}</strong>
+                  <span>({{ worker.reviewsCount }} تقييم)</span>
+                </div>
+                <div class="sl-card-stat">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  <span>{{ worker.city }}</span>
+                </div>
+                <div class="sl-card-stat">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/>
+                  </svg>
+                  <span>{{ worker.completedJobs }} طلب مكتمل</span>
+                </div>
+                <div class="sl-card-stat">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                  </svg>
+                  <span>{{ worker.yearsOfExperience }} سنين خبرة</span>
+                </div>
+              </div>
+
+              <!-- Bio -->
+              <p class="sl-card-bio">{{ worker.bio }}</p>
+
+              <!-- Footer -->
+              <div class="sl-card-footer">
+                <div class="sl-card-price">
+                  <span class="sl-price-val">{{ worker.hourlyRate }}</span>
+                  <span class="sl-price-lbl">ج.م / ساعة</span>
+                </div>
+                <div class="sl-card-actions">
+                  <button class="sl-btn-outline" (click)="goToProfile(worker.id)">عرض البروفايل</button>
+                  <button class="sl-btn-fill"    (click)="goToProfile(worker.id)">احجز دلوقتي</button>
+                </div>
+              </div>
+
+            </div>
+          }
+        </div>
+      }
+
+    </div>
+  </div>
+</div>

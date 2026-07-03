@@ -1,0 +1,146 @@
+.pd-page {
+  padding: 28px 32px 40px;
+  background: #F7F9FC;
+  min-height: 100vh;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+@media (max-width: 640px) {
+  .pd-page { padding: 20px 16px 32px; }
+}
+
+.pd-header { margin-bottom: 24px; }
+.pd-title { font-size: 22px; font-weight: 700; color: #0F172A; }
+.pd-subtitle { font-size: 13px; color: #64748B; margin-top: 4px; }
+
+.pd-loading {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  padding: 60px; color: #64748B; font-size: 14px;
+}
+.pd-spinner {
+  width: 34px; height: 34px;
+  border: 3px solid rgba(37,99,235,0.12);
+  border-top-color: #2563EB;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.pd-error {
+  padding: 16px 20px; border-radius: 10px;
+  background: rgba(220,38,38,0.07); border: 1px solid rgba(220,38,38,0.18);
+  color: #DC2626; font-size: 14px;
+}
+
+/* ===== Stats Grid ===== */
+.pd-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.pd-stat-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.pd-stat-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.pd-stat-icon--success { background: rgba(22,163,74,0.1); color: #16A34A; }
+.pd-stat-icon--accent  { background: rgba(249,115,22,0.1); color: #F97316; }
+.pd-stat-icon--primary { background: rgba(37,99,235,0.1); color: #2563EB; }
+.pd-stat-icon--warning { background: rgba(234,179,8,0.12); color: #CA8A04; }
+
+.pd-stat-value { font-size: 18px; font-weight: 700; color: #0F172A; white-space: nowrap; }
+.pd-stat-sub { font-size: 11px; color: #94A3B8; font-weight: 500; }
+.pd-stat-label { font-size: 12px; color: #64748B; margin-top: 2px; }
+
+/* ===== Charts Grid ===== */
+.pd-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.pd-chart-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 18px 20px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.pd-chart-title { font-size: 14px; font-weight: 600; color: #0F172A; margin-bottom: 12px; }
+.pd-chart-empty { font-size: 13px; color: #94A3B8; text-align: center; padding: 40px 0; }
+
+/* ===== Recent Activity ===== */
+.pd-recent {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+
+.pd-recent-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+
+.pd-recent-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #F7F9FC;
+  flex-wrap: wrap;
+}
+
+.pd-avatar {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+
+.pd-recent-info { flex: 1; min-width: 140px; }
+.pd-recent-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pd-recent-name { font-size: 13px; font-weight: 600; color: #0F172A; }
+.pd-recent-desc {
+  font-size: 12px; color: #64748B; margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.pd-recent-right { text-align: left; flex-shrink: 0; }
+.pd-recent-amount { font-size: 13px; font-weight: 700; color: #0F172A; }
+.pd-recent-date { font-size: 11px; color: #94A3B8; margin-top: 2px; }
+
+/* ===== Status badges (نفس الأنماط بتاعت pro-requests) ===== */
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.status--pending   { background: rgba(249,115,22,0.1);  color: #EA580C; }
+.status--active    { background: rgba(37,99,235,0.1);   color: #2563EB; }
+.status--completed { background: rgba(22,163,74,0.1);   color: #16A34A; }
+.status--cancelled { background: rgba(220,38,38,0.1);   color: #DC2626; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-spinner { animation: none; }
+}

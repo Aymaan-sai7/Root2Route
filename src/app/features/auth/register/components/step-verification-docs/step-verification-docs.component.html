@@ -1,0 +1,107 @@
+<div [formGroup]="form()" class="space-y-5">
+
+  <div class="rounded-sm border border-blueprint/20 bg-blueprint/5 p-3.5">
+    <p class="flex items-start gap-2 text-xs leading-relaxed text-ink-soft">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1B4F72" stroke-width="2" stroke-linecap="round" class="mt-0.5 shrink-0">
+        <path d="M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5l-8-3z"/>
+      </svg>
+      توثيق هويتك بيخلي العملاء يثقوا فيك أكتر، وبيسرّع موافقتنا على حسابك.
+    </p>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="rounded-sm border border-danger/30 bg-danger/10 px-3.5 py-2.5 text-xs text-danger">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <!-- البطاقة - الوش -->
+  <div>
+    <label class="mb-1.5 block text-sm font-medium text-ink">صورة البطاقة (الوش)</label>
+
+    @if (idFrontPreview()) {
+      <div class="upload-preview relative overflow-hidden rounded-sm border border-line">
+        <img [src]="idFrontPreview()" alt="معاينة وش البطاقة" class="h-32 w-full object-cover" />
+        <button
+          type="button"
+          (click)="removeFile('idFront')"
+          class="absolute end-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-ink/70 text-white backdrop-blur-sm"
+          aria-label="حذف الصورة"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    } @else {
+      <label class="upload-dropzone flex cursor-pointer flex-col items-center justify-center gap-2 rounded-sm border-2 border-dashed border-line-strong bg-paper-dim px-4 py-7 text-center transition-colors hover:border-blueprint">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7A8B99" stroke-width="1.8" stroke-linecap="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+        </svg>
+        <span class="text-xs text-steel">اضغط لاختيار صورة، أو اسحبها هنا</span>
+        <input type="file" accept="image/png, image/jpeg, image/webp" class="hidden" (change)="onFileSelected($event, 'idFront')" />
+      </label>
+    }
+    @if (form().get('idFront')?.invalid && form().get('idFront')?.touched) {
+      <p class="mt-1 text-xs text-danger">صورة وش البطاقة مطلوبة.</p>
+    }
+  </div>
+
+  <!-- البطاقة - الظهر -->
+  <div>
+    <label class="mb-1.5 block text-sm font-medium text-ink">صورة البطاقة (الظهر)</label>
+
+    @if (idBackPreview()) {
+      <div class="upload-preview relative overflow-hidden rounded-sm border border-line">
+        <img [src]="idBackPreview()" alt="معاينة ظهر البطاقة" class="h-32 w-full object-cover" />
+        <button
+          type="button"
+          (click)="removeFile('idBack')"
+          class="absolute end-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-ink/70 text-white backdrop-blur-sm"
+          aria-label="حذف الصورة"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    } @else {
+      <label class="upload-dropzone flex cursor-pointer flex-col items-center justify-center gap-2 rounded-sm border-2 border-dashed border-line-strong bg-paper-dim px-4 py-7 text-center transition-colors hover:border-blueprint">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7A8B99" stroke-width="1.8" stroke-linecap="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+        </svg>
+        <span class="text-xs text-steel">اضغط لاختيار صورة، أو اسحبها هنا</span>
+        <input type="file" accept="image/png, image/jpeg, image/webp" class="hidden" (change)="onFileSelected($event, 'idBack')" />
+      </label>
+    }
+    @if (form().get('idBack')?.invalid && form().get('idBack')?.touched) {
+      <p class="mt-1 text-xs text-danger">صورة ظهر البطاقة مطلوبة.</p>
+    }
+  </div>
+
+  <div class="tape-rule opacity-40"></div>
+
+  <!-- الشهادة (اختياري) -->
+  <div>
+    <div class="mb-1.5 flex items-center justify-between">
+      <label class="block text-sm font-medium text-ink">شهادة أو كرنيه تخصص</label>
+      <span class="rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success">يزود فرصة القبول</span>
+    </div>
+
+    @if (certificatePreview()) {
+      <div class="flex items-center gap-3 rounded-sm border border-line bg-paper-dim p-3">
+        <img [src]="certificatePreview()" alt="معاينة الشهادة" class="h-12 w-12 rounded-sm object-cover" />
+        <span class="flex-1 truncate text-xs text-ink-soft">{{ certificateFileName() }}</span>
+        <button type="button" (click)="removeFile('certificate')" class="text-danger" aria-label="حذف الشهادة">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    } @else {
+      <label class="upload-dropzone flex cursor-pointer flex-col items-center justify-center gap-2 rounded-sm border-2 border-dashed border-line bg-paper px-4 py-6 text-center transition-colors hover:border-blueprint">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7A8B99" stroke-width="1.8" stroke-linecap="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <path d="M14 2v6h6"/>
+        </svg>
+        <span class="text-xs text-steel">رفع شهادة أو كرنيه (اختياري)</span>
+        <input type="file" accept="image/png, image/jpeg, image/webp" class="hidden" (change)="onFileSelected($event, 'certificate')" />
+      </label>
+    }
+  </div>
+
+</div>

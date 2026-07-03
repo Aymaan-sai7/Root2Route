@@ -1,0 +1,77 @@
+<div [formGroup]="form()" class="space-y-5">
+
+  <p class="text-sm text-ink-soft">دي البيانات اللي العملاء هيشوفوها في صفحتك، اكتبها بدقة عشان تبان بشكل محترف.</p>
+
+  <div>
+    <label class="mb-1.5 block text-sm font-medium text-ink">التخصص</label>
+    <select
+    title="select"
+      formControlName="trade"
+      class="w-full rounded-sm border border-line-strong bg-paper px-3.5 py-2.5 text-sm text-ink focus:border-blueprint focus:outline-none"
+    >
+      <option value="" disabled selected>اختار تخصصك</option>
+      @for (trade of trades; track trade.value) {
+        <option [value]="trade.value">{{ trade.label }}</option>
+      }
+    </select>
+    @if (form().get('trade')?.invalid && form().get('trade')?.touched) {
+      <p class="mt-1 text-xs text-danger">لازم تختار تخصص.</p>
+    }
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <label class="mb-1.5 block text-sm font-medium text-ink">السعر بالساعة</label>
+      <input
+        type="number"
+        formControlName="hourlyRate"
+        placeholder="السعر بالساعة"
+        min="0"
+        class="w-full rounded-sm border border-line-strong bg-paper px-3.5 py-2.5 text-sm text-ink placeholder:text-steel focus:border-blueprint focus:outline-none"
+      />
+      @if (form().get('hourlyRate')?.invalid && form().get('hourlyRate')?.touched) {
+        <p class="mt-1 text-xs text-danger">اكتب سعر صحيح أكبر من صفر.</p>
+      }
+    </div>
+
+    <div>
+      <label class="mb-1.5 block text-sm font-medium text-ink">سنين الخبرة</label>
+      <input
+        type="number"
+        formControlName="yearsOfExperience"
+        placeholder="سنين الخبرة"
+        min="0"
+        class="w-full rounded-sm border border-line-strong bg-paper px-3.5 py-2.5 text-sm text-ink placeholder:text-steel focus:border-blueprint focus:outline-none"
+      />
+      @if (form().get('yearsOfExperience')?.invalid && form().get('yearsOfExperience')?.touched) {
+        <p class="mt-1 text-xs text-danger">اكتب عدد سنين صحيح.</p>
+      }
+    </div>
+  </div>
+
+  <div>
+    <label class="mb-1.5 block text-sm font-medium text-ink">المدينة / المنطقة</label>
+    <input
+      type="text"
+      formControlName="city"
+      placeholder="المدينة أو المنطقة"
+      class="w-full rounded-sm border border-line-strong bg-paper px-3.5 py-2.5 text-sm text-ink placeholder:text-steel focus:border-blueprint focus:outline-none"
+    />
+    @if (form().get('city')?.invalid && form().get('city')?.touched) {
+      <p class="mt-1 text-xs text-danger">اكتب المدينة أو المنطقة اللي بتشتغل فيها.</p>
+    }
+  </div>
+
+  <div>
+    <label class="mb-1.5 block text-sm font-medium text-ink">نطاق الخدمة (كم)</label>
+    <input
+      type="number"
+      formControlName="serviceRadius"
+      placeholder="أقصى مسافة مستعد تتحرك ليها"
+      min="1"
+      class="w-full rounded-sm border border-line-strong bg-paper px-3.5 py-2.5 text-sm text-ink placeholder:text-steel focus:border-blueprint focus:outline-none"
+    />
+    <p class="mt-1 text-xs text-steel">أقصى مسافة مستعد تتحرك ليها لتنفيذ شغلانة (اختياري).</p>
+  </div>
+
+</div>

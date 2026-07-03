@@ -1,0 +1,47 @@
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  overflow: hidden;
+}
+
+.marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  direction: ltr;
+  animation: marquee-scroll 48s linear infinite;
+}
+
+.trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  padding: 8px 16px;
+  margin-right: 16px;
+  border-radius: 999px;
+  border: 1px solid #D9D2C3;
+  background: #F2EFE7;
+  color: #324653;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.trust-badge svg {
+  color: #1B4F72;
+  flex-shrink: 0;
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-25%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
