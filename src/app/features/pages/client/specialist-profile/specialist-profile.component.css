@@ -72,8 +72,11 @@
   align-items: flex-start;
   gap: 24px;
 }
-@media (max-width: 640px) {
   @media (max-width: 640px) {
+
+      .sp-badges{
+        justify-content:center;
+    }
 
   .sp-profile-top{
     flex-direction: column;
@@ -98,7 +101,7 @@
   }
 
 }
-}
+
 
 .sp-avatar {
   width: 88px; height: 88px;
@@ -129,6 +132,11 @@
   color: #fff;
 }
 
+.sp-badges{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
 .sp-verified {
   display: inline-flex;
   align-items: center;
