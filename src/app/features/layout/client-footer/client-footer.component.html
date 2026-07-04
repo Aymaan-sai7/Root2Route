@@ -13,7 +13,7 @@
 
       <!-- Services quick links -->
       <div class="cf-col">
-        <p class="cf-col-title">الخدمات</p>
+        <p class="cf-col-title">الخدمات الاكثر طلباً</p>
         @for (link of serviceLinks; track link.path) {
           <a [routerLink]="link.path" class="cf-col-link">{{ link.label }}</a>
         }

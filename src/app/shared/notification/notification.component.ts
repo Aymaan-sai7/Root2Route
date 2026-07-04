@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ElementRef, HostListener, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, HostListener, Input, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -23,6 +23,9 @@ export class NotificationComponent implements OnInit {
   private elRef = inject(ElementRef);
   private destroyRef = inject(DestroyRef);
 
+    @Input() variant: 'dropdown' | 'inline' = 'dropdown';
+  @Input() label = 'الإشعارات';
+  
   isOpen = signal(false);
   notifications = signal<Notification[]>([]);
   loading = signal(false);

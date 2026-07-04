@@ -21,8 +21,6 @@ export class ClientFooterComponent {
     { label: 'كهرباء',          path: '/find-services/electrical' },
     { label: 'سباكة',           path: '/find-services/plumbing' },
     { label: 'نجارة',           path: '/find-services/carpentry' },
-    { label: 'نقاشة',           path: '/find-services/painting' },
-    { label: 'تكييف وتبريد',    path: '/find-services/ac' },
   ];
 
   accountLinks: QuickLink[] = [
