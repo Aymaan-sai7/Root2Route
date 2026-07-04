@@ -180,3 +180,7 @@ html[dir='rtl'] .tape-rule {
     animation: none;
   }
 }
+
+body.sl-no-scroll {
+  overflow: hidden;
+}

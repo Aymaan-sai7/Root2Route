@@ -6,7 +6,7 @@
   top: 0;
   z-index: 50;
   border-bottom: 1px solid rgba(37,99,235,0.1); /* primary */
-  background: rgba(255,255,255,0.92); /* paper — يطابق bg-paper/90 في اللاندنج ناف */
+  background: rgba(255,255,255,0.92); /* paper */
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -188,61 +188,225 @@
 
 
 /* ============================================================
-   MOBILE MENU
+   MOBILE TOGGLE (Hamburger → X أنيميشن)
    ============================================================ */
-.mobile-menu {
-  border-top: 1px solid rgba(37,99,235,0.1); /* primary */
-  background: #F7F9FC; /* surface-alt */
-  padding: 16px 20px;
+.mobile-toggle-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid rgba(37,99,235,0.14);
+  background: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+@media (max-width: 767px) {
+  .mobile-toggle-btn { display: flex; }
+}
+.mobile-toggle-line {
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: #0F172A; /* ink */
+  transition: transform 0.28s cubic-bezier(0.16,1,0.3,1), opacity 0.2s ease;
+}
+.mobile-toggle-btn--open .mobile-toggle-line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.mobile-toggle-btn--open .mobile-toggle-line:nth-child(2) {
+  opacity: 0;
+}
+.mobile-toggle-btn--open .mobile-toggle-line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+
+/* ============================================================
+   BACKDROP
+   ============================================================ */
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,0.5); /* ink */
+  backdrop-filter: blur(2px);
+  z-index: 90;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.nav-backdrop--open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+/* ============================================================
+   DRAWER
+   ============================================================ */
+.nav-drawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  inset-inline-end: 0; /* نفس ناحية زرار الفتح */
+  width: min(300px, 82vw);
+  background: #fff;
+  box-shadow: -12px 0 40px rgba(15,23,42,0.16);
+  z-index: 95;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+}
+.nav-drawer--open {
+  transform: translateX(0);
 }
 
-.mobile-link {
-  display: block;
-  padding: 10px 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #64748B; /* steel */
-  text-decoration: none;
-  border-radius: 8px;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-.mobile-link:hover {
-  background: rgba(37,99,235,0.06); /* primary */
-  color: #2563EB; /* primary */
+.nav-drawer-accent {
+  height: 4px;
+  background: linear-gradient(90deg, #2563EB, #F97316); /* primary → accent */
+  flex-shrink: 0;
 }
 
-.mobile-user {
+.nav-drawer-head {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 8px;
+  justify-content: space-between;
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid rgba(37,99,235,0.08);
 }
-
-.mobile-logout {
+.nav-drawer-brand {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #DC2626; /* danger */
-  background: none;
-  border: none;
-  cursor: pointer;
-  border-radius: 8px;
-  width: 100%;
-  text-align: right;
-  transition: background-color 0.15s ease;
+  font-family: var(--font-display, inherit);
+  font-weight: 700;
+  font-size: 16px;
+  color: #0F172A;
 }
-.mobile-logout:hover {
-  background: rgba(220,38,38,0.06); /* danger */
+.nav-drawer-logo { height: 30px; width: auto; object-fit: contain; }
+.nav-drawer-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(37,99,235,0.08);
+  color: #2563EB;
+  cursor: pointer;
 }
 
+.nav-drawer-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  background: #F7F9FC; /* surface-alt */
+}
+.nav-drawer-user-info { min-width: 0; }
+.nav-drawer-user-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0F172A;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nav-drawer-user-email {
+  font-size: 11.5px;
+  color: #64748B;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-drawer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 12px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.nav-drawer-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 10px;
+  border-radius: 10px;
+  border: none;
+  background: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155;
+  text-decoration: none;
+  cursor: pointer;
+  text-align: right;
+  font-family: inherit;
+  opacity: 0;
+  transform: translateX(14px);
+  transition: background-color 0.15s ease, color 0.15s ease,
+              opacity 0.35s ease, transform 0.35s ease;
+}
+.nav-drawer--open .nav-drawer-link { opacity: 1; transform: translateX(0); }
+.nav-drawer--open .nav-drawer-link:nth-child(1) { transition-delay: 0.08s; }
+.nav-drawer--open .nav-drawer-link:nth-child(2) { transition-delay: 0.13s; }
+.nav-drawer--open .nav-drawer-link:nth-child(3) { transition-delay: 0.18s; }
+.nav-drawer--open .nav-drawer-link:nth-child(4) { transition-delay: 0.23s; }
+.nav-drawer:not(.nav-drawer--open) .nav-drawer-link { transition-delay: 0s !important; }
+
+.nav-drawer-link:hover { background: rgba(37,99,235,0.06); color: #2563EB; }
+.nav-drawer-link--active {
+  background: rgba(37,99,235,0.08);
+  color: #2563EB;
+  font-weight: 600;
+}
+.nav-drawer-link--static { cursor: default; }
+.nav-drawer-link--static:hover { background: none; color: #334155; }
+
+.nav-drawer-link-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: rgba(37,99,235,0.08);
+  color: #2563EB;
+  flex-shrink: 0;
+}
+.nav-drawer-link-text { flex: 1; }
+
+.nav-drawer-footer {
+  padding: 14px 18px 20px;
+  border-top: 1px solid rgba(37,99,235,0.08);
+}
+.nav-drawer-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px;
+  border-radius: 10px;
+  border: 1px solid rgba(220,38,38,0.2);
+  background: rgba(220,38,38,0.05);
+  color: #DC2626;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.nav-drawer-logout:hover { background: rgba(220,38,38,0.1); }
+
+
 /* ============================================================
-   MESSAGES ICON + DROPDOWN
+   MESSAGES ICON + DROPDOWN (Desktop)
    ============================================================ */
 .messages-btn {
   position: relative;
@@ -273,7 +437,7 @@
   height: 17px;
   padding: 0 4px;
   border-radius: 999px;
-  background: #DC2626; /* danger — كان مطابق أصلاً */
+  background: #DC2626; /* danger */
   color: #fff;
   font-size: 10px;
   font-weight: 700;
@@ -352,7 +516,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #2563EB; /* primary — كان مطابق أصلاً */
+  background: #2563EB; /* primary */
   flex-shrink: 0;
 }
 
@@ -377,29 +541,20 @@
   color: #64748B; /* steel */
 }
 
-/* Mobile */
-.mobile-messages-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-}
+/* Mobile — الشارة داخل الدرج + بانل المحادثات */
 .mobile-messages-badge {
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
   border-radius: 999px;
-  background: #DC2626; /* danger — كان مطابق أصلاً */
+  background: #DC2626; /* danger */
   color: #fff;
   font-size: 10.5px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 .mobile-messages-panel {
   display: flex;
@@ -407,7 +562,7 @@
   border: 1px solid rgba(37,99,235,0.1); /* primary */
   border-radius: 10px;
   overflow: hidden;
-  margin: 4px 0;
+  margin: 2px 10px 6px;
 }
 
 /* ============================================================
@@ -416,5 +571,11 @@
 @media (prefers-reduced-motion: reduce) {
   .user-dropdown { animation: none; }
   .navbar-link::after,
-  .user-chevron { transition: none; }
+  .user-chevron,
+  .nav-drawer,
+  .nav-backdrop,
+  .nav-drawer-link,
+  .mobile-toggle-line {
+    transition: none;
+  }
 }

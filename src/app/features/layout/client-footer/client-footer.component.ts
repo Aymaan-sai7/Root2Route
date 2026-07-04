@@ -1,22 +1,32 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
-interface LegalLink {
+interface QuickLink {
   label: string;
-  href: string;
+  path: string;
 }
 
 @Component({
   selector: 'app-client-footer',
   standalone: true,
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './client-footer.component.html',
   styleUrl: './client-footer.component.css',
 })
 export class ClientFooterComponent {
   currentYear = new Date().getFullYear();
 
-  legalLinks: LegalLink[] = [
-    { label: 'الشروط والأحكام', href: '#' },
-    { label: 'سياسة الخصوصية', href: '#' },
+  // بدل الـ placeholders — لينكات حقيقية لصفحات موجودة فعليًا في المشروع
+  serviceLinks: QuickLink[] = [
+    { label: 'كهرباء',          path: '/find-services/electrical' },
+    { label: 'سباكة',           path: '/find-services/plumbing' },
+    { label: 'نجارة',           path: '/find-services/carpentry' },
+    { label: 'نقاشة',           path: '/find-services/painting' },
+    { label: 'تكييف وتبريد',    path: '/find-services/ac' },
+  ];
+
+  accountLinks: QuickLink[] = [
+    { label: 'كل الخدمات',   path: '/find-services' },
+    { label: 'طلباتي',       path: '/orders' },
   ];
 }

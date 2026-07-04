@@ -1,23 +1,35 @@
 <footer class="cf-footer">
   <div class="cf-inner">
 
-    <!-- Brand -->
-    <a href="/find-services" class="cf-brand">
-      <img src="/sanaye3i_nav.png" alt="Sanaye3i Logo" class="cf-logo" />
-      <span class="cf-brand-name">صنايعي</span>
-    </a>
+    <div class="cf-top">
+      <!-- Brand -->
+      <div class="cf-brand-col">
+        <a routerLink="/find-services" class="cf-brand">
+          <img src="/sanaye3i_nav.png" alt="Sanaye3i Logo" class="cf-logo" />
+          <span class="cf-brand-name">صنايعي</span>
+        </a>
+        <p class="cf-tagline">اطلب صنايعي موثوق في دقايق.</p>
+      </div>
 
-    <!-- Copyright -->
-    <p class="cf-copy">© {{ currentYear }} صنايعي. كل الحقوق محفوظة.</p>
-
-    <!-- Legal links -->
-    <div class="cf-links">
-      @for (link of legalLinks; track link.label; let last = $last) {
-        <a [href]="link.href" class="cf-link">{{ link.label }}</a>
-        @if (!last) {
-          <span class="cf-link-sep">•</span>
+      <!-- Services quick links -->
+      <div class="cf-col">
+        <p class="cf-col-title">الخدمات</p>
+        @for (link of serviceLinks; track link.path) {
+          <a [routerLink]="link.path" class="cf-col-link">{{ link.label }}</a>
         }
-      }
+      </div>
+
+      <!-- Account quick links -->
+      <div class="cf-col">
+        <p class="cf-col-title">حسابي</p>
+        @for (link of accountLinks; track link.path) {
+          <a [routerLink]="link.path" class="cf-col-link">{{ link.label }}</a>
+        }
+      </div>
+    </div>
+
+    <div class="cf-bottom">
+      <p class="cf-copy">© {{ currentYear }} صنايعي. كل الحقوق محفوظة.</p>
     </div>
 
   </div>
