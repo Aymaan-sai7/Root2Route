@@ -73,7 +73,31 @@
   gap: 24px;
 }
 @media (max-width: 640px) {
-  .sp-profile-top { flex-direction: column; align-items: center; text-align: center; }
+  @media (max-width: 640px) {
+
+  .sp-profile-top{
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .sp-profile-info{
+    width:100%;
+  }
+
+  .sp-name-row{
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap:10px;
+  }
+
+  .sp-name{
+    width:100%;
+    text-align:center;
+  }
+
+}
 }
 
 .sp-avatar {
