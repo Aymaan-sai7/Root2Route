@@ -261,9 +261,15 @@
   transform: translateX(100%);
   transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
 }
-.nav-drawer--open {
-  transform: translateX(0);
+
+html[dir='rtl'] .nav-drawer {
+  transform: translateX(-100%);
 }
+
+.nav-drawer--open {
+  transform: translateX(0) !important; /* لازم !important عشان يكسب الأولوية فوق قاعدة الـ rtl اللي أعلى تخصيصًا منه */
+}
+
 
 .nav-drawer-accent {
   height: 4px;
