@@ -1,4 +1,4 @@
-<div class="fixed inset-0 z-[60] md:static md:z-auto md:min-h-screen bg-paper flex flex-col">
+<div class="fixed inset-0 z-[60] md:static md:z-auto md:min-h-screen bg-paper flex flex-col overflow-hidden">
   <!-- Header -->
   <div class="bg-white border-b border-steel/20 px-4 py-3 flex items-center gap-3 sticky top-0 z-10">
     <button (click)="goBack()" class="text-steel hover:text-ink transition-colors" title="رجوع">
@@ -15,7 +15,7 @@
     <h2 class="font-bold text-ink text-sm">{{ otherName() }}</h2>
   </div>
   <!-- Messages -->
-  <div class="flex-1 overflow-y-auto overscroll-contain px-4 py-4 space-y-3">
+  <div class="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-4 space-y-3">
     @if (isLoading()) {
       <div class="flex justify-center items-center py-20">
         <div class="w-8 h-8 border-4 border-blueprint border-t-transparent rounded-full animate-spin"></div>

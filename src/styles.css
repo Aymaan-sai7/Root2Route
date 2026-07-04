@@ -8,6 +8,9 @@ html, body {
   background-color: #FFFFFF;
   scroll-behavior: smooth;
 }
+html, body {
+  overflow-x: hidden;
+}
 
 html[dir='rtl'] body {
   font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
