@@ -1,4 +1,7 @@
-import { Component, inject, OnInit, OnDestroy, signal, HostListener, Renderer2 } from '@angular/core';
+import {
+  Component, inject, OnInit, OnDestroy, AfterViewInit,
+  signal, HostListener, Renderer2, ViewChild, ElementRef,
+} from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/Auth.service';
@@ -13,11 +16,14 @@ import { NotificationComponent } from '../../../shared/notification/notification
   templateUrl: './client-navbar.component.html',
   styleUrl: './client-navbar.component.css',
 })
-export class ClientNavbarComponent implements OnInit, OnDestroy {
+export class ClientNavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   auth = inject(AuthService);
   private messagesService = inject(MessagesService);
   private router = inject(Router);
   private renderer = inject(Renderer2);
+
+  // الـ wrapper اللي فيه الـ backdrop والـ drawer — هننقله لـ body فعليًا
+  @ViewChild('navPortal') navPortal?: ElementRef<HTMLElement>;
 
   mobileOpen      = signal(false);
   dropdownOpen    = signal(false);
@@ -36,15 +42,30 @@ export class ClientNavbarComponent implements OnInit, OnDestroy {
     this.refreshUnreadCount();
     this.pollingInterval = setInterval(() => this.refreshUnreadCount(), 15000);
 
-    // قفل الدرج تلقائيًا لو المستخدم نقل صفحة
     this.router.events
       .pipe(filter((e) => e instanceof NavigationEnd))
       .subscribe(() => this.closeMobile());
   }
 
+  ngAfterViewInit(): void {
+    // ⚠️ الخطوة الأساسية: ننقل الـ backdrop + الـ drawer عشان يبقوا أطفال
+    // مباشرين لـ <body> بره أي جد ممكن يكون عنده transform/will-change/filter
+    // وبيكسر containing block بتاعة position:fixed (السبب الحقيقي لمشكلة
+    // ظهور الـ drawer في نص الصفحة بدل ما يبقى ثابت بالنسبة للشاشة كلها)
+    if (this.navPortal) {
+      this.renderer.appendChild(document.body, this.navPortal.nativeElement);
+    }
+  }
+
   ngOnDestroy(): void {
     if (this.pollingInterval) clearInterval(this.pollingInterval);
-    this.renderer.removeClass(document.body, 'sl-no-scroll');
+    this.renderer.setStyle(document.body, 'overflow', '');
+
+    // لازم نشيل العنصر يدويًا من body وقت تدمير الكومبوننت،
+    // وإلا هيفضل عالق فيها لو الراوت اتغير
+    if (this.navPortal?.nativeElement?.parentNode === document.body) {
+      this.renderer.removeChild(document.body, this.navPortal.nativeElement);
+    }
   }
 
   @HostListener('window:scroll')
@@ -75,13 +96,17 @@ export class ClientNavbarComponent implements OnInit, OnDestroy {
   // ── الدرج (Drawer) على الموبايل ──────────────────────────────
   openMobile(): void {
     this.mobileOpen.set(true);
-    this.renderer.addClass(document.body, 'sl-no-scroll');
+    // استخدمنا setStyle مباشر بدل class عشان overflow:hidden على body —
+    // كلاسات CSS بتاعة Angular بتكون scoped جوه كل كومبوننت، فكلاس زي
+    // 'sl-no-scroll' اللي معرّف في كومبوننت تاني (specialists-list) ماكانش
+    // هيتطبق فعليًا على body لما نضيفه من هنا. الطريقة دي أضمن 100%.
+    this.renderer.setStyle(document.body, 'overflow', 'hidden');
   }
 
   closeMobile(): void {
     this.mobileOpen.set(false);
     this.messagesOpen.set(false);
-    this.renderer.removeClass(document.body, 'sl-no-scroll');
+    this.renderer.setStyle(document.body, 'overflow', '');
   }
 
   toggleMobile(): void {
