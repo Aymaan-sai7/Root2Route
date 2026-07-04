@@ -12,7 +12,5 @@ import { IdleTimeoutService } from './core/services/timeout.service';
 export class AppComponent {
   title = 'sanaye3i';
 
-  // مجرد حقن الـ service كفاية عشان يبدأ يراقب النشاط تلقائيًا —
-  // مش محتاجين نستخدمه في حاجة تانية هنا
   private idleTimeout = inject(IdleTimeoutService);
 }

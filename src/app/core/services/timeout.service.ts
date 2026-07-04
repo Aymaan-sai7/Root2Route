@@ -2,7 +2,7 @@ import { Injectable, inject, NgZone, effect } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from './Auth.service';
 
-const IDLE_TIMEOUT_MS = 15 * 1000;
+const IDLE_TIMEOUT_MS = 15 * 60 * 1000;
 
 const ACTIVITY_EVENTS = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'] as const;
 
