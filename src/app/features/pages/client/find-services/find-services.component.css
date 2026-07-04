@@ -634,3 +634,9 @@ html[dir='rtl'] .fs-top-item:hover {
   .fs-skeleton-card { animation: none; }
   .fs-bento-card, .fs-top-item { transition: none; }
 }
+
+@media (max-width: 768px) {
+  .fs-hide-mobile {
+    display: none;
+  }
+}
