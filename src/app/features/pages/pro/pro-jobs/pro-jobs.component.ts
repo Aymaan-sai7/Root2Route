@@ -7,6 +7,7 @@ import { WorkersService } from '../../../../core/services/workers.service';
 import { Booking } from '../../../../core/models/booking.model';
 import { generateAvatarColor } from '../../../../core/utils/color.util';
 import { switchMap } from 'rxjs';
+import { confirmDelete } from '../../../../core/utils/confirm.util';
 
 type TabFilter = 'active' | 'completed';
 
@@ -102,15 +103,15 @@ export class ProJobsComponent implements OnInit {
     return map[status] ?? status;
   }
 
-  deleteJob(id: string): void {
-    const confirmed = confirm('متأكد إنك عايز تمسح الطلب ده نهائيًا؟ الإجراء ده مش هيترجع.');
-    if (!confirmed) return;
+  async deleteJob(id: string): Promise<void> {
+  const confirmed = await confirmDelete();
+  if (!confirmed) return;
 
-    this.bookings.delete(id).subscribe({
-      next: () => {
-        this.allJobs.update((jobs) => jobs.filter((j) => j.id !== id));
-      },
-    });
-  }
+  this.bookings.delete(id).subscribe({
+    next: () => {
+      this.allJobs.update((jobs) => jobs.filter((j) => j.id !== id));
+    },
+  });
+}
 
 }
