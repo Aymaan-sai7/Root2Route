@@ -1,0 +1,55 @@
+<div class="ad-page">
+
+  <div class="ad-header">
+    <h2 class="ad-title">نظرة عامة</h2>
+    <p class="ad-desc">إحصائيات المنصة لحظيًا</p>
+  </div>
+
+  @if (loading()) {
+    <div class="ad-cards-grid">
+      @for (s of [1,2,3,4,5,6,7]; track s) {
+        <div class="ad-skeleton"></div>
+      }
+    </div>
+  } @else if (stats(); as s) {
+    <div class="ad-cards-grid">
+
+      <div class="ad-card">
+        <span class="ad-card-label">إجمالي المستخدمين</span>
+        <span class="ad-card-value">{{ s.totalUsers }}</span>
+      </div>
+
+      <div class="ad-card">
+        <span class="ad-card-label">العملاء</span>
+        <span class="ad-card-value">{{ s.totalClients }}</span>
+      </div>
+
+      <div class="ad-card">
+        <span class="ad-card-label">الصنايعية</span>
+        <span class="ad-card-value">{{ s.totalPros }}</span>
+      </div>
+
+      <div class="ad-card ad-card--highlight">
+        <span class="ad-card-label">طلبات قيد المراجعة</span>
+        <span class="ad-card-value">{{ s.pendingApprovals }}</span>
+      </div>
+
+      <div class="ad-card ad-card--danger">
+        <span class="ad-card-label">حسابات محظورة</span>
+        <span class="ad-card-value">{{ s.blockedUsers }}</span>
+      </div>
+
+      <div class="ad-card">
+        <span class="ad-card-label">إجمالي الحجوزات</span>
+        <span class="ad-card-value">{{ s.totalBookings }}</span>
+      </div>
+
+      <div class="ad-card">
+        <span class="ad-card-label">إجمالي التقييمات</span>
+        <span class="ad-card-value">{{ s.totalReviews }}</span>
+      </div>
+
+    </div>
+  }
+
+</div>

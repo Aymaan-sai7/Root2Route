@@ -1,0 +1,14 @@
+.admin-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+  background: #F7F9FC; /* surface-alt */
+}
+@media (max-width: 860px) {
+  .admin-layout { grid-template-columns: 1fr; }
+}
+
+.admin-content {
+  min-height: 100vh;
+  overflow-y: auto;
+}

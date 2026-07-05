@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, map, catchError, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { User } from '../models/user.model';
+import { User, UserRole } from '../models/user.model';
 
 const STORAGE_KEY = 'sanaye3i_user';
 const TOKEN_KEY = 'sanaye3i_token';
@@ -14,9 +14,27 @@ interface AuthResponse {
   worker?: any;
 }
 
-export interface RegisterResult {
+// ⚠️ payload التسجيل منفصل عن User model عمدًا — User بقى بيمثل "شكل البيانات
+// الراجعة من السيرفر" بس (وعشان كده مفيهوش password خالص)، لكن الفرونت إند
+// لازم يبعت password فعليًا وقت التسجيل، فمش منطقي نبني الـ payload بالـ
+// Omit<User, ...> زي الأول
+export interface RegisterPayload {
+  fullName: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  nationalId: string;
+}
+
+// ⚠️ التسجيل مبقاش بيرجع session token خالص — الحساب بيتعمل بـ status: 'pending' ولازم
+// موافقة أدمن الأول قبل أي دخول فعلي، فمفيش "auto-login" بعد التسجيل تاني.
+// docsUploadToken (لو pro) توكن مؤقت قصير العمر لرفع مستندات التحقق بس — مش session，
+// لازم يتستخدم مرة واحدة هنا ويترمي، مش يتحفظ في أي storage
+export interface RegisterPendingResponse {
+  message: string;
   user: User;
   worker?: any;
+  docsUploadToken?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -30,10 +48,13 @@ export class AuthService {
   isLoggedIn  = computed(() => !!this.currentUserSignal());
   isClient    = computed(() => this.currentUserSignal()?.role === 'client');
   isPro       = computed(() => this.currentUserSignal()?.role === 'pro');
+  isAdmin     = computed(() => this.currentUserSignal()?.role === 'admin');
 
   // ── Login ────────────────────────────────────────────────────
   // keepSignedIn = true (افتراضي) → localStorage (تفضل الجلسة بعد إغلاق المتصفح)
   // keepSignedIn = false           → sessionStorage (بتتمسح لما يتقفل التاب)
+  // ⚠️ لو الحساب status !== 'active' (pending/blocked/rejected)، السيرفر بيرفض
+  // بـ 403 ورسالة مناسبة، وبتوصل هنا زي أي error عادي من خلال catchError تحت
   login(email: string, password: string, keepSignedIn: boolean = true): Observable<User> {
     return this.http
       .post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password })
@@ -48,21 +69,20 @@ export class AuthService {
   }
 
   // ── Register ─────────────────────────────────────────────────
-  // عملية atomic في السيرفر: الـ user + بروفايل الصنايعي (لو pro) بيتكتبوا مع بعض
-  // مفيش سيناريو "حساب يتيم" لإن الكتابة على db.json بتحصل مرة واحدة بس بعد
-  // ما كل البيانات جاهزة في السيرفر
+  // عملية atomic في السيرفر: الـ user + بروفايل الصنايعي (لو pro) بيتكتبوا مع بعض.
+  // الحساب بيتعمل status: 'pending' ومفيش أي تسجيل دخول تلقائي — لازم موافقة أدمن
+  // الأول، فالكومبوننت اللي بينادي على الميثود دي محتاج يوجّه المستخدم لصفحة
+  // "طلبك قيد المراجعة" بدل ما يعمل redirectAfterLogin()
   register(
-    data: Omit<User, 'id' | 'createdAt'>,
+    data: RegisterPayload,
     workerData?: any
-  ): Observable<RegisterResult> {
+  ): Observable<RegisterPendingResponse> {
     return this.http
-      .post<AuthResponse>(`${environment.apiUrl}/auth/register`, {
+      .post<RegisterPendingResponse>(`${environment.apiUrl}/auth/register`, {
         ...data,
         workerData,
       })
       .pipe(
-        tap((res) => this.setSession(res, true)),
-        map((res) => ({ user: res.user, worker: res.worker })),
         catchError((err: HttpErrorResponse) => {
           const msg = err.error?.message ?? 'حصل خطأ، حاول تاني.';
           return throwError(() => new Error(msg));
@@ -85,11 +105,14 @@ export class AuthService {
     return localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY);
   }
 
-  // ── Redirect بعد login/register حسب الـ role ────────────────
+  // ── Redirect بعد login حسب الـ role ─────────────────────────
   redirectAfterLogin(): void {
     const user = this.currentUserSignal();
     if (!user) return;
-    const target = user.role === 'pro' ? '/pro/dashboard' : '/find-services';
+    const target =
+      user.role === 'admin' ? '/admin/dashboard' :
+      user.role === 'pro'   ? '/pro/dashboard' :
+      '/find-services';
     this.router.navigate([target]);
   }
 

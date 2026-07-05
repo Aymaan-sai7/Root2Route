@@ -5,6 +5,7 @@ import { roleGuard } from './core/guards/role.guard';
 // Layouts
 import { ClientLayoutComponent } from './features/layout/client-layout/client-layout.component';
 import { ProLayoutComponent } from './features/layout/pro-layout/pro-layout.component';
+import { AdminLayoutComponent } from './features/layout/admin/layout/admin-layout/admin-layout.component'; // ← جديد
 
 // Public
 import { LandingComponent } from './features/pages/landing/landing.component';
@@ -12,6 +13,7 @@ import { LandingComponent } from './features/pages/landing/landing.component';
 // Auth
 import { LoginComponent } from './features/auth/login/login.component';
 import { RegisterComponent } from './features/auth/register/register.component';
+import { PendingReviewComponent } from './features/auth/register/components/pending-review/pending-review.component';
 
 // Client Pages
 import { FindServicesComponent } from './features/pages/client/find-services/find-services.component';
@@ -27,6 +29,9 @@ import { ProJobsComponent } from './features/pages/pro/pro-jobs/pro-jobs.compone
 import { ProSettingsComponent } from './features/pages/pro/pro-settings/pro-settings.component';
 import { BookingComponent } from './features/pages/client/booking/booking.component';
 import { ProMessagesComponent } from './features/pages/pro/pro-messages/pro-messages.component';
+
+// Admin Pages
+import { AdminDashboardComponent } from './features/pages/admin/admin-dashboard/admin-dashboard.component'; // ← جديد
 
 export const routes: Routes = [
 
@@ -47,6 +52,11 @@ export const routes: Routes = [
     path: 'register',
     component: RegisterComponent,
     title: 'Sanaye3i — التسجيل',
+  },
+  {
+    path: 'pending-review',
+    component: PendingReviewComponent,
+    title: 'Sanaye3i — طلبك قيد المراجعة',
   },
   {
   path: 'messages/:otherId',
@@ -129,6 +139,19 @@ export const routes: Routes = [
   ],
 },
 
+  // ─── Admin Layout (محمية بـ authGuard + roleGuard('admin')) ← جديد ──
+  {
+    path: 'admin',
+    component: AdminLayoutComponent,
+    canActivate: [authGuard, roleGuard('admin')],
+    children: [
+      {
+        path: 'dashboard',
+        component: AdminDashboardComponent,
+        title: 'Sanaye3i — لوحة تحكم الأدمن',
+      },
+    ],
+  },
 
   {
     path: '**',

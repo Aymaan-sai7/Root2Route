@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable, switchMap } from 'rxjs';
 import { map } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -64,20 +64,36 @@ export class WorkersService {
     );
   }
 
+  /**
+   * رفع مستندات التحقق.
+   *
+   * token اختياري: لو اتبعت (زي docsUploadToken المؤقت اللي بيرجع من /auth/register
+   * وقت تسجيل صنايعي جديد)، بيتحط يدويًا كـ Authorization header هنا. الـ
+   * authInterceptor العام مش بيتدخل في الحالة دي لإنه بيشيك على auth.getToken()
+   * (اللي بيرجع null وقت التسجيل لسه لإن مفيش session)، فالهيدر اللي بنحطه
+   * إحنا يدويًا بيفضل زي ما هو من غير ما الـ interceptor يلغيه أو يستبدله.
+   *
+   * لو مفيش token اتبعت (الاستخدام العادي — رفع مستندات بعد ما المستخدم يكون
+   * مسجل دخول فعليًا)، بيمشي عادي والـ interceptor هو اللي بيحط الهيدر من الـ storage.
+   */
   uploadVerificationDocs(
-  workerId: string,
-  files: { idFront?: File; idBack?: File; certificate?: File }
-): Observable<Worker> {
-  const formData = new FormData();
-  if (files.idFront) formData.append('idFront', files.idFront);
-  if (files.idBack) formData.append('idBack', files.idBack);
-  if (files.certificate) formData.append('certificate', files.certificate);
+    workerId: string,
+    files: { idFront?: File; idBack?: File; certificate?: File },
+    token?: string
+  ): Observable<Worker> {
+    const formData = new FormData();
+    if (files.idFront) formData.append('idFront', files.idFront);
+    if (files.idBack) formData.append('idBack', files.idBack);
+    if (files.certificate) formData.append('certificate', files.certificate);
 
-  return this.http.post<Worker>(
-    `${environment.apiUrl}/workers/${workerId}/verification-docs`,
-    formData
-  );
-}
+    const headers = token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : undefined;
+
+    return this.http.post<Worker>(
+      `${environment.apiUrl}/workers/${workerId}/verification-docs`,
+      formData,
+      { headers }
+    );
+  }
 
   /** يزوّد عدد الطلبات المكتملة لصنايعي معين بـ 1 */
   incrementCompletedJobs(workerId: string): Observable<Worker> {

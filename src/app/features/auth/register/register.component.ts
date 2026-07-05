@@ -43,6 +43,9 @@ export class RegisterComponent implements OnInit {
     fullName:         ['', [Validators.required, Validators.minLength(3)]],
     email:            ['', [Validators.required, Validators.email]],
     password:         ['', [Validators.required, Validators.minLength(8)]],
+    // ⚠️ جديد: مطلوب لكل الأدوار — بيتفحص وقت التسجيل إنه مش مكرر (لأي role)
+    // عشان يمنع نفس الشخص يسجل كـ client وpro مع بعض
+    nationalId:       ['', [Validators.required, Validators.pattern(/^\d{14}$/)]],
     role:             ['', Validators.required],
     trade:            [''],
     hourlyRate:       [null],
@@ -63,7 +66,7 @@ export class RegisterComponent implements OnInit {
   private stepFields = computed<Partial<Record<number, string[]>>>(() => {
     if (this.roleValue() === 'pro') {
       return {
-        1: ['fullName', 'email', 'password'],
+        1: ['fullName', 'email', 'password', 'nationalId'],
         2: ['role'],
         3: ['trade', 'hourlyRate', 'yearsOfExperience', 'city'],
         4: ['idFront', 'idBack'],
@@ -71,7 +74,7 @@ export class RegisterComponent implements OnInit {
       };
     }
     return {
-      1: ['fullName', 'email', 'password'],
+      1: ['fullName', 'email', 'password', 'nationalId'],
       2: ['role'],
       3: [],
     };
@@ -135,32 +138,31 @@ export class RegisterComponent implements OnInit {
     } : undefined;
 
     this.auth.register(
-      { fullName: v.fullName, email: v.email, password: v.password, role },
+      { fullName: v.fullName, email: v.email, password: v.password, role, nationalId: v.nationalId },
       workerData
     ).subscribe({
-      next: ({ worker }) => {
+      next: (res) => {
         this.loading.set(false);
 
-        // لو صنايعي ومعاه ملفات هوية، ابعتهم دلوقتي — الـ worker.id والتوكن
-        // بقوا موجودين بعد نجاح التسجيل
-        if (role === 'pro' && worker && (v.idFront || v.idBack || v.certificate)) {
-          this.workers.uploadVerificationDocs(worker.id, {
-            idFront: v.idFront,
-            idBack: v.idBack,
-            certificate: v.certificate,
-          }).subscribe({
+        // لو صنايعي ومعاه ملفات هوية، ابعتهم دلوقتي باستخدام docsUploadToken —
+        // توكن مؤقت (15 دقيقة) غرضه الوحيد رفع المستندات دي، مش session، مش
+        // بيتحفظ في أي storage، وبيتستخدم مرة واحدة بس هنا
+        if (role === 'pro' && res.worker && res.docsUploadToken &&
+            (v.idFront || v.idBack || v.certificate)) {
+          this.workers.uploadVerificationDocs(
+            res.worker.id,
+            { idFront: v.idFront, idBack: v.idBack, certificate: v.certificate },
+            res.docsUploadToken
+          ).subscribe({
             error: () => {
               // فشل رفع الملفات مايوقفش التسجيل نفسه — الحساب اتعمل بنجاح بالفعل،
-              // ممكن يرفعهم تاني من صفحة الإعدادات بعدين
+              // ممكن يرفعهم تاني بعد ما يتوافق عليه ويسجل دخول
             },
           });
         }
 
-        if (role === 'pro') {
-          this.router.navigate(['/login']);
-        } else {
-          this.auth.redirectAfterLogin();
-        }
+        // الحساب pending دلوقتي — مفيش أي تسجيل دخول تلقائي، نوجهه لصفحة الانتظار
+        this.router.navigate(['/pending-review']);
       },
       error: (err: Error) => {
         this.loading.set(false);

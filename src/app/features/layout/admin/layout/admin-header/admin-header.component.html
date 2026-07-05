@@ -1,0 +1,11 @@
+<header class="admin-header">
+  <h1 class="admin-header-title">لوحة تحكم الأدمن</h1>
+
+  <div class="admin-header-user">
+    <div class="admin-header-avatar">{{ auth.currentUser()?.fullName?.charAt(0) ?? 'أ' }}</div>
+    <div>
+      <p class="admin-header-name">{{ auth.currentUser()?.fullName }}</p>
+      <p class="admin-header-role">أدمن</p>
+    </div>
+  </div>
+</header>
