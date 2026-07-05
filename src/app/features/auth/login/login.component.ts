@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ScrollRevealDirective } from '../../../shared/directive/scroll-reveal.directive';
 import { AuthService } from '../../../core/services/Auth.service';
 
@@ -12,8 +12,10 @@ import { AuthService } from '../../../core/services/Auth.service';
   styleUrl: './login.component.css',
 })
 export class LoginComponent {
-  private fb   = inject(FormBuilder);
-  private auth = inject(AuthService);
+  private fb     = inject(FormBuilder);
+  private auth   = inject(AuthService);
+  private route  = inject(ActivatedRoute);
+  private router = inject(Router);
 
   form: FormGroup = this.fb.group({
     email:        ['', [Validators.required, Validators.email]],
@@ -42,12 +44,21 @@ export class LoginComponent {
     this.loading.set(true);
     this.errorMessage.set(null);
 
-    const { email, password } = this.form.value;
+    const { email, password, keepSignedIn } = this.form.value;
 
-    this.auth.login(email, password).subscribe({
+    this.auth.login(email, password, keepSignedIn).subscribe({
       next: () => {
         this.loading.set(false);
-        this.auth.redirectAfterLogin();
+
+        // لو المستخدم كان جاي من رابط محدد (authGuard حفظها كـ returnUrl)،
+        // نرجّعه لنفس الصفحة دي بدل ما نوديه مكانه الافتراضي حسب الدور.
+        // roleGuard هيفضل يتأكد إن الصفحة دي فعلاً بتاعة دوره.
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+        if (returnUrl) {
+          this.router.navigateByUrl(returnUrl);
+        } else {
+          this.auth.redirectAfterLogin();
+        }
       },
       error: (err: Error) => {
         this.loading.set(false);
