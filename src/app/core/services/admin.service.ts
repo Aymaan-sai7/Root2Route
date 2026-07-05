@@ -1,8 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { User, UserRole, UserStatus } from '../models/user.model';
+import { Booking } from '../models/booking.model';
+import { Review } from '../models/review.model';
 
 export interface AdminStats {
   totalUsers: number;
@@ -52,5 +54,28 @@ export class AdminService {
   /** accept / reject / block / unblock */
   updateUserStatus(id: string, status: UserStatus): Observable<User> {
     return this.http.patch<User>(`${this.base}/users/${id}/status`, { status });
+  }
+
+  /**
+   * كل الحجوزات في المنصة — للرقابة (read-only حاليًا).
+   * ⚠️ ملاحظة: GET /bookings مش محمي بـ verifyAdmin على السيرفر حاليًا (endpoint عام
+   * أصلاً مستخدم من صفحات الـ client/pro)، فمفيش فرق أمني حقيقي هنا لسه، بس منطقيًا
+   * هي "بوابة الأدمن" للبيانات دي من ناحية الفرونت إند
+   */
+  getAllBookings(): Observable<Booking[]> {
+    return this.http.get<Booking[]>(`${environment.apiUrl}/bookings`).pipe(
+      map((list) =>
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      )
+    );
+  }
+
+  /** كل التقييمات في المنصة — لمراجعة/حذف أي تقييم مسيء (نفس ملاحظة الحجوزات فوق) */
+  getAllReviews(): Observable<Review[]> {
+    return this.http.get<Review[]>(`${environment.apiUrl}/reviews`).pipe(
+      map((list) =>
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      )
+    );
   }
 }

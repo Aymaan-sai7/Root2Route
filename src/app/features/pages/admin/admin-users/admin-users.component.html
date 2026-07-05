@@ -1,0 +1,83 @@
+<div class="au-page">
+
+  <div class="au-header">
+    <h2 class="au-title">المستخدمين</h2>
+    <p class="au-desc">كل الحسابات المسجلة في المنصة — عملاء وصنايعية وأدمن</p>
+  </div>
+
+  <div class="au-filters">
+    <select title="role" class="au-select" (change)="onRoleChange($event)">
+      <option value="">كل الأدوار</option>
+      <option value="client">عملاء</option>
+      <option value="pro">صنايعية</option>
+      <option value="admin">أدمن</option>
+    </select>
+
+    <select title="state" class="au-select" (change)="onStatusChange($event)">
+      <option value="">كل الحالات</option>
+      <option value="pending">قيد المراجعة</option>
+      <option value="active">نشط</option>
+      <option value="rejected">مرفوض</option>
+      <option value="blocked">محظور</option>
+    </select>
+
+    <div class="au-search">
+      <input
+        type="text"
+        placeholder="بحث بالاسم / الإيميل / الرقم القومي"
+        [value]="searchTerm()"
+        (input)="onSearchInput($event)"
+        (keydown.enter)="search()"
+      />
+      <button type="button" (click)="search()">بحث</button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="au-list">
+      @for (s of [1,2,3,4,5]; track s) {
+        <div class="au-skeleton"></div>
+      }
+    </div>
+  } @else if (users().length === 0) {
+    <p class="au-empty">مفيش نتائج مطابقة للفلاتر دي.</p>
+  } @else {
+    <div class="au-list">
+      @for (user of users(); track user.id) {
+        <div class="au-row">
+
+          <div class="au-avatar">{{ user.fullName.charAt(0) }}</div>
+
+          <div class="au-info">
+            <div class="au-info-top">
+              <p class="au-name">{{ user.fullName }}</p>
+              <span class="au-role-badge au-role-badge--{{ user.role }}">{{ roleLabel(user.role) }}</span>
+              <span class="au-status-badge au-status-badge--{{ user.status }}">{{ statusLabel(user.status) }}</span>
+            </div>
+            <p class="au-email">{{ user.email }}</p>
+            <p class="au-meta">{{ user.nationalId || '—' }} · سجّل {{ timeAgo(user.createdAt) }}</p>
+          </div>
+
+          <div class="au-actions">
+            @if (user.role === 'admin') {
+              <span class="au-admin-note">حساب أدمن</span>
+            } @else if (user.status === 'pending') {
+              <button class="au-btn au-btn--accept" [disabled]="processingId() === user.id" (click)="accept(user)">قبول</button>
+              <button class="au-btn au-btn--reject" [disabled]="processingId() === user.id" (click)="reject(user)">رفض</button>
+              <button class="au-btn au-btn--block" [disabled]="processingId() === user.id" (click)="block(user)">حظر</button>
+            } @else if (user.status === 'active') {
+              <button class="au-btn au-btn--block" [disabled]="processingId() === user.id" (click)="block(user)">حظر</button>
+            } @else if (user.status === 'blocked') {
+              <button class="au-btn au-btn--accept" [disabled]="processingId() === user.id" (click)="unblock(user)">إلغاء الحظر</button>
+            } @else if (user.status === 'rejected') {
+              <button class="au-btn au-btn--accept" [disabled]="processingId() === user.id" (click)="accept(user)">قبول</button>
+              <button class="au-btn au-btn--block" [disabled]="processingId() === user.id" (click)="block(user)">حظر</button>
+            }
+          </div>
+
+        </div>
+      }
+    </div>
+  }
+
+</div>

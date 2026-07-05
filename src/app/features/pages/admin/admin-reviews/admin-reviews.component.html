@@ -1,0 +1,62 @@
+<div class="arv-page">
+
+  <div class="arv-header">
+    <h2 class="arv-title">التقييمات</h2>
+    <p class="arv-desc">كل التقييمات في المنصة — لمراجعة وحذف أي تقييم مسيء</p>
+  </div>
+
+  @if (loading()) {
+    <div class="arv-list">
+      @for (s of [1,2,3,4]; track s) {
+        <div class="arv-skeleton"></div>
+      }
+    </div>
+  } @else if (reviews().length === 0) {
+    <p class="arv-empty">مفيش تقييمات لسه.</p>
+  } @else {
+    <div class="arv-list">
+      @for (r of reviews(); track r.id) {
+        <div class="arv-card">
+
+          <div class="arv-card-top">
+            <div class="arv-avatar">{{ r.clientName.charAt(0) }}</div>
+
+            <div class="arv-info">
+              <p class="arv-name">{{ r.clientName }}</p>
+              <div class="arv-stars">
+                @for (filled of stars(r.rating); track $index) {
+                  <svg width="13" height="13" viewBox="0 0 24 24" [attr.fill]="filled ? '#F97316' : 'none'" stroke="#F97316" stroke-width="1.5">
+                    <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                  </svg>
+                }
+              </div>
+            </div>
+
+            <span class="arv-date">{{ timeAgo(r.createdAt) }}</span>
+          </div>
+
+          @if (r.comment) {
+            <p class="arv-comment">{{ r.comment }}</p>
+          }
+
+          <div class="arv-actions">
+            <button
+              type="button"
+              class="arv-delete-btn"
+              [disabled]="deletingId() === r.id"
+              (click)="confirmDelete(r)"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+              حذف
+            </button>
+          </div>
+
+        </div>
+      }
+    </div>
+  }
+
+</div>

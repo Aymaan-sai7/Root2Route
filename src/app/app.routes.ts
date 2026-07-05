@@ -32,6 +32,10 @@ import { ProMessagesComponent } from './features/pages/pro/pro-messages/pro-mess
 
 // Admin Pages
 import { AdminDashboardComponent } from './features/pages/admin/admin-dashboard/admin-dashboard.component'; // ← جديد
+import { AdminRegistrationsComponent } from './features/pages/admin/admin-registrations/admin-registrations.component';
+import { AdminReviewsComponent } from './features/pages/admin/admin-reviews/admin-reviews.component';
+import { AdminBookingsComponent } from './features/pages/admin/admin-bookings/admin-bookings.component';
+import { AdminUsersComponent } from './features/pages/admin/admin-users/admin-users.component';
 
 export const routes: Routes = [
 
@@ -149,6 +153,26 @@ export const routes: Routes = [
         path: 'dashboard',
         component: AdminDashboardComponent,
         title: 'Sanaye3i — لوحة تحكم الأدمن',
+      },
+       {
+        path: 'registrations',
+        component: AdminRegistrationsComponent,
+        title: 'Sanaye3i — طلبات التسجيل',
+      },
+      {
+        path: 'users',
+        component: AdminUsersComponent,
+        title: 'Sanaye3i — إدارة المستخدمين',
+      },
+      {
+        path: 'bookings',
+        component: AdminBookingsComponent,
+        title: 'Sanaye3i — إدارة الحجوزات',
+      },
+      {
+        path: 'reviews',
+        component: AdminReviewsComponent,
+        title: 'Sanaye3i — إدارة التقييمات',
       },
     ],
   },

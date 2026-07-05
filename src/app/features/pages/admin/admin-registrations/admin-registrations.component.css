@@ -1,0 +1,219 @@
+.ar-page {
+  padding: 28px 24px;
+}
+
+.ar-header {
+  margin-bottom: 22px;
+}
+.ar-title {
+  font-family: var(--font-display, inherit);
+  font-size: 20px;
+  font-weight: 700;
+  color: #0F172A; /* ink */
+}
+.ar-desc {
+  font-size: 13px;
+  color: #64748B; /* steel */
+  margin-top: 4px;
+}
+
+.ar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ar-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 60px 20px;
+  color: #64748B;
+  text-align: center;
+}
+
+/* ===== Card ===== */
+.ar-card {
+  background: #fff;
+  border: 1px solid #E2E8F0; /* line */
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.ar-card-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.ar-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #2563EB; /* primary */
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.ar-info { flex: 1; min-width: 0; }
+
+.ar-info-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ar-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0F172A; /* ink */
+}
+.ar-role-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(37,99,235,0.1); /* primary */
+  color: #2563EB;
+}
+.ar-role-badge--pro {
+  background: rgba(249,115,22,0.1); /* accent */
+  color: #EA580C;
+}
+
+.ar-email {
+  font-size: 12.5px;
+  color: #64748B; /* steel */
+  margin-top: 2px;
+}
+
+.ar-meta, .ar-worker-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 11.5px;
+  color: #64748B;
+  margin-top: 6px;
+}
+.ar-worker-summary {
+  color: #0F172A;
+  font-weight: 500;
+}
+.ar-meta-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #CBD5E1;
+}
+
+.ar-expand-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2563EB; /* primary */
+  background: none;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 6px 4px;
+}
+.ar-expand-btn:hover { text-decoration: underline; }
+
+/* ===== Docs ===== */
+.ar-docs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed #E2E8F0;
+}
+.ar-doc-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-decoration: none;
+}
+.ar-doc-item img {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+}
+.ar-doc-item span {
+  font-size: 11px;
+  color: #64748B;
+  text-align: center;
+}
+.ar-no-docs {
+  font-size: 12.5px;
+  color: #64748B;
+}
+
+/* ===== Actions ===== */
+.ar-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #F7F9FC;
+}
+.ar-btn {
+  flex: 1;
+  padding: 9px 14px;
+  border-radius: 8px;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+.ar-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ar-btn--accept {
+  background: #16A34A; /* success */
+  color: #fff;
+}
+.ar-btn--accept:hover:not(:disabled) { background: #15803D; }
+
+.ar-btn--reject {
+  background: rgba(220,38,38,0.08); /* danger */
+  color: #DC2626;
+}
+.ar-btn--reject:hover:not(:disabled) { background: rgba(220,38,38,0.15); }
+
+.ar-btn--block {
+  background: #DC2626; /* danger */
+  color: #fff;
+}
+.ar-btn--block:hover:not(:disabled) { background: #B91C1C; }
+
+/* ===== Skeleton ===== */
+.ar-skeleton {
+  height: 140px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #E2E8F0 25%, #F7F9FC 37%, #E2E8F0 63%);
+  background-size: 400% 100%;
+  animation: ar-shimmer 1.6s ease-in-out infinite;
+}
+@keyframes ar-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ar-skeleton { animation: none; }
+}

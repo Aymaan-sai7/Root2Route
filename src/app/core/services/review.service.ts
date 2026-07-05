@@ -4,12 +4,12 @@ import { Observable, switchMap, map, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Review, CreateReviewDto } from '../models/review.model';
 import { Worker } from '../models/worker.model';
-import { NotificationsService } from './notification.service'; // ← جديد
+import { NotificationsService } from './notification.service';
 
 @Injectable({ providedIn: 'root' })
 export class ReviewsService {
   private http = inject(HttpClient);
-  private notificationsService = inject(NotificationsService); // ← جديد
+  private notificationsService = inject(NotificationsService);
   private reviewsBase = `${environment.apiUrl}/reviews`;
   private workersBase = `${environment.apiUrl}/workers`;
 
@@ -57,6 +57,13 @@ export class ReviewsService {
       switchMap((updated) =>
         this.recalculateWorkerRating(workerId).pipe(map(() => updated))
       )
+    );
+  }
+
+  adminDelete(reviewId: string, workerId: string): Observable<void> {
+    return this.http.delete<void>(`${this.reviewsBase}/${reviewId}`).pipe(
+      switchMap(() => this.recalculateWorkerRating(workerId)),
+      map(() => undefined)
     );
   }
 

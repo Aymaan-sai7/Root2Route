@@ -1,0 +1,55 @@
+<div class="ab-page">
+
+  <div class="ab-header">
+    <h2 class="ab-title">الحجوزات</h2>
+    <p class="ab-desc">كل الحجوزات في المنصة — رقابة (عرض بس دلوقتي)</p>
+  </div>
+
+  <div class="ab-filters">
+    <select title="status" class="ab-select" (change)="onStatusChange($event)">
+      <option value="">كل الحالات</option>
+      <option value="pending">قيد الانتظار</option>
+      <option value="active">جاري التنفيذ</option>
+      <option value="completed">مكتمل</option>
+      <option value="cancelled">ملغي</option>
+    </select>
+  </div>
+
+  @if (loading()) {
+    <div class="ab-list">
+      @for (s of [1,2,3,4]; track s) {
+        <div class="ab-skeleton"></div>
+      }
+    </div>
+  } @else if (filteredBookings().length === 0) {
+    <p class="ab-empty">مفيش حجوزات مطابقة.</p>
+  } @else {
+    <div class="ab-list">
+      @for (b of filteredBookings(); track b.id) {
+        <div class="ab-row">
+
+          <div class="ab-avatar" [style.background]="b.workerAvatarColor">
+            {{ b.workerName.charAt(0) }}
+          </div>
+
+          <div class="ab-info">
+            <p class="ab-desc-text">{{ b.description }}</p>
+            <p class="ab-meta">
+              <span>{{ b.clientName }}</span>
+              <span class="ab-dot"></span>
+              <span>{{ b.workerName }} · {{ b.workerTrade }}</span>
+              <span class="ab-dot"></span>
+              <span>{{ timeAgo(b.createdAt) }}</span>
+            </p>
+          </div>
+
+          <div class="ab-amount">{{ b.totalAmount }} ج.م</div>
+
+          <span class="ab-status ab-status--{{ b.status }}">{{ statusLabel(b.status) }}</span>
+
+        </div>
+      }
+    </div>
+  }
+
+</div>

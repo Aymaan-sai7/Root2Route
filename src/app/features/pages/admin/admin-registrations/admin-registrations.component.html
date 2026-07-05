@@ -1,0 +1,128 @@
+<div class="ar-page">
+
+  <div class="ar-header">
+    <h2 class="ar-title">طلبات التسجيل</h2>
+    <p class="ar-desc">الحسابات اللي لسه في انتظار موافقتك قبل ما تقدر تدخل المنصة</p>
+  </div>
+
+  @if (loading()) {
+    <div class="ar-list">
+      @for (s of [1,2,3]; track s) {
+        <div class="ar-skeleton"></div>
+      }
+    </div>
+  } @else if (rows().length === 0) {
+    <div class="ar-empty">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/>
+      </svg>
+      <p>مفيش طلبات قيد المراجعة دلوقتي</p>
+    </div>
+  } @else {
+    <div class="ar-list">
+      @for (row of rows(); track row.user.id) {
+        <div class="ar-card">
+
+          <div class="ar-card-main">
+            <div class="ar-avatar">{{ row.user.fullName.charAt(0) }}</div>
+
+            <div class="ar-info">
+              <div class="ar-info-top">
+                <p class="ar-name">{{ row.user.fullName }}</p>
+                <span class="ar-role-badge" [class.ar-role-badge--pro]="row.user.role === 'pro'">
+                  {{ row.user.role === 'pro' ? 'صنايعي' : 'عميل' }}
+                </span>
+              </div>
+              <p class="ar-email">{{ row.user.email }}</p>
+              <div class="ar-meta">
+                <span>الرقم القومي: {{ row.user.nationalId || '—' }}</span>
+                <span class="ar-meta-dot"></span>
+                <span>سجّل {{ timeAgo(row.user.createdAt) }}</span>
+              </div>
+
+              @if (row.worker) {
+                <div class="ar-worker-summary">
+                  <span>{{ row.worker.tradeLabel }}</span>
+                  <span class="ar-meta-dot"></span>
+                  <span>{{ row.worker.city }}</span>
+                  <span class="ar-meta-dot"></span>
+                  <span>{{ row.worker.hourlyRate }} ج.م/ساعة</span>
+                  <span class="ar-meta-dot"></span>
+                  <span>{{ row.worker.yearsOfExperience }} سنين خبرة</span>
+                </div>
+              }
+            </div>
+
+            @if (row.worker) {
+              <button type="button" class="ar-expand-btn" (click)="toggleExpand(row.user.id)">
+                {{ expandedId() === row.user.id ? 'إخفاء المستندات' : 'عرض مستندات التحقق' }}
+                <svg
+                  width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  [style.transform]="expandedId() === row.user.id ? 'rotate(180deg)' : 'rotate(0deg)'"
+                  style="transition: transform 0.2s ease;"
+                >
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </button>
+            }
+          </div>
+
+          @if (row.worker && expandedId() === row.user.id) {
+            <div class="ar-docs">
+              @if (row.worker.idFrontUrl) {
+                <a [href]="docUrl(row.worker.idFrontUrl)" target="_blank" rel="noopener" class="ar-doc-item">
+                  <img [src]="docUrl(row.worker.idFrontUrl)" alt="وش البطاقة" />
+                  <span>وش البطاقة</span>
+                </a>
+              }
+              @if (row.worker.idBackUrl) {
+                <a [href]="docUrl(row.worker.idBackUrl)" target="_blank" rel="noopener" class="ar-doc-item">
+                  <img [src]="docUrl(row.worker.idBackUrl)" alt="ظهر البطاقة" />
+                  <span>ظهر البطاقة</span>
+                </a>
+              }
+              @if (row.worker.certificateUrl) {
+                <a [href]="docUrl(row.worker.certificateUrl)" target="_blank" rel="noopener" class="ar-doc-item">
+                  <img [src]="docUrl(row.worker.certificateUrl)" alt="شهادة" />
+                  <span>شهادة/كرنيه</span>
+                </a>
+              }
+              @if (!row.worker.idFrontUrl && !row.worker.idBackUrl && !row.worker.certificateUrl) {
+                <p class="ar-no-docs">مفيش مستندات مرفوعة لسه.</p>
+              }
+            </div>
+          }
+
+          <div class="ar-actions">
+            <button
+              type="button"
+              class="ar-btn ar-btn--accept"
+              [disabled]="processingId() === row.user.id"
+              (click)="accept(row.user.id)"
+            >
+              قبول
+            </button>
+            <button
+              type="button"
+              class="ar-btn ar-btn--reject"
+              [disabled]="processingId() === row.user.id"
+              (click)="reject(row.user.id)"
+            >
+              رفض
+            </button>
+            <button
+              type="button"
+              class="ar-btn ar-btn--block"
+              [disabled]="processingId() === row.user.id"
+              (click)="block(row.user.id)"
+            >
+              حظر
+            </button>
+          </div>
+
+        </div>
+      }
+    </div>
+  }
+
+</div>

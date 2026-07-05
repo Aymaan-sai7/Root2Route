@@ -1,0 +1,110 @@
+.arv-page { padding: 28px 24px; }
+
+.arv-header { margin-bottom: 20px; }
+.arv-title {
+  font-family: var(--font-display, inherit);
+  font-size: 20px;
+  font-weight: 700;
+  color: #0F172A;
+}
+.arv-desc {
+  font-size: 13px;
+  color: #64748B;
+  margin-top: 4px;
+}
+
+.arv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.arv-empty {
+  text-align: center;
+  padding: 50px 20px;
+  color: #64748B;
+  font-size: 13px;
+}
+
+.arv-card {
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.arv-card-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.arv-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #2563EB; /* primary */
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.arv-info { flex: 1; min-width: 0; }
+.arv-name { font-size: 13px; font-weight: 700; color: #0F172A; }
+.arv-stars { display: flex; gap: 2px; margin-top: 3px; }
+
+.arv-date {
+  font-size: 11px;
+  color: #94A3B8;
+  flex-shrink: 0;
+}
+
+.arv-comment {
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.6;
+  margin-top: 10px;
+}
+
+.arv-actions {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #E2E8F0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.arv-delete-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 13px;
+  border-radius: 7px;
+  border: none;
+  background: rgba(220,38,38,0.08); /* danger */
+  color: #DC2626;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.arv-delete-btn:hover:not(:disabled) { background: rgba(220,38,38,0.15); }
+.arv-delete-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.arv-skeleton {
+  height: 96px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #E2E8F0 25%, #F7F9FC 37%, #E2E8F0 63%);
+  background-size: 400% 100%;
+  animation: arv-shimmer 1.6s ease-in-out infinite;
+}
+@keyframes arv-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arv-skeleton { animation: none; }
+}
