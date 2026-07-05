@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { NgApexchartsModule, ChartComponent, ApexAxisChartSeries, ApexChart, ApexXAxis, ApexNonAxisChartSeries } from 'ng-apexcharts';
+import { NgApexchartsModule, ChartComponent, ApexAxisChartSeries, ApexChart, ApexXAxis, ApexNonAxisChartSeries, ApexResponsive } from 'ng-apexcharts';
 import { BookingsService } from '../../../../core/services/bookings.service';
 import { AuthService } from '../../../../core/services/Auth.service';
 import { WorkersService } from '../../../../core/services/workers.service';
@@ -51,13 +51,37 @@ export class ProDashboardComponent implements OnInit {
 
   // ===== Bar Chart: أرباح آخر 7 أيام =====
   earningsChartSeries: ApexAxisChartSeries = [];
-  earningsChartOptions: Partial<{ chart: ApexChart; xaxis: ApexXAxis; colors: string[]; dataLabels: any; plotOptions: any; grid: any }> = {
+  earningsChartOptions: Partial<{
+    chart: ApexChart;
+    xaxis: ApexXAxis;
+    colors: string[];
+    dataLabels: any;
+    plotOptions: any;
+    grid: any;
+    responsive: ApexResponsive[];
+  }> = {
     chart: { type: 'bar', height: 260, toolbar: { show: false }, fontFamily: 'Inter, IBM Plex Sans Arabic, sans-serif' },
     colors: ['#2563EB'],
     dataLabels: { enabled: false },
     plotOptions: { bar: { borderRadius: 6, columnWidth: '45%' } },
     grid: { borderColor: '#E2E8F0', strokeDashArray: 4 },
-    xaxis: { categories: [] },
+    xaxis: {
+      categories: [],
+      labels: { style: { fontSize: '12px' } },
+    },
+    // ⚠️ ده اللي بيحل مشكلة تراكب أيام الأسبوع على الموبايل — لما عرض
+    // الشاشة يبقى أقل من 640px، بنصغّر الخط ونقلل مساحة الأعمدة عشان
+    // الليبلز الطويلة (زي "الأربعاء") تاخد مساحة أقل ومتتلخبطش فوق بعض
+    responsive: [
+      {
+        breakpoint: 640,
+        options: {
+          chart: { height: 220 },
+          xaxis: { labels: { style: { fontSize: '9px' }, rotate: -45, rotateAlways: true } },
+          plotOptions: { bar: { columnWidth: '60%' } },
+        },
+      },
+    ],
   };
 
   // ===== Donut Chart: توزيع الحالات =====
@@ -69,6 +93,15 @@ export class ProDashboardComponent implements OnInit {
     legend: { position: 'bottom', fontSize: '12px' },
     dataLabels: { enabled: false },
     stroke: { width: 0 },
+    responsive: [
+      {
+        breakpoint: 640,
+        options: {
+          chart: { height: 220 },
+          legend: { fontSize: '11px' },
+        },
+      },
+    ],
   };
 
   ngOnInit(): void {
@@ -101,7 +134,9 @@ export class ProDashboardComponent implements OnInit {
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
-      const label = d.toLocaleDateString('ar-EG', { weekday: 'short' });
+      // ⚠️ اختصرنا اسم اليوم لحرفين بس (زي "سبت"، "أحد") بدل الاسم كامل
+      // عشان ياخد مساحة أقل أفقيًا ويقلل احتمال التراكب من الأساس
+      const label = d.toLocaleDateString('ar-EG', { weekday: 'short' }).slice(0, 3);
       const dayStr = d.toDateString();
 
       const total = jobs
@@ -114,7 +149,10 @@ export class ProDashboardComponent implements OnInit {
     this.earningsChartSeries = [{ name: 'الأرباح', data: days.map((d) => d.total) }];
     this.earningsChartOptions = {
       ...this.earningsChartOptions,
-      xaxis: { categories: days.map((d) => d.label) },
+      xaxis: {
+        ...this.earningsChartOptions.xaxis,
+        categories: days.map((d) => d.label),
+      },
     };
   }
 

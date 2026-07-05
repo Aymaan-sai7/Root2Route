@@ -82,6 +82,7 @@
           [dataLabels]="earningsChartOptions.dataLabels"
           [plotOptions]="earningsChartOptions.plotOptions"
           [grid]="earningsChartOptions.grid"
+          [responsive]="earningsChartOptions.responsive!"
         ></apx-chart>
       </div>
 
@@ -96,6 +97,7 @@
             [legend]="statusChartOptions.legend"
             [dataLabels]="statusChartOptions.dataLabels"
             [stroke]="statusChartOptions.stroke"
+            [responsive]="statusChartOptions.responsive"
           ></apx-chart>
         } @else {
           <p class="pd-chart-empty">مفيش بيانات كفاية لعرض الرسم</p>
