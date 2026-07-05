@@ -11,7 +11,9 @@
         <div class="ad-skeleton"></div>
       }
     </div>
-  } @else if (stats(); as s) {
+  }
+  @else {
+  @if (stats(); as s) {
     <div class="ad-cards-grid">
 
       <div class="ad-card">
@@ -51,5 +53,6 @@
 
     </div>
   }
+}
 
 </div>

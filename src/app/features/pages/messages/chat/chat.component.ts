@@ -110,6 +110,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     const user = this.currentUser();
     if (!text || !conv || !user || this.isSending()) return;
 
+    if (user.role !== 'client' && user.role !== 'pro') {
+  return;
+}
+
     this.isSending.set(true);
 
     this.messagesService.sendMessage({
