@@ -90,6 +90,36 @@ export class AuthService {
       );
   }
 
+  // ── Forgot / Reset Password ─────────────────────────────────
+  // ⚠️ الرد من السيرفر عام دايمًا (نفس الرسالة سواء الإيميل موجود ولا لأ)،
+  // عشان محدش يقدر يتأكد مين مسجل عندنا من غيره
+  forgotPassword(email: string): Observable<{ message: string }> {
+    return this.http
+      .post<{ message: string }>(`${environment.apiUrl}/auth/forgot-password`, { email })
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          const msg = err.error?.message ?? 'حصل خطأ، حاول تاني.';
+          return throwError(() => new Error(msg));
+        })
+      );
+  }
+
+  // token و email جايين من الـ query params في اللينك اللي وصل بالإيميل
+  resetPassword(email: string, token: string, newPassword: string): Observable<{ message: string }> {
+    return this.http
+      .post<{ message: string }>(`${environment.apiUrl}/auth/reset-password`, {
+        email,
+        token,
+        newPassword,
+      })
+      .pipe(
+        catchError((err: HttpErrorResponse) => {
+          const msg = err.error?.message ?? 'حصل خطأ، حاول تاني.';
+          return throwError(() => new Error(msg));
+        })
+      );
+  }
+
   // ── Logout ───────────────────────────────────────────────────
   logout(): void {
     this.currentUserSignal.set(null);

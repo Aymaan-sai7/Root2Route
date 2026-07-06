@@ -12,9 +12,9 @@
 .pro-sidebar {
   position: fixed;
   top: 0;
-  left: 0;
+  right: 0;
   width: 240px;
-  height: 100vh;
+  height: 100dvh;
   background: #0F172A; /* ink */
   display: flex;
   flex-direction: column;

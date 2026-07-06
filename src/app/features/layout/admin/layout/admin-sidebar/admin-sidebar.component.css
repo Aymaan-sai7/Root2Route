@@ -1,12 +1,18 @@
 .admin-sidebar {
-  background: #0F172A; /* ink */
+  position: fixed;
+  top: 0;
+  inset-inline-start: 0;
+
+  width: 240px;
+  height: 100dvh;
+
+  background: #0F172A;
   display: flex;
   flex-direction: column;
+
   padding: 24px 16px;
-  position: sticky;
-  top: 0;
-  height: 100vh;
   overflow-y: auto;
+  z-index: 40;
 }
 
 .admin-sidebar-logo {
