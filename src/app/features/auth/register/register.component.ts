@@ -233,16 +233,15 @@ export class RegisterComponent implements OnInit {
       } else {
         control?.clearValidators();
       }
-      control?.updateValueAndValidity();
+      control?.updateValueAndValidity({ emitEvent: false }); // ← ضيف { emitEvent: false } هنا
     });
 
-    // ⚠️ جديد: customTrade مطلوب بس لو pro واختار "other"
     const customTradeCtrl = this.form.get('customTrade');
     if (isPro && trade === 'other') {
       customTradeCtrl?.setValidators([Validators.required, Validators.minLength(2)]);
     } else {
       customTradeCtrl?.clearValidators();
     }
-    customTradeCtrl?.updateValueAndValidity();
-  }
+    customTradeCtrl?.updateValueAndValidity({ emitEvent: false }); // ← وهنا برضو
+}
 }
