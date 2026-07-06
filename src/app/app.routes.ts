@@ -36,6 +36,8 @@ import { AdminRegistrationsComponent } from './features/pages/admin/admin-regist
 import { AdminReviewsComponent } from './features/pages/admin/admin-reviews/admin-reviews.component';
 import { AdminBookingsComponent } from './features/pages/admin/admin-bookings/admin-bookings.component';
 import { AdminUsersComponent } from './features/pages/admin/admin-users/admin-users.component';
+import { ForgotPasswordComponent } from './features/auth/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './features/auth/reset-password/reset-password.component';
 
 export const routes: Routes = [
 
@@ -57,6 +59,16 @@ export const routes: Routes = [
     component: RegisterComponent,
     title: 'Sanaye3i — التسجيل',
   },
+  {
+  path: 'forgot-password',
+    component: ForgotPasswordComponent,
+    title: 'Sanaye3i — نسيت كلمة المرور',
+},
+{
+  path: 'reset-password',
+  component: ResetPasswordComponent,
+    title: 'Sanaye3i — إعادة تعيين كلمة المرور',
+},
   {
     path: 'pending-review',
     component: PendingReviewComponent,
