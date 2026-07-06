@@ -13,11 +13,43 @@
     <h1 class="admin-header-title">لوحة تحكم الأدمن</h1>
   </div>
 
-  <div class="admin-header-user">
-    <div class="admin-header-avatar">{{ auth.currentUser()?.fullName?.charAt(0) ?? 'أ' }}</div>
-    <div class="admin-header-user-text">
-      <p class="admin-header-name">{{ auth.currentUser()?.fullName }}</p>
-      <p class="admin-header-role">أدمن</p>
-    </div>
+  <div class="admin-header-user-wrap">
+    <button
+      type="button"
+      class="admin-header-user"
+      [class.admin-header-user--open]="dropdownOpen()"
+      (click)="toggleDropdown()"
+    >
+      <div class="admin-header-avatar">{{ auth.currentUser()?.fullName?.charAt(0) ?? 'أ' }}</div>
+      <div class="admin-header-user-text">
+        <p class="admin-header-name">{{ auth.currentUser()?.fullName }}</p>
+        <p class="admin-header-role">أدمن</p>
+      </div>
+      <svg
+        class="admin-header-chevron"
+        [class.admin-header-chevron--open]="dropdownOpen()"
+        width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"
+      >
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </button>
+
+    @if (dropdownOpen()) {
+      <div class="admin-header-dropdown">
+        <div class="admin-header-dropdown-info">
+          <p class="admin-header-dropdown-name">{{ auth.currentUser()?.fullName }}</p>
+          <p class="admin-header-dropdown-email">{{ auth.currentUser()?.email }}</p>
+        </div>
+        <div class="admin-header-dropdown-divider"></div>
+        <button type="button" class="admin-header-dropdown-item" (click)="logout()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          تسجيل خروج
+        </button>
+      </div>
+    }
   </div>
 </header>
