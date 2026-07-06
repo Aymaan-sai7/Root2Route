@@ -108,3 +108,8 @@
 @media (prefers-reduced-motion: reduce) {
   .arv-skeleton { animation: none; }
 }
+
+@media (max-width: 640px) {
+  .arv-page { padding: 16px 14px; }
+  .arv-card { padding: 13px; }
+}

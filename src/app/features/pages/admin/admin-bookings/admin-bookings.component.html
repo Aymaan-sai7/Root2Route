@@ -1,31 +1,31 @@
 <div class="ab-page">
+
   <div class="ab-header">
     <h2 class="ab-title">الحجوزات</h2>
-    <p class="ab-desc">كل الحجوزات في المنصة — رقابة (عرض بس دلوقتي)</p>
+    <p class="ab-desc">كل الحجوزات في المنصة — رقابة وإحصائيات</p>
   </div>
 
-  @if (!loading()) {
-    <!-- Stat Cards -->
-    <div class="ab-stats-grid">
-      <div class="ab-stat-card">
-        <span class="ab-stat-value">{{ bookings().length }}</span>
-        <span class="ab-stat-label">إجمالي الحجوزات</span>
-      </div>
-      <div class="ab-stat-card ab-stat-card--success">
-        <span class="ab-stat-value">{{ totalRevenue() }} ج.م</span>
-        <span class="ab-stat-label">إجمالي الإيرادات</span>
-      </div>
-      <div class="ab-stat-card">
-        <span class="ab-stat-value">{{ avgBookingValue() }} ج.م</span>
-        <span class="ab-stat-label">متوسط قيمة الحجز</span>
-      </div>
-      <div class="ab-stat-card ab-stat-card--primary">
-        <span class="ab-stat-value">{{ activeCount() }}</span>
-        <span class="ab-stat-label">جاري التنفيذ دلوقتي</span>
-      </div>
+  <!-- ===== إحصائيات سريعة ===== -->
+  <div class="ab-stats-grid">
+    <div class="ab-stat-card">
+      <span class="ab-stat-label">إجمالي الإيرادات</span>
+      <span class="ab-stat-value">{{ totalRevenue() }} ج.م</span>
     </div>
-  }
+    <div class="ab-stat-card">
+      <span class="ab-stat-label">متوسط قيمة الحجز</span>
+      <span class="ab-stat-value">{{ avgBookingValue() }} ج.م</span>
+    </div>
+    <div class="ab-stat-card">
+      <span class="ab-stat-label">حجوزات مكتملة</span>
+      <span class="ab-stat-value">{{ completedCount() }}</span>
+    </div>
+    <div class="ab-stat-card">
+      <span class="ab-stat-label">جاري تنفيذها</span>
+      <span class="ab-stat-value">{{ activeCount() }}</span>
+    </div>
+  </div>
 
+  <!-- ===== فلاتر ===== -->
   <div class="ab-filters">
     <app-admin-select
       [options]="statusOptions"
@@ -39,7 +39,7 @@
       </svg>
       <input
         type="text"
-        placeholder="بحث بالعميل / الصنايعي / وصف الشغل"
+        placeholder="بحث بالعميل / الصنايعي / الوصف"
         [value]="searchTerm()"
         (input)="onSearchInput($event)"
       />
@@ -57,10 +57,13 @@
   } @else {
     <div class="ab-list">
       @for (b of filteredBookings(); track b.id) {
-        <div class="ab-card" [class.ab-card--open]="expandedId() === b.id">
+        <div class="ab-card">
 
-          <div class="ab-row" (click)="toggleExpand(b)">
-            <div class="ab-avatar" [style.background]="b.workerAvatarColor">{{ b.workerName.charAt(0) }}</div>
+          <button type="button" class="ab-row" (click)="toggleExpand(b)">
+            <div class="ab-avatar" [style.background]="b.workerAvatarColor">
+              {{ b.workerName.charAt(0) }}
+            </div>
+
             <div class="ab-info">
               <p class="ab-desc-text">{{ b.description }}</p>
               <p class="ab-meta">
@@ -71,30 +74,46 @@
                 <span>{{ timeAgo(b.createdAt) }}</span>
               </p>
             </div>
-            <div class="ab-amount">{{ b.totalAmount }} ج.م</div>
-            <span class="ab-status ab-status--{{ b.status }}">{{ statusLabel(b.status) }}</span>
-            <svg class="ab-chevron" [class.ab-chevron--open]="expandedId() === b.id" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round">
+
+            <div class="ab-side">
+              <span class="ab-amount">{{ b.totalAmount }} ج.م</span>
+              <span class="ab-status ab-status--{{ b.status }}">{{ statusLabel(b.status) }}</span>
+            </div>
+
+            <svg
+              class="ab-chevron"
+              [class.ab-chevron--open]="expandedId() === b.id"
+              width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            >
               <polyline points="6 9 12 15 18 9"/>
             </svg>
-          </div>
+          </button>
 
           @if (expandedId() === b.id) {
-            <div class="ab-details">
-              <div class="ab-details-grid">
-                <div class="ab-detail-item"><span class="ab-detail-label">العميل</span><span class="ab-detail-value">{{ b.clientName }}</span></div>
-                <div class="ab-detail-item"><span class="ab-detail-label">الصنايعي</span><span class="ab-detail-value">{{ b.workerName }} ({{ b.workerTrade }})</span></div>
-                <div class="ab-detail-item"><span class="ab-detail-label">عدد الساعات</span><span class="ab-detail-value">{{ b.estimatedHours }} ساعة</span></div>
-                <div class="ab-detail-item"><span class="ab-detail-label">موعد الحجز</span><span class="ab-detail-value">{{ b.scheduledAt | date: 'd MMM y - h:mm a' }}</span></div>
-                <div class="ab-detail-item"><span class="ab-detail-label">المنطقة</span><span class="ab-detail-value">{{ b.address?.area }} — {{ b.address?.street }}</span></div>
-                <div class="ab-detail-item"><span class="ab-detail-label">رقم المبنى</span><span class="ab-detail-value">{{ b.address?.buildingNumber || '—' }}</span></div>
+            <div class="ab-expanded">
+              <div class="ab-expanded-item">
+                <span class="ab-expanded-label">الموعد</span>
+                <span class="ab-expanded-value">{{ b.scheduledAt | date:'d/M/yyyy - h:mm a' }}</span>
               </div>
-              @if (b.address?.notes) {
-                <p class="ab-notes"><strong>ملاحظات العميل:</strong> {{ b.address?.notes }}</p>
-              }
+              <div class="ab-expanded-item">
+                <span class="ab-expanded-label">عدد الساعات</span>
+                <span class="ab-expanded-value">{{ b.estimatedHours }} ساعة</span>
+              </div>
+              <div class="ab-expanded-item ab-expanded-item--full">
+                <span class="ab-expanded-label">العنوان</span>
+                <span class="ab-expanded-value">
+                  {{ b.address.area }}، {{ b.address.street }}، مبنى {{ b.address.buildingNumber }}
+                  @if (b.address.notes) {
+                    — {{ b.address.notes }}
+                  }
+                </span>
+              </div>
             </div>
           }
+
         </div>
       }
     </div>
   }
+
 </div>

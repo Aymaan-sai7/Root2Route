@@ -1,9 +1,21 @@
 <header class="admin-header">
-  <h1 class="admin-header-title">لوحة تحكم الأدمن</h1>
+  <div class="admin-header-start">
+    <button
+      type="button"
+      class="admin-header-menu-btn"
+      [class.admin-header-menu-btn--open]="adminUi.mobileNavOpen()"
+      (click)="adminUi.toggle()"
+      aria-label="القائمة"
+    >
+      <span class="admin-menu-bar admin-menu-bar--top"></span>
+      <span class="admin-menu-bar admin-menu-bar--bottom"></span>
+    </button>
+    <h1 class="admin-header-title">لوحة تحكم الأدمن</h1>
+  </div>
 
   <div class="admin-header-user">
     <div class="admin-header-avatar">{{ auth.currentUser()?.fullName?.charAt(0) ?? 'أ' }}</div>
-    <div>
+    <div class="admin-header-user-text">
       <p class="admin-header-name">{{ auth.currentUser()?.fullName }}</p>
       <p class="admin-header-role">أدمن</p>
     </div>

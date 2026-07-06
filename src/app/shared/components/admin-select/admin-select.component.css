@@ -1,8 +1,8 @@
 .asel-wrap {
   position: relative;
-  min-width: 170px;
+  min-width: 0;
+  width: 100%;
 }
-
 .asel-trigger {
   display: flex;
   align-items: center;
@@ -26,20 +26,17 @@
   border-color: #2563EB; /* primary */
   box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
 }
-
 .asel-trigger-label {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 .asel-chevron {
   color: #94A3B8; /* steel.light */
   flex-shrink: 0;
   transition: transform 0.2s ease;
 }
 .asel-chevron--open { transform: rotate(180deg); color: #2563EB; }
-
 .asel-panel {
   position: absolute;
   top: calc(100% + 6px);
@@ -59,7 +56,6 @@
   from { opacity: 0; transform: translateY(-4px) scale(0.98); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
-
 .asel-option {
   display: flex;
   align-items: center;
@@ -87,9 +83,23 @@
   font-weight: 600;
 }
 .asel-option--active svg { color: #2563EB; flex-shrink: 0; }
-
 .asel-panel::-webkit-scrollbar { width: 5px; }
 .asel-panel::-webkit-scrollbar-thumb { background: rgba(37,99,235,0.15); border-radius: 999px; }
+
+/* ===== Mobile: أهداف لمس أكبر ===== */
+@media (max-width: 480px) {
+  .asel-trigger {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+  .asel-option {
+    padding: 12px 10px;
+    font-size: 14px;
+  }
+  .asel-panel {
+    max-height: 45vh;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .asel-panel { animation: none; }

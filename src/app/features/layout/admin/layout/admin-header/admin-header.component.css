@@ -2,44 +2,119 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
+  gap: 10px;
+  padding: 14px 20px;
   border-bottom: 1px solid #E2E8F0; /* line */
   background: #FFFFFF; /* surface */
+  position: sticky;
+  top: 0;
+  z-index: 60;
+}
+
+.admin-header-start {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
 }
 
 .admin-header-title {
   font-size: 18px;
   font-weight: 700;
   color: #0F172A; /* ink */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
+
+/* ===== Mobile menu button — مخفي دائمًا على الديسكتوب ===== */
+.admin-header-menu-btn {
+  display: none;
+  position: relative;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+  background: #fff;
+  cursor: pointer;
+}
+.admin-menu-bar {
+  position: absolute;
+  width: 16px;
+  height: 2px;
+  border-radius: 2px;
+  background: #0F172A;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.admin-menu-bar--top { transform: translateY(-3px); }
+.admin-menu-bar--bottom { transform: translateY(3px); }
+.admin-header-menu-btn--open .admin-menu-bar--top { transform: translateY(0) rotate(45deg); }
+.admin-header-menu-btn--open .admin-menu-bar--bottom { transform: translateY(0) rotate(-45deg); }
 
 .admin-header-user {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .admin-header-avatar {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: #2563EB; /* primary */
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   flex-shrink: 0;
 }
 
+.admin-header-user-text {
+  min-width: 0;
+}
 .admin-header-name {
   font-size: 13px;
   font-weight: 600;
-  color: #0F172A; /* ink */
+  color: #0F172A;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
 .admin-header-role {
   font-size: 11px;
-  color: #64748B; /* steel */
+  color: #64748B;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 860px) {
+  .admin-header-menu-btn {
+    display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-header {
+    padding: 12px 14px;
+  }
+  .admin-header-title {
+    font-size: 15px;
+  }
+  /* على الشاشات الصغيرة جدًا، الاسم بس مهم، النص الفرعي مش لازم ياخد مساحة */
+  .admin-header-role {
+    display: none;
+  }
+  .admin-header-name {
+    max-width: 90px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-menu-bar { transition: none; }
 }

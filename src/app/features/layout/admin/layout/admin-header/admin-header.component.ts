@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../../../../core/services/Auth.service';
+import { AdminUiService } from '../../../../../core/services/admin ui.service';
 
 @Component({
   selector: 'app-admin-header',
@@ -10,4 +11,5 @@ import { AuthService } from '../../../../../core/services/Auth.service';
 })
 export class AdminHeaderComponent {
   auth = inject(AuthService);
+  adminUi = inject(AdminUiService);
 }

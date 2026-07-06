@@ -217,3 +217,16 @@
 @media (prefers-reduced-motion: reduce) {
   .ar-skeleton { animation: none; }
 }
+
+@media (max-width: 640px) {
+  .ar-page { padding: 16px 14px; }
+
+  .ar-card { padding: 14px; }
+  .ar-card-main { flex-wrap: wrap; }
+  .ar-expand-btn { flex-basis: 100%; justify-content: flex-start; margin-top: 8px; }
+
+  .ar-doc-item img { width: 100px; height: 68px; }
+
+  .ar-actions { flex-wrap: wrap; }
+  .ar-btn { min-width: calc(50% - 4px); flex: 1 1 calc(50% - 4px); }
+}

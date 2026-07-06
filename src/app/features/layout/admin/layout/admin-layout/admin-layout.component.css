@@ -5,10 +5,13 @@
   background: #F7F9FC; /* surface-alt */
 }
 @media (max-width: 860px) {
-  .admin-layout { grid-template-columns: 1fr; }
+  .admin-layout {
+    grid-template-columns: 1fr; /* السايدبار بقى fixed overlay، مش عمود جوه الـ grid */
+  }
 }
 
 .admin-content {
   min-height: 100vh;
   overflow-y: auto;
+  min-width: 0; /* يمنع overflow أفقي لو محتوى جوه الصفحة (زي جداول) أعرض من المساحة */
 }
