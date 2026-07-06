@@ -1,0 +1,97 @@
+.asel-wrap {
+  position: relative;
+  min-width: 170px;
+}
+
+.asel-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #E2E8F0; /* line */
+  background: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0F172A; /* ink */
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.asel-trigger:hover {
+  border-color: rgba(37,99,235,0.35); /* primary */
+}
+.asel-trigger--open {
+  border-color: #2563EB; /* primary */
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+
+.asel-trigger-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.asel-chevron {
+  color: #94A3B8; /* steel.light */
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+.asel-chevron--open { transform: rotate(180deg); color: #2563EB; }
+
+.asel-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  inset-inline-start: 0;
+  min-width: 100%;
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  box-shadow: 0 10px 32px rgba(15,23,42,0.14);
+  padding: 6px;
+  z-index: 50;
+  max-height: 260px;
+  overflow-y: auto;
+  animation: asel-in 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes asel-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.asel-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  color: #334155;
+  text-align: right;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.asel-option:hover {
+  background: rgba(37,99,235,0.06); /* primary */
+  color: #2563EB;
+}
+.asel-option--active {
+  background: rgba(37,99,235,0.08);
+  color: #2563EB;
+  font-weight: 600;
+}
+.asel-option--active svg { color: #2563EB; flex-shrink: 0; }
+
+.asel-panel::-webkit-scrollbar { width: 5px; }
+.asel-panel::-webkit-scrollbar-thumb { background: rgba(37,99,235,0.15); border-radius: 999px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .asel-panel { animation: none; }
+  .asel-chevron, .asel-trigger, .asel-option { transition: none; }
+}

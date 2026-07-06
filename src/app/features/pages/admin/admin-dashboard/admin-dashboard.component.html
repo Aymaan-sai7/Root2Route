@@ -11,48 +11,197 @@
         <div class="ad-skeleton"></div>
       }
     </div>
-  }
-  @else {
-  @if (stats(); as s) {
+  } @else if (stats(); as s) {
+
+    <!-- Stat Cards -->
     <div class="ad-cards-grid">
-
       <div class="ad-card">
-        <span class="ad-card-label">إجمالي المستخدمين</span>
-        <span class="ad-card-value">{{ s.totalUsers }}</span>
+        <div class="ad-card-icon ad-card-icon--primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div>
+          <span class="ad-card-value">{{ s.totalUsers }}</span>
+          <span class="ad-card-label">إجمالي المستخدمين</span>
+        </div>
       </div>
 
       <div class="ad-card">
-        <span class="ad-card-label">العملاء</span>
-        <span class="ad-card-value">{{ s.totalClients }}</span>
+        <div class="ad-card-icon ad-card-icon--primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="8" r="4"/><path d="M6 21v-2a6 6 0 0 1 12 0v2"/>
+          </svg>
+        </div>
+        <div>
+          <span class="ad-card-value">{{ s.totalClients }}</span>
+          <span class="ad-card-label">العملاء</span>
+        </div>
       </div>
 
       <div class="ad-card">
-        <span class="ad-card-label">الصنايعية</span>
-        <span class="ad-card-value">{{ s.totalPros }}</span>
+        <div class="ad-card-icon ad-card-icon--accent">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+          </svg>
+        </div>
+        <div>
+          <span class="ad-card-value">{{ s.totalPros }}</span>
+          <span class="ad-card-label">الصنايعية</span>
+        </div>
       </div>
 
       <div class="ad-card ad-card--highlight">
-        <span class="ad-card-label">طلبات قيد المراجعة</span>
-        <span class="ad-card-value">{{ s.pendingApprovals }}</span>
+        <div class="ad-card-icon ad-card-icon--highlight">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div>
+          <span class="ad-card-value">{{ s.pendingApprovals }}</span>
+          <span class="ad-card-label">طلبات قيد المراجعة</span>
+        </div>
+        <a routerLink="/admin/registrations" class="ad-card-cta">راجعهم →</a>
       </div>
 
       <div class="ad-card ad-card--danger">
-        <span class="ad-card-label">حسابات محظورة</span>
-        <span class="ad-card-value">{{ s.blockedUsers }}</span>
+        <div class="ad-card-icon ad-card-icon--danger">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="10"/><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"/>
+          </svg>
+        </div>
+        <div>
+          <span class="ad-card-value">{{ s.blockedUsers }}</span>
+          <span class="ad-card-label">حسابات محظورة</span>
+        </div>
       </div>
 
       <div class="ad-card">
-        <span class="ad-card-label">إجمالي الحجوزات</span>
-        <span class="ad-card-value">{{ s.totalBookings }}</span>
+        <div class="ad-card-icon ad-card-icon--success">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+          </svg>
+        </div>
+        <div>
+          <span class="ad-card-value">{{ s.totalBookings }}</span>
+          <span class="ad-card-label">إجمالي الحجوزات</span>
+        </div>
       </div>
 
       <div class="ad-card">
-        <span class="ad-card-label">إجمالي التقييمات</span>
-        <span class="ad-card-value">{{ s.totalReviews }}</span>
+        <div class="ad-card-icon ad-card-icon--warning">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#F97316">
+            <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+          </svg>
+        </div>
+        <div>
+          <span class="ad-card-value">{{ s.totalReviews }}</span>
+          <span class="ad-card-label">إجمالي التقييمات</span>
+        </div>
       </div>
-
     </div>
-  }
-}
 
+    <!-- Charts -->
+    <div class="ad-charts-grid">
+      <div class="ad-chart-card">
+        <h3 class="ad-chart-title">تسجيلات جديدة (آخر 7 أيام)</h3>
+        <apx-chart
+          [series]="registrationsSeries"
+          [chart]="registrationsOptions.chart!"
+          [xaxis]="registrationsOptions.xaxis!"
+          [colors]="registrationsOptions.colors!"
+          [dataLabels]="registrationsOptions.dataLabels"
+          [plotOptions]="registrationsOptions.plotOptions"
+          [grid]="registrationsOptions.grid"
+          [responsive]="registrationsOptions.responsive!"
+        ></apx-chart>
+      </div>
+
+      <div class="ad-chart-card">
+        <h3 class="ad-chart-title">المستخدمين حسب الدور</h3>
+        <apx-chart
+          [series]="rolesSeries"
+          [chart]="rolesOptions.chart"
+          [labels]="rolesOptions.labels"
+          [colors]="rolesOptions.colors"
+          [legend]="rolesOptions.legend"
+          [dataLabels]="rolesOptions.dataLabels"
+          [stroke]="rolesOptions.stroke"
+        ></apx-chart>
+      </div>
+
+      <div class="ad-chart-card">
+        <h3 class="ad-chart-title">الحسابات حسب الحالة</h3>
+        <apx-chart
+          [series]="statusSeries"
+          [chart]="statusOptions.chart"
+          [labels]="statusOptions.labels"
+          [colors]="statusOptions.colors"
+          [legend]="statusOptions.legend"
+          [dataLabels]="statusOptions.dataLabels"
+          [stroke]="statusOptions.stroke"
+        ></apx-chart>
+      </div>
+
+      <div class="ad-chart-card">
+        <h3 class="ad-chart-title">الحجوزات حسب الحالة</h3>
+        <apx-chart
+          [series]="bookingsSeries"
+          [chart]="bookingsOptions.chart"
+          [plotOptions]="bookingsOptions.plotOptions"
+          [colors]="bookingsOptions.colors"
+          [dataLabels]="bookingsOptions.dataLabels"
+          [grid]="bookingsOptions.grid"
+          [xaxis]="bookingsOptions.xaxis"
+          [legend]="bookingsOptions.legend"
+        ></apx-chart>
+      </div>
+    </div>
+
+    <!-- Recent Registrations -->
+    <div class="ad-recent">
+      <div class="ad-recent-header">
+        <h3 class="ad-chart-title">آخر التسجيلات</h3>
+        <a routerLink="/admin/users" class="ad-recent-link">عرض الكل →</a>
+      </div>
+
+      @if (recentUsers().length === 0) {
+        <p class="ad-empty">مفيش تسجيلات لسه.</p>
+      } @else {
+        <div class="ad-table-wrap">
+          <table class="ad-table">
+            <thead>
+              <tr>
+                <th>المستخدم</th>
+                <th>الدور</th>
+                <th>الحالة</th>
+                <th>تاريخ التسجيل</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (u of recentUsers(); track u.id) {
+                <tr>
+                  <td>
+                    <div class="ad-table-user">
+                      <div class="ad-table-avatar" [style.background]="getAvatarColor(u.fullName)">
+                        {{ u.fullName.charAt(0) }}
+                      </div>
+                      <div>
+                        <p class="ad-table-name">{{ u.fullName }}</p>
+                        <p class="ad-table-email">{{ u.email }}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span class="ad-role-badge ad-role-badge--{{ u.role }}">{{ roleLabel(u.role) }}</span></td>
+                  <td><span class="ad-status-badge ad-status-badge--{{ u.status ?? 'active' }}">{{ statusLabel(u.status) }}</span></td>
+                  <td class="ad-table-time">{{ timeAgo(u.createdAt) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+
+  }
 </div>
