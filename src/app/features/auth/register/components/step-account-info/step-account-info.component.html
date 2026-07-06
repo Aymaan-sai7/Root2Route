@@ -55,7 +55,23 @@
     }
   </div>
 
-  <!-- الرقم القومي ← جديد -->
+  <!-- رقم الموبايل ← جديد -->
+  <div>
+    <label class="mb-1.5 block text-sm font-medium text-ink">رقم الموبايل</label>
+    <input
+      type="tel"
+      formControlName="mobileNumber"
+      placeholder="01xxxxxxxxx"
+      inputmode="numeric"
+      maxlength="11"
+      class="w-full rounded-sm border border-line-strong bg-paper px-3.5 py-2.5 text-sm text-ink placeholder:text-steel focus:border-blueprint focus:outline-none"
+    />
+    @if (form().get('mobileNumber')?.invalid && form().get('mobileNumber')?.touched) {
+      <p class="mt-1 text-xs text-danger">رقم موبايل مصري صحيح مطلوب (11 رقم يبدأ بـ 010/011/012/015).</p>
+    }
+  </div>
+
+  <!-- الرقم القومي -->
   <div>
     <label class="mb-1.5 block text-sm font-medium text-ink">الرقم القومي</label>
     <input

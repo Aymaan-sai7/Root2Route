@@ -24,6 +24,7 @@ export interface RegisterPayload {
   password: string;
   role: UserRole;
   nationalId: string;
+  mobileNumber: string; // ⚠️ جديد
 }
 
 // ⚠️ التسجيل مبقاش بيرجع session token خالص — الحساب بيتعمل بـ status: 'pending' ولازم

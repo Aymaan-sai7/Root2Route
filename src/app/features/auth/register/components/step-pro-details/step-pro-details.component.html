@@ -4,20 +4,32 @@
 
   <div>
     <label class="mb-1.5 block text-sm font-medium text-ink">التخصص</label>
-    <select
-    title="select"
-      formControlName="trade"
-      class="w-full rounded-sm border border-line-strong bg-paper px-3.5 py-2.5 text-sm text-ink focus:border-blueprint focus:outline-none"
-    >
-      <option value="" disabled selected>اختار تخصصك</option>
-      @for (trade of trades; track trade.value) {
-        <option [value]="trade.value">{{ trade.label }}</option>
-      }
-    </select>
+    <app-admin-select
+      [options]="trades"
+      [value]="form().get('trade')?.value ?? ''"
+      placeholder="اختار تخصصك"
+      (valueChange)="onTradeChange($event)"
+    />
     @if (form().get('trade')?.invalid && form().get('trade')?.touched) {
       <p class="mt-1 text-xs text-danger">لازم تختار تخصص.</p>
     }
   </div>
+
+  <!-- يظهر بس لو اختار "تخصص تاني / مش موجود" -->
+  @if (isOtherTrade()) {
+    <div>
+      <label class="mb-1.5 block text-sm font-medium text-ink">اكتب اسم التخصص</label>
+      <input
+        type="text"
+        formControlName="customTrade"
+        placeholder="مثلاً: تركيب مطابخ"
+        class="w-full rounded-sm border border-line-strong bg-paper px-3.5 py-2.5 text-sm text-ink placeholder:text-steel focus:border-blueprint focus:outline-none"
+      />
+      @if (form().get('customTrade')?.invalid && form().get('customTrade')?.touched) {
+        <p class="mt-1 text-xs text-danger">اكتب اسم التخصص (حرفين على الأقل).</p>
+      }
+    </div>
+  }
 
   <div class="grid grid-cols-2 gap-4">
     <div>

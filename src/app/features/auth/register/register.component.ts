@@ -43,11 +43,15 @@ export class RegisterComponent implements OnInit {
     fullName:         ['', [Validators.required, Validators.minLength(3)]],
     email:            ['', [Validators.required, Validators.email]],
     password:         ['', [Validators.required, Validators.minLength(8)]],
-    // ⚠️ جديد: مطلوب لكل الأدوار — بيتفحص وقت التسجيل إنه مش مكرر (لأي role)
+    // ⚠️ جديد: رقم موبايل مصري (01 + 0/1/2/5 + 8 أرقام = 11 رقم بالظبط)
+    mobileNumber:     ['', [Validators.required, Validators.pattern(/^01[0125]\d{8}$/)]],
+    // ⚠️ مطلوب لكل الأدوار — بيتفحص وقت التسجيل إنه مش مكرر (لأي role)
     // عشان يمنع نفس الشخص يسجل كـ client وpro مع بعض
     nationalId:       ['', [Validators.required, Validators.pattern(/^\d{14}$/)]],
     role:             ['', Validators.required],
     trade:            [''],
+    // ⚠️ جديد: يتفعّل بس لو اختار "other" في التخصص
+    customTrade:      [''],
     hourlyRate:       [null],
     yearsOfExperience:[null],
     city:             [''],
@@ -66,7 +70,7 @@ export class RegisterComponent implements OnInit {
   private stepFields = computed<Partial<Record<number, string[]>>>(() => {
     if (this.roleValue() === 'pro') {
       return {
-        1: ['fullName', 'email', 'password', 'nationalId'],
+        1: ['fullName', 'email', 'password', 'mobileNumber', 'nationalId'],
         2: ['role'],
         3: ['trade', 'hourlyRate', 'yearsOfExperience', 'city'],
         4: ['idFront', 'idBack'],
@@ -74,7 +78,7 @@ export class RegisterComponent implements OnInit {
       };
     }
     return {
-      1: ['fullName', 'email', 'password', 'nationalId'],
+      1: ['fullName', 'email', 'password', 'mobileNumber', 'nationalId'],
       2: ['role'],
       3: [],
     };
@@ -86,6 +90,10 @@ export class RegisterComponent implements OnInit {
       this.form.get('role')?.setValue(roleFromUrl);
     }
     this.syncProValidators();
+
+    // ⚠️ جديد: أي تغيير في التخصص يعيد ضبط فاليديشن customTrade فورًا
+    // (عشان لو اختار "أخرى" يبقى الحقل مطلوب على طول من غير ما ينتقل خطوة)
+    this.form.get('trade')?.valueChanges.subscribe(() => this.syncProValidators());
   }
 
   goNext(): void {
@@ -121,6 +129,7 @@ export class RegisterComponent implements OnInit {
 
     const v    = this.form.value;
     const role = v.role as 'client' | 'pro';
+    const isOtherTrade = v.trade === 'other';
 
     // بيانات بروفايل الصنايعي (لو pro) بتتبعت في نفس طلب التسجيل —
     // السيرفر بيكتب الـ user والـ worker مع بعض في عملية واحدة (atomic)،
@@ -128,7 +137,8 @@ export class RegisterComponent implements OnInit {
     const workerData = role === 'pro' ? {
       fullName:          v.fullName,
       trade:             v.trade,
-      tradeLabel:        this.getTradeLabel(v.trade),
+      // ⚠️ لو "أخرى" استخدم النص اللي كتبه بدل الماب الثابت
+      tradeLabel:        isOtherTrade ? v.customTrade : this.getTradeLabel(v.trade),
       city:              v.city,
       hourlyRate:        Number(v.hourlyRate),
       yearsOfExperience: Number(v.yearsOfExperience),
@@ -138,7 +148,14 @@ export class RegisterComponent implements OnInit {
     } : undefined;
 
     this.auth.register(
-      { fullName: v.fullName, email: v.email, password: v.password, role, nationalId: v.nationalId },
+      {
+        fullName: v.fullName,
+        email: v.email,
+        password: v.password,
+        mobileNumber: v.mobileNumber,
+        role,
+        nationalId: v.nationalId,
+      },
       workerData
     ).subscribe({
       next: (res) => {
@@ -201,6 +218,7 @@ export class RegisterComponent implements OnInit {
 
   private syncProValidators(): void {
     const isPro = this.form.get('role')?.value === 'pro';
+    const trade = this.form.get('trade')?.value;
 
     const fields = ['trade', 'hourlyRate', 'yearsOfExperience', 'city', 'idFront', 'idBack'];
 
@@ -217,5 +235,14 @@ export class RegisterComponent implements OnInit {
       }
       control?.updateValueAndValidity();
     });
+
+    // ⚠️ جديد: customTrade مطلوب بس لو pro واختار "other"
+    const customTradeCtrl = this.form.get('customTrade');
+    if (isPro && trade === 'other') {
+      customTradeCtrl?.setValidators([Validators.required, Validators.minLength(2)]);
+    } else {
+      customTradeCtrl?.clearValidators();
+    }
+    customTradeCtrl?.updateValueAndValidity();
   }
 }
