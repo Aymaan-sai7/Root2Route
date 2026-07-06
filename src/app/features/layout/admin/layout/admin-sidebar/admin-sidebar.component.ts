@@ -1,8 +1,9 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AdminService } from '../../../../../core/services/admin.service';
 import { AuthService } from '../../../../../core/services/Auth.service';
 import { AdminUiService } from '../../../../../core/services/admin ui.service';
+import { AdminSocketService } from '../../../../../core/services/admin-socket.service';
 
 @Component({
   selector: 'app-admin-sidebar',
@@ -11,20 +12,25 @@ import { AdminUiService } from '../../../../../core/services/admin ui.service';
   templateUrl: './admin-sidebar.component.html',
   styleUrl: './admin-sidebar.component.css',
 })
-export class AdminSidebarComponent implements OnInit {
+export class AdminSidebarComponent implements OnInit, OnDestroy {
   private adminService = inject(AdminService);
   private auth = inject(AuthService);
+  private adminSocket = inject(AdminSocketService);
   adminUi = inject(AdminUiService);
 
-  pendingApprovals = signal(0);
+  pendingApprovals = this.adminService.pendingApprovals;
 
   ngOnInit(): void {
-    this.adminService.getStats().subscribe({
-      next: (stats) => this.pendingApprovals.set(stats.pendingApprovals),
-    });
+    // أول تحميل: نجيب الرقم الحالي مرة واحدة (fallback لحد ما الـ socket يبدأ يبعت)
+    this.adminService.refreshPendingApprovals();
+    // بعد كده الرقم بيتحدث لايف عن طريق الـ WebSocket من غير أي polling أو refresh
+    this.adminSocket.connect();
   }
 
-  /** بيتنادى من كل رابط في الدرج — يقفل الدرج بعد أي اختيار على الموبايل */
+  ngOnDestroy(): void {
+    this.adminSocket.disconnect();
+  }
+
   onNavigate(): void {
     this.adminUi.close();
   }

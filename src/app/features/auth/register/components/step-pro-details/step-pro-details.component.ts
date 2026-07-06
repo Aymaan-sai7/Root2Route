@@ -1,7 +1,6 @@
-import { Component, input, computed } from '@angular/core';
+import { Component, input, computed, signal, OnInit } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AdminSelectComponent, AdminSelectOption } from '../../../../../shared/components/admin-select/admin-select.component';
-// ⚠️ عدّل عدد الـ ../ لو مسار register مختلف عندك بالنسبة لـ shared/admin-select
 
 @Component({
   selector: 'app-step-pro-details',
@@ -10,7 +9,7 @@ import { AdminSelectComponent, AdminSelectOption } from '../../../../../shared/c
   templateUrl: './step-pro-details.component.html',
   styleUrl: './step-pro-details.component.css'
 })
-export class StepProDetailsComponent {
+export class StepProDetailsComponent implements OnInit {
   form = input.required<FormGroup>();
 
   trades: AdminSelectOption[] = [
@@ -22,8 +21,17 @@ export class StepProDetailsComponent {
     { value: 'other', label: 'تخصص تاني / مش موجود' },
   ];
 
-  // ⚠️ جديد: يظهر حقل كتابة التخصص لو اختار "other"
-  isOtherTrade = computed(() => this.form().get('trade')?.value === 'other');
+  // ⚠️ الفيكس: signal عادي بنحدّثه يدويًا بدل toSignal في تعريف الحقل
+  // (لأن form() مش متاحة وقت field initializers، لازم نستناها لحد ngOnInit)
+  private tradeValue = signal<string>('');
+
+  isOtherTrade = computed(() => this.tradeValue() === 'other');
+
+  ngOnInit(): void {
+    const control = this.form().get('trade');
+    this.tradeValue.set(control?.value ?? '');
+    control?.valueChanges.subscribe((val) => this.tradeValue.set(val));
+  }
 
   onTradeChange(val: string): void {
     const control = this.form().get('trade');

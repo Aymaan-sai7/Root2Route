@@ -106,6 +106,8 @@ export class AdminRegistrationsComponent implements OnInit {
       next: () => {
         // الحساب مبقاش pending، يتشال من القايمة فورًا
         this.rows.update((list) => list.filter((r) => r.user.id !== userId));
+        // ⚠️ جديد: ننقص الرقم في الصايدبار فورًا من غير ما نعمل request تاني لـ getStats()
+        this.adminService.decrementPendingApprovals();
         this.processingId.set(null);
       },
       error: () => this.processingId.set(null),

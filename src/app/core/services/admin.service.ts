@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -32,9 +32,29 @@ export class AdminService {
   private http = inject(HttpClient);
   private base = `${environment.apiUrl}/admin`;
 
+  // ⚠️ جديد: مصدر واحد للحقيقة لعدد الطلبات المعلّقة، بيتشارك بين الصايدبار
+  // وصفحة admin-registrations من غير ما محدش يحتاج يعمل refresh يدوي أو
+  // request جديد لـ getStats() كل مرة يتغيّر فيها الرقم
+  pendingApprovals = signal(0);
+
   /** إحصائيات عامة للداشبورد */
   getStats(): Observable<AdminStats> {
     return this.http.get<AdminStats>(`${this.base}/stats`);
+  }
+
+  /**
+   * بينادي getStats() ويحدّث pendingApprovals تلقائيًا.
+   * يستخدم في أول تحميل للصايدبار (fallback) وفي admin-dashboard لو محتاج.
+   */
+  refreshPendingApprovals(): void {
+    this.getStats().subscribe({
+      next: (stats) => this.pendingApprovals.set(stats.pendingApprovals),
+    });
+  }
+
+  /** بينقص الرقم بواحد فورًا (بعد قبول/رفض/حظر) من غير أي request إضافي للسيرفر */
+  decrementPendingApprovals(): void {
+    this.pendingApprovals.update((n) => Math.max(0, n - 1));
   }
 
   /** كل المستخدمين مع فلاتر اختيارية (role, status, search) */
@@ -78,4 +98,9 @@ export class AdminService {
       )
     );
   }
+
+  // ⚠️ جديد: بتتحدث من الـ WebSocket — رقم حقيقي جاي من السيرفر مباشرة
+setPendingApprovals(count: number): void {
+  this.pendingApprovals.set(count);
+}
 }
