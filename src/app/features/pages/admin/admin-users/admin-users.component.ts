@@ -1,13 +1,17 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import Swal from 'sweetalert2';
 import { AdminService } from '../../../../core/services/admin.service';
 import { User, UserRole, UserStatus } from '../../../../core/models/user.model';
+import { Worker } from '../../../../core/models/worker.model';
 import { timeAgo } from '../../../../core/utils/time.util';
+import { generateAvatarColor } from '../../../../core/utils/color.util';
+import { AdminSelectComponent, AdminSelectOption } from '../../../../shared/components/admin-select/admin-select.component';
 
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [],
+  imports: [AdminSelectComponent, DatePipe],
   templateUrl: './admin-users.component.html',
   styleUrl: './admin-users.component.css',
 })
@@ -21,6 +25,24 @@ export class AdminUsersComponent implements OnInit {
   roleFilter = signal<UserRole | ''>('');
   statusFilter = signal<UserStatus | ''>('');
   searchTerm = signal('');
+
+  // ── توسيع الصف لعرض التفاصيل ──────────────────────────────
+  expandedId = signal<string | null>(null);
+  loadingDetail = signal<string | null>(null);
+  workerDetails = signal<Record<string, Worker | null>>({});
+
+  roleOptions: AdminSelectOption[] = [
+    { value: 'client', label: 'عملاء' },
+    { value: 'pro', label: 'صنايعية' },
+    { value: 'admin', label: 'أدمن' },
+  ];
+
+  statusOptions: AdminSelectOption[] = [
+    { value: 'pending', label: 'قيد المراجعة' },
+    { value: 'active', label: 'نشط' },
+    { value: 'rejected', label: 'مرفوض' },
+    { value: 'blocked', label: 'محظور' },
+  ];
 
   ngOnInit(): void {
     this.load();
@@ -43,13 +65,13 @@ export class AdminUsersComponent implements OnInit {
       });
   }
 
-  onRoleChange(event: Event): void {
-    this.roleFilter.set((event.target as HTMLSelectElement).value as UserRole | '');
+  onRoleChange(value: string): void {
+    this.roleFilter.set(value as UserRole | '');
     this.load();
   }
 
-  onStatusChange(event: Event): void {
-    this.statusFilter.set((event.target as HTMLSelectElement).value as UserStatus | '');
+  onStatusChange(value: string): void {
+    this.statusFilter.set(value as UserStatus | '');
     this.load();
   }
 
@@ -61,34 +83,58 @@ export class AdminUsersComponent implements OnInit {
     this.load();
   }
 
+  // ── توسيع/قفل صف مستخدم ────────────────────────────────────
+  toggleExpand(user: User): void {
+    if (this.expandedId() === user.id) {
+      this.expandedId.set(null);
+      return;
+    }
+    this.expandedId.set(user.id);
+
+    // لو صنايعي ومفيش تفاصيله متجابة قبل كده، اجيبها دلوقتي بس
+    if (user.role === 'pro' && !(user.id in this.workerDetails())) {
+      this.loadingDetail.set(user.id);
+      this.adminService.getUserDetail(user.id).subscribe({
+        next: (detail) => {
+          this.workerDetails.update((map) => ({ ...map, [user.id]: detail.worker }));
+          this.loadingDetail.set(null);
+        },
+        error: () => this.loadingDetail.set(null),
+      });
+    }
+  }
+
+  workerFor(userId: string): Worker | null | undefined {
+    return this.workerDetails()[userId];
+  }
+
+  getAvatarColor(name: string): string {
+    return generateAvatarColor(name);
+  }
+
   timeAgo(date: string): string {
     return timeAgo(date);
   }
 
   statusLabel(status: UserStatus): string {
     const map: Record<UserStatus, string> = {
-      pending: 'قيد المراجعة',
-      active: 'نشط',
-      rejected: 'مرفوض',
-      blocked: 'محظور',
+      pending: 'قيد المراجعة', active: 'نشط', rejected: 'مرفوض', blocked: 'محظور',
     };
     return map[status];
   }
 
   roleLabel(role: UserRole): string {
-    const map: Record<UserRole, string> = {
-      client: 'عميل',
-      pro: 'صنايعي',
-      admin: 'أدمن',
-    };
+    const map: Record<UserRole, string> = { client: 'عميل', pro: 'صنايعي', admin: 'أدمن' };
     return map[role];
   }
 
-  accept(user: User): void {
+  accept(user: User, event?: Event): void {
+    event?.stopPropagation();
     this.updateStatus(user.id, 'active');
   }
 
-  reject(user: User): void {
+  reject(user: User, event?: Event): void {
+    event?.stopPropagation();
     Swal.fire({
       title: `رفض ${user.fullName}؟`,
       icon: 'warning',
@@ -101,7 +147,8 @@ export class AdminUsersComponent implements OnInit {
     });
   }
 
-  block(user: User): void {
+  block(user: User, event?: Event): void {
+    event?.stopPropagation();
     Swal.fire({
       title: `حظر ${user.fullName}؟`,
       text: 'مش هيقدر يسجل دخول خالص لحد ما تلغي الحظر.',
@@ -115,7 +162,8 @@ export class AdminUsersComponent implements OnInit {
     });
   }
 
-  unblock(user: User): void {
+  unblock(user: User, event?: Event): void {
+    event?.stopPropagation();
     this.updateStatus(user.id, 'active');
   }
 

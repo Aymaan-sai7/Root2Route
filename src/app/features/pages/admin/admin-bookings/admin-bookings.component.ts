@@ -1,12 +1,14 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { AdminService } from '../../../../core/services/admin.service';
 import { Booking, BookingStatus } from '../../../../core/models/booking.model';
 import { timeAgo } from '../../../../core/utils/time.util';
+import { AdminSelectComponent, AdminSelectOption } from '../../../../shared/components/admin-select/admin-select.component';
 
 @Component({
   selector: 'app-admin-bookings',
   standalone: true,
-  imports: [],
+  imports: [DatePipe, AdminSelectComponent],
   templateUrl: './admin-bookings.component.html',
   styleUrl: './admin-bookings.component.css',
 })
@@ -16,12 +18,47 @@ export class AdminBookingsComponent implements OnInit {
   bookings = signal<Booking[]>([]);
   loading = signal(true);
   statusFilter = signal<BookingStatus | ''>('');
+  searchTerm = signal('');
+  expandedId = signal<string | null>(null);
+
+  statusOptions: AdminSelectOption[] = [
+    { value: 'pending', label: 'قيد الانتظار' },
+    { value: 'active', label: 'جاري التنفيذ' },
+    { value: 'completed', label: 'مكتمل' },
+    { value: 'cancelled', label: 'ملغي' },
+  ];
 
   filteredBookings = computed(() => {
-    const filter = this.statusFilter();
-    const list = this.bookings();
-    return filter ? list.filter((b) => b.status === filter) : list;
+    const status = this.statusFilter();
+    const q = this.searchTerm().trim().toLowerCase();
+    let list = this.bookings();
+    if (status) list = list.filter((b) => b.status === status);
+    if (q) {
+      list = list.filter(
+        (b) =>
+          b.clientName?.toLowerCase().includes(q) ||
+          b.workerName?.toLowerCase().includes(q) ||
+          b.description?.toLowerCase().includes(q)
+      );
+    }
+    return [...list].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   });
+
+  // ===== إحصائيات سريعة محسوبة من كل الحجوزات (بدون تأثر بالفلاتر) =====
+  totalRevenue = computed(() =>
+    this.bookings()
+      .filter((b) => b.status === 'completed')
+      .reduce((sum, b) => sum + b.totalAmount, 0)
+  );
+
+  avgBookingValue = computed(() => {
+    const completed = this.bookings().filter((b) => b.status === 'completed');
+    if (completed.length === 0) return 0;
+    return Math.round(this.totalRevenue() / completed.length);
+  });
+
+  completedCount = computed(() => this.bookings().filter((b) => b.status === 'completed').length);
+  activeCount = computed(() => this.bookings().filter((b) => b.status === 'active').length);
 
   ngOnInit(): void {
     this.adminService.getAllBookings().subscribe({
@@ -33,8 +70,16 @@ export class AdminBookingsComponent implements OnInit {
     });
   }
 
-  onStatusChange(event: Event): void {
-    this.statusFilter.set((event.target as HTMLSelectElement).value as BookingStatus | '');
+  onStatusChange(value: string): void {
+    this.statusFilter.set(value as BookingStatus | '');
+  }
+
+  onSearchInput(event: Event): void {
+    this.searchTerm.set((event.target as HTMLInputElement).value);
+  }
+
+  toggleExpand(booking: Booking): void {
+    this.expandedId.set(this.expandedId() === booking.id ? null : booking.id);
   }
 
   timeAgo(date: string): string {

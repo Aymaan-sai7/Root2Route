@@ -1,27 +1,26 @@
 <div class="au-page">
-
   <div class="au-header">
     <h2 class="au-title">المستخدمين</h2>
     <p class="au-desc">كل الحسابات المسجلة في المنصة — عملاء وصنايعية وأدمن</p>
   </div>
 
   <div class="au-filters">
-    <select title="role" class="au-select" (change)="onRoleChange($event)">
-      <option value="">كل الأدوار</option>
-      <option value="client">عملاء</option>
-      <option value="pro">صنايعية</option>
-      <option value="admin">أدمن</option>
-    </select>
-
-    <select title="state" class="au-select" (change)="onStatusChange($event)">
-      <option value="">كل الحالات</option>
-      <option value="pending">قيد المراجعة</option>
-      <option value="active">نشط</option>
-      <option value="rejected">مرفوض</option>
-      <option value="blocked">محظور</option>
-    </select>
-
+    <app-admin-select
+      [options]="roleOptions"
+      [value]="roleFilter()"
+      placeholder="كل الأدوار"
+      (valueChange)="onRoleChange($event)"
+    />
+    <app-admin-select
+      [options]="statusOptions"
+      [value]="statusFilter()"
+      placeholder="كل الحالات"
+      (valueChange)="onStatusChange($event)"
+    />
     <div class="au-search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="au-search-icon">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
       <input
         type="text"
         placeholder="بحث بالاسم / الإيميل / الرقم القومي"
@@ -44,40 +43,114 @@
   } @else {
     <div class="au-list">
       @for (user of users(); track user.id) {
-        <div class="au-row">
+        <div class="au-card" [class.au-card--open]="expandedId() === user.id">
 
-          <div class="au-avatar">{{ user.fullName.charAt(0) }}</div>
-
-          <div class="au-info">
-            <div class="au-info-top">
-              <p class="au-name">{{ user.fullName }}</p>
-              <span class="au-role-badge au-role-badge--{{ user.role }}">{{ roleLabel(user.role) }}</span>
-              <span class="au-status-badge au-status-badge--{{ user.status }}">{{ statusLabel(user.status) }}</span>
+          <!-- Row -->
+          <div class="au-row" (click)="toggleExpand(user)">
+            <div class="au-avatar" [style.background]="getAvatarColor(user.fullName)">{{ user.fullName.charAt(0) }}</div>
+            <div class="au-info">
+              <div class="au-info-top">
+                <p class="au-name">{{ user.fullName }}</p>
+                <span class="au-role-badge au-role-badge--{{ user.role }}">{{ roleLabel(user.role) }}</span>
+                <span class="au-status-badge au-status-badge--{{ user.status ?? 'active' }}">{{ statusLabel(user.status ?? 'active') }}</span>
+              </div>
+              <p class="au-email">{{ user.email }}</p>
             </div>
-            <p class="au-email">{{ user.email }}</p>
-            <p class="au-meta">{{ user.nationalId || '—' }} · سجّل {{ timeAgo(user.createdAt) }}</p>
+            <p class="au-time">{{ timeAgo(user.createdAt) }}</p>
+
+            <div class="au-actions" (click)="$event.stopPropagation()">
+              @if (user.role === 'admin') {
+                <span class="au-admin-note">حساب أدمن</span>
+              } @else if (user.status === 'pending') {
+                <button class="au-btn au-btn--accept" [disabled]="processingId() === user.id" (click)="accept(user, $event)">قبول</button>
+                <button class="au-btn au-btn--reject" [disabled]="processingId() === user.id" (click)="reject(user, $event)">رفض</button>
+                <button class="au-btn au-btn--block" [disabled]="processingId() === user.id" (click)="block(user, $event)">حظر</button>
+              } @else if ((user.status ?? 'active') === 'active') {
+                <button class="au-btn au-btn--block" [disabled]="processingId() === user.id" (click)="block(user, $event)">حظر</button>
+              } @else if (user.status === 'blocked') {
+                <button class="au-btn au-btn--accept" [disabled]="processingId() === user.id" (click)="unblock(user, $event)">إلغاء الحظر</button>
+              } @else if (user.status === 'rejected') {
+                <button class="au-btn au-btn--accept" [disabled]="processingId() === user.id" (click)="accept(user, $event)">قبول</button>
+                <button class="au-btn au-btn--block" [disabled]="processingId() === user.id" (click)="block(user, $event)">حظر</button>
+              }
+            </div>
+
+            <svg class="au-chevron" [class.au-chevron--open]="expandedId() === user.id" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
           </div>
 
-          <div class="au-actions">
-            @if (user.role === 'admin') {
-              <span class="au-admin-note">حساب أدمن</span>
-            } @else if (user.status === 'pending') {
-              <button class="au-btn au-btn--accept" [disabled]="processingId() === user.id" (click)="accept(user)">قبول</button>
-              <button class="au-btn au-btn--reject" [disabled]="processingId() === user.id" (click)="reject(user)">رفض</button>
-              <button class="au-btn au-btn--block" [disabled]="processingId() === user.id" (click)="block(user)">حظر</button>
-            } @else if (user.status === 'active') {
-              <button class="au-btn au-btn--block" [disabled]="processingId() === user.id" (click)="block(user)">حظر</button>
-            } @else if (user.status === 'blocked') {
-              <button class="au-btn au-btn--accept" [disabled]="processingId() === user.id" (click)="unblock(user)">إلغاء الحظر</button>
-            } @else if (user.status === 'rejected') {
-              <button class="au-btn au-btn--accept" [disabled]="processingId() === user.id" (click)="accept(user)">قبول</button>
-              <button class="au-btn au-btn--block" [disabled]="processingId() === user.id" (click)="block(user)">حظر</button>
-            }
-          </div>
+          <!-- Expanded Details -->
+          @if (expandedId() === user.id) {
+            <div class="au-details">
+              <div class="au-details-grid">
+                <div class="au-detail-item">
+                  <span class="au-detail-label">الرقم القومي</span>
+                  <span class="au-detail-value">{{ user.nationalId || '—' }}</span>
+                </div>
+                <div class="au-detail-item">
+                  <span class="au-detail-label">تاريخ التسجيل الكامل</span>
+                  <span class="au-detail-value">{{ user.createdAt | date: 'd MMMM y - h:mm a' }}</span>
+                </div>
+                <div class="au-detail-item">
+                  <span class="au-detail-label">معرّف الحساب</span>
+                  <span class="au-detail-value au-detail-value--mono">{{ user.id }}</span>
+                </div>
+              </div>
 
+              @if (user.role === 'pro') {
+                @if (loadingDetail() === user.id) {
+                  <div class="au-detail-loading"><div class="au-detail-spinner"></div> بيجيب بيانات الصنايعي...</div>
+                }
+                @else{
+                  @if (workerFor(user.id); as w) {
+                  @if (w) {
+                    <div class="au-worker-box">
+                      <div class="au-details-grid">
+                        <div class="au-detail-item"><span class="au-detail-label">المهنة</span><span class="au-detail-value">{{ w.tradeLabel }}</span></div>
+                        <div class="au-detail-item"><span class="au-detail-label">المدينة</span><span class="au-detail-value">{{ w.city }}</span></div>
+                        <div class="au-detail-item"><span class="au-detail-label">السعر بالساعة</span><span class="au-detail-value">{{ w.hourlyRate }} ج.م</span></div>
+                        <div class="au-detail-item"><span class="au-detail-label">سنين الخبرة</span><span class="au-detail-value">{{ w.yearsOfExperience }}</span></div>
+                        <div class="au-detail-item"><span class="au-detail-label">التقييم</span><span class="au-detail-value">{{ w.rating }} ({{ w.reviewsCount }})</span></div>
+                        <div class="au-detail-item"><span class="au-detail-label">طلبات مكتملة</span><span class="au-detail-value">{{ w.completedJobs }}</span></div>
+                      </div>
+
+                      @if (w.idFrontUrl || w.idBackUrl || w.certificateUrl) {
+                        <p class="au-docs-title">مستندات التحقق</p>
+                        <div class="au-docs-grid">
+                          @if (w.idFrontUrl) {
+                            <a [href]="w.idFrontUrl" target="_blank" class="au-doc-thumb">
+                              <img [src]="w.idFrontUrl" alt="وش البطاقة" />
+                              <span>وش البطاقة</span>
+                            </a>
+                          }
+                          @if (w.idBackUrl) {
+                            <a [href]="w.idBackUrl" target="_blank" class="au-doc-thumb">
+                              <img [src]="w.idBackUrl" alt="ظهر البطاقة" />
+                              <span>ظهر البطاقة</span>
+                            </a>
+                          }
+                          @if (w.certificateUrl) {
+                            <a [href]="w.certificateUrl" target="_blank" class="au-doc-thumb">
+                              <img [src]="w.certificateUrl" alt="شهادة" />
+                              <span>شهادة</span>
+                            </a>
+                          }
+                        </div>
+                      } @else {
+                        <p class="au-no-docs">لسه مرفوعش مستندات تحقق.</p>
+                      }
+                    </div>
+                  } @else {
+                    <p class="au-no-docs">مفيش بيانات بروفايل صنايعي مرتبطة بالحساب ده.</p>
+                  }
+                }
+              }
+              }
+            </div>
+          }
         </div>
       }
     </div>
   }
-
 </div>

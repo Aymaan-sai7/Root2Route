@@ -1,119 +1,118 @@
-.ab-page { padding: 28px 24px; }
-
+.ab-page { padding: 28px 24px 40px; }
 .ab-header { margin-bottom: 18px; }
-.ab-title {
-  font-family: var(--font-display, inherit);
-  font-size: 20px;
-  font-weight: 700;
-  color: #0F172A;
-}
-.ab-desc {
-  font-size: 13px;
-  color: #64748B;
-  margin-top: 4px;
-}
+.ab-title { font-family: var(--font-display, inherit); font-size: 20px; font-weight: 700; color: #0F172A; }
+.ab-desc { font-size: 13px; color: #64748B; margin-top: 4px; }
 
-.ab-filters { margin-bottom: 16px; }
-.ab-select {
-  padding: 9px 12px;
-  border-radius: 8px;
-  border: 1px solid #E2E8F0;
+/* ===== Stat Cards ===== */
+.ab-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.ab-stat-card {
   background: #fff;
-  font-size: 13px;
-  color: #0F172A;
-  cursor: pointer;
-}
-
-.ab-list {
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 4px;
 }
-.ab-empty {
-  text-align: center;
-  padding: 50px 20px;
-  color: #64748B;
-  font-size: 13px;
+.ab-stat-value { font-family: var(--font-display, inherit); font-size: 20px; font-weight: 700; color: #0F172A; }
+.ab-stat-label { font-size: 11.5px; color: #64748B; font-weight: 500; }
+.ab-stat-card--success { border-color: rgba(22,163,74,0.25); background: rgba(22,163,74,0.03); }
+.ab-stat-card--success .ab-stat-value { color: #16A34A; }
+.ab-stat-card--primary { border-color: rgba(37,99,235,0.25); background: rgba(37,99,235,0.03); }
+.ab-stat-card--primary .ab-stat-value { color: #2563EB; }
+
+/* ===== Filters ===== */
+.ab-filters { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.ab-search {
+  display: flex; align-items: center; gap: 8px;
+  flex: 1; min-width: 220px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1px solid #E2E8F0;
+  background: #fff;
+  color: #94A3B8;
 }
+.ab-search input {
+  flex: 1; border: none; outline: none; background: none;
+  font-size: 13px; color: #0F172A;
+}
+
+/* ===== List ===== */
+.ab-list { display: flex; flex-direction: column; gap: 10px; }
+.ab-empty { text-align: center; padding: 50px 20px; color: #64748B; font-size: 13px; }
+
+.ab-card {
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.ab-card--open { border-color: rgba(37,99,235,0.3); box-shadow: 0 4px 16px rgba(37,99,235,0.06); }
 
 .ab-row {
   display: flex;
   align-items: center;
   gap: 14px;
-  background: #fff;
-  border: 1px solid #E2E8F0;
-  border-radius: 12px;
   padding: 14px 16px;
   flex-wrap: wrap;
+  cursor: pointer;
 }
+.ab-row:hover { background: rgba(37,99,235,0.02); }
 
 .ab-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 15px;
-  font-weight: 700;
-  flex-shrink: 0;
+  width: 40px; height: 40px; border-radius: 50%;
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 700; flex-shrink: 0;
 }
-
 .ab-info { flex: 1; min-width: 220px; }
-.ab-desc-text {
-  font-size: 13px;
-  font-weight: 600;
-  color: #0F172A;
-  line-height: 1.4;
-}
-.ab-meta {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  font-size: 11.5px;
-  color: #64748B;
-  margin-top: 4px;
-}
-.ab-dot {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: #CBD5E1;
-}
-
-.ab-amount {
-  font-size: 13px;
-  font-weight: 700;
-  color: #2563EB;
-  flex-shrink: 0;
-}
-
-.ab-status {
-  font-size: 10.5px;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 999px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
+.ab-desc-text { font-size: 13px; font-weight: 600; color: #0F172A; line-height: 1.4; }
+.ab-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 11.5px; color: #64748B; margin-top: 4px; }
+.ab-dot { width: 3px; height: 3px; border-radius: 50%; background: #CBD5E1; }
+.ab-amount { font-size: 13px; font-weight: 700; color: #2563EB; flex-shrink: 0; }
+.ab-status { font-size: 10.5px; font-weight: 600; padding: 3px 10px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
 .ab-status--completed { background: rgba(22,163,74,0.12); color: #16A34A; }
 .ab-status--active { background: rgba(37,99,235,0.12); color: #2563EB; }
 .ab-status--pending { background: rgba(249,115,22,0.12); color: #EA580C; }
 .ab-status--cancelled { background: rgba(220,38,38,0.12); color: #DC2626; }
 
+.ab-chevron { color: #94A3B8; flex-shrink: 0; transition: transform 0.2s ease; }
+.ab-chevron--open { transform: rotate(180deg); color: #2563EB; }
+
+/* ===== Expanded Details ===== */
+.ab-details {
+  padding: 16px 18px 18px;
+  border-top: 1px solid #F1F5F9;
+  background: #F7F9FC;
+  animation: ab-expand 0.2s ease;
+}
+@keyframes ab-expand { from { opacity: 0; } to { opacity: 1; } }
+.ab-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+.ab-detail-item { display: flex; flex-direction: column; gap: 2px; }
+.ab-detail-label { font-size: 10.5px; color: #94A3B8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; }
+.ab-detail-value { font-size: 13px; color: #0F172A; font-weight: 600; }
+.ab-notes { font-size: 12.5px; color: #475569; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #E2E8F0; }
+.ab-notes strong { color: #0F172A; }
+
+/* ===== Skeleton ===== */
 .ab-skeleton {
-  height: 76px;
-  border-radius: 12px;
+  height: 76px; border-radius: 12px;
   background: linear-gradient(90deg, #E2E8F0 25%, #F7F9FC 37%, #E2E8F0 63%);
   background-size: 400% 100%;
   animation: ab-shimmer 1.6s ease-in-out infinite;
 }
-@keyframes ab-shimmer {
-  0% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+@keyframes ab-shimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
 @media (prefers-reduced-motion: reduce) {
   .ab-skeleton { animation: none; }
+  .ab-card, .ab-chevron { transition: none; }
 }
