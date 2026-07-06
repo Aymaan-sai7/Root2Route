@@ -44,30 +44,93 @@ export class AdminDashboardComponent implements OnInit {
 
   // ===== Chart 2: توزيع المستخدمين حسب الدور (Donut) =====
   rolesSeries: ApexNonAxisChartSeries = [];
+
   rolesOptions: any = {
-    chart: { type: 'donut', height: 240, fontFamily: 'Inter, IBM Plex Sans Arabic, sans-serif' },
-    labels: ['عملاء', 'صنايعية', 'أدمن'],
-    colors: ['#2563EB', '#F97316', '#0F172A'],
-    legend: { position: 'bottom', fontSize: '12px' },
-    dataLabels: { enabled: false },
-    stroke: { width: 0 },
-  };
+  chart: {
+    type: 'donut',
+    height: 240,
+    fontFamily: 'Inter, IBM Plex Sans Arabic, sans-serif'
+  },
+  responsive: [
+    {
+      breakpoint: 640,
+      options: {
+        chart: {
+          height: 200
+        }
+      }
+    }
+  ],
+  labels: ['عملاء', 'صنايعية', 'أدمن'],
+  colors: ['#2563EB', '#F97316', '#0F172A'],
+  legend: {
+    position: 'bottom',
+    fontSize: '12px'
+  },
+  dataLabels: {
+    enabled: false
+  },
+  stroke: {
+    width: 0
+  },
+};
 
   // ===== Chart 3: توزيع الحسابات حسب الحالة (Donut) =====
   statusSeries: ApexNonAxisChartSeries = [];
   statusOptions: any = {
-    chart: { type: 'donut', height: 240, fontFamily: 'Inter, IBM Plex Sans Arabic, sans-serif' },
-    labels: ['قيد المراجعة', 'نشط', 'مرفوض', 'محظور'],
-    colors: ['#F97316', '#16A34A', '#94A3B8', '#DC2626'],
-    legend: { position: 'bottom', fontSize: '12px' },
-    dataLabels: { enabled: false },
-    stroke: { width: 0 },
-  };
+  chart: {
+    type: 'donut',
+    height: 240,
+    fontFamily: 'Inter, IBM Plex Sans Arabic, sans-serif'
+  },
+
+  responsive: [
+    {
+      breakpoint: 640,
+      options: {
+        chart: {
+          height: 200
+        }
+      }
+    }
+  ],
+
+  labels: ['قيد المراجعة', 'نشط', 'مرفوض', 'محظور'],
+  colors: ['#F97316', '#16A34A', '#94A3B8', '#DC2626'],
+  legend: {
+    position: 'bottom',
+    fontSize: '12px'
+  },
+  dataLabels: {
+    enabled: false
+  },
+  stroke: {
+    width: 0
+  },
+};
 
   // ===== Chart 4: الحجوزات حسب الحالة (Bar أفقي) =====
   bookingsSeries: ApexAxisChartSeries = [];
   bookingsOptions: any = {
-    chart: { type: 'bar', height: 240, toolbar: { show: false }, fontFamily: 'Inter, IBM Plex Sans Arabic, sans-serif' },
+    chart: {
+  type: 'bar',
+  height: 240,
+  toolbar: {
+    show: false
+  },
+  fontFamily: 'Inter, IBM Plex Sans Arabic, sans-serif'
+},
+
+responsive: [
+  {
+    breakpoint: 640,
+    options: {
+      chart: {
+        height: 220
+      }
+    }
+  }
+],
     plotOptions: { bar: { horizontal: true, borderRadius: 6, distributed: true, barHeight: '55%' } },
     colors: ['#F97316', '#2563EB', '#16A34A', '#DC2626'],
     dataLabels: { enabled: true, style: { fontSize: '11px' } },
@@ -124,7 +187,7 @@ export class AdminDashboardComponent implements OnInit {
   private buildStatusChart(users: User[]): void {
     this.statusSeries = [
       users.filter((u) => u.status === 'pending').length,
-      users.filter((u) => (u.status ?? 'active') === 'active').length,
+      users.filter((u) => u.status === 'active').length,
       users.filter((u) => u.status === 'rejected').length,
       users.filter((u) => u.status === 'blocked').length,
     ];
@@ -159,6 +222,6 @@ export class AdminDashboardComponent implements OnInit {
     const map: Record<string, string> = {
       pending: 'قيد المراجعة', active: 'نشط', rejected: 'مرفوض', blocked: 'محظور',
     };
-    return map[status ?? 'active'] ?? status;
+    return map[status] ?? status;
   }
 }
