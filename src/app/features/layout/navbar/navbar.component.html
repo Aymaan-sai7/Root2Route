@@ -6,10 +6,10 @@
 
     <a routerLink="/" class="flex items-center gap-2 shrink-0">
       <img
-    src="/sanaye3i_nav.png"
-    alt="Sanaye3i Logo"
-    class="h-11 w-auto object-contain"
-  />
+        src="/sanaye3i_nav.png"
+        alt="Sanaye3i Logo"
+        class="h-11 w-auto object-contain"
+      />
       <span class="font-display text-xl font-bold tracking-tight text-blueprint">صنايعي</span>
     </a>
 
@@ -21,31 +21,84 @@
 
     <div class="hidden items-center gap-3 md:flex">
       <a routerLink="/login" class="text-sm font-medium text-ink-soft transition-colors hover:text-blueprint">تسجيل دخول</a>
-      <a routerLink="/register" class="rounded-sm bg-signal px-4 py-2 text-sm font-semibold text-white shadow-card transition-colors hover:bg-signal-deep">إنشاء حساب </a>
+      <a routerLink="/register" class="rounded-sm bg-signal px-4 py-2 text-sm font-semibold text-white shadow-card transition-colors hover:bg-signal-deep">إنشاء حساب</a>
     </div>
 
-    <button type="button" class="flex items-center justify-center rounded-sm border border-line-strong p-2 md:hidden" (click)="toggleMobile()" aria-label="Toggle menu">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        @if (!mobileOpen()) {
-          <path d="M3 6h18M3 12h18M3 18h18"></path>
-        } @else {
-          <path d="M6 6l12 12M18 6L6 18"></path>
-        }
-      </svg>
+    <!-- الهامبرجر الجديد: 3 خطوط بتتحول X -->
+    <button
+      type="button"
+      class="mnav-toggle md:hidden"
+      [class.is-open]="mobileOpen()"
+      (click)="toggleMobile()"
+      [attr.aria-expanded]="mobileOpen()"
+      aria-label="فتح القائمة"
+    >
+      <span class="mnav-toggle-line"></span>
+      <span class="mnav-toggle-line"></span>
+      <span class="mnav-toggle-line"></span>
     </button>
 
   </nav>
+</header>
 
+<!-- ⚠️ بتتنقل لـ document.body في ngAfterViewInit، فمكانها هنا مش مهم بصريًا -->
+<div #mobileMenuRoot class="mnav-portal">
   @if (mobileOpen()) {
-    <div class="border-t border-line bg-paper px-5 py-4 md:hidden">
-      <div class="flex flex-col gap-4">
-        <a href="#services" class="text-sm font-medium text-ink-soft" (click)="toggleMobile()">دور على صنايعي</a>
-        <a href="#how-it-works" class="text-sm font-medium text-ink-soft" (click)="toggleMobile()">إزاي بيشتغل</a>
-        <a href="#become-pro" class="text-sm font-medium text-ink-soft" (click)="toggleMobile()">اشتغل معانا</a>
-        <div class="tape-rule"></div>
-        <a routerLink="/login" class="text-sm font-medium text-ink-soft">تسجيل دخول</a>
-        <a routerLink="/register" class="rounded-sm bg-signal px-4 py-2.5 text-center text-sm font-semibold text-white">اطلب صنايعي</a>
+    <div class="mnav-backdrop" [@overlayFade] (click)="closeMobile()" aria-hidden="true"></div>
+
+    <div class="mnav-panel" [@panelSlide] role="dialog" aria-modal="true" aria-label="قائمة التصفح">
+
+      <div class="mnav-panel-header">
+        <a routerLink="/" class="flex items-center gap-2" (click)="closeMobile()">
+          <img src="/sanaye3i_nav.png" alt="Sanaye3i Logo" class="h-8 w-auto object-contain" />
+          <span class="font-display text-base font-bold text-blueprint">صنايعي</span>
+        </a>
+        <button type="button" class="mnav-close-btn" (click)="closeMobile()" aria-label="إغلاق القائمة">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round">
+            <path d="M6 6l12 12M18 6L6 18"/>
+          </svg>
+        </button>
       </div>
+
+      <nav class="mnav-links" [@staggerLinks]>
+        <a href="#services" class="mnav-link" (click)="closeMobile()">
+          <span class="mnav-link-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+            </svg>
+          </span>
+          <span>دور على صنايعي</span>
+        </a>
+        <a href="#how-it-works" class="mnav-link" (click)="closeMobile()">
+          <span class="mnav-link-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>
+            </svg>
+          </span>
+          <span>إزاي بيشتغل</span>
+        </a>
+        <a href="#become-pro" class="mnav-link" (click)="closeMobile()">
+          <span class="mnav-link-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.77z"/>
+            </svg>
+          </span>
+          <span>اشتغل معانا</span>
+        </a>
+      </nav>
+
+      <div class="mnav-divider"></div>
+
+      <div class="mnav-actions">
+        <a routerLink="/login" class="mnav-btn mnav-btn--outline" (click)="closeMobile()">تسجيل دخول</a>
+        <a routerLink="/register" class="mnav-btn mnav-btn--filled" (click)="closeMobile()">
+          إنشاء حساب
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" class="rtl:rotate-180">
+            <path d="M5 12h14M13 6l6 6-6 6"/>
+          </svg>
+        </a>
+      </div>
+
     </div>
   }
-</header>
+</div>

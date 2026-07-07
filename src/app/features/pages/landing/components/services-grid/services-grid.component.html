@@ -13,9 +13,8 @@
 
         @if (cat.featured) {
           <!-- الكارت الكبير المميز -->
-<a
-            [routerLink]="['/specialists']"
-            [queryParams]="{ category: cat.id }"
+          <a
+            [routerLink]="cat.id === 'more' ? ['/find-services'] : ['/find-services', cat.id]"
             class="service-card service-card--featured group relative col-span-1 row-span-2 overflow-hidden rounded-lg sm:col-span-2 lg:col-span-1"
           >
             <div class="featured-pattern absolute inset-0"></div>
@@ -50,9 +49,8 @@
           </a>
         } @else {
           <!-- الكروت العادية -->
-<a
-            [routerLink]="['/specialists']"
-            [queryParams]="{ category: cat.id }"
+          <a
+            [routerLink]="cat.id === 'more' ? ['/find-services'] : ['/find-services', cat.id]"
             class="service-card group relative overflow-hidden rounded-lg border border-line bg-paper p-6"
           >
             <div class="flex items-start justify-between">

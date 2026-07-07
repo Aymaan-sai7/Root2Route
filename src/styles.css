@@ -11,7 +11,9 @@ html, body {
 html, body {
   overflow-x: hidden;
 }
-
+body.mnav-scroll-lock {
+  overflow: hidden;
+}
 html[dir='rtl'] body {
   font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
 }

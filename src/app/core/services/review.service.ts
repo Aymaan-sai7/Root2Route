@@ -31,6 +31,26 @@ export class ReviewsService {
     );
   }
 
+  /**
+   * ⚠️ جديد: أعلى التقييمات على مستوى المنصة كلها — للاستخدام في اللاندج بيدج (تقييمات حقيقية).
+   * الـ backend مبيدعمش فلترة "أكبر من أو يساوي" في الـ query العام (بس exact match)،
+   * فبنجيب كل التقييمات ونفلتر/نرتب من عندنا. الداتا صغيرة (db.json)، فمفيش مشكلة أداء.
+   * بنستبعد أي تقييم من غير تعليق نصي، عشان مفيش حاجة نعرضها كـ "quote".
+   */
+  getTopRated(limit = 8, minRating = 4): Observable<Review[]> {
+    return this.http.get<Review[]>(this.reviewsBase).pipe(
+      map((reviews) =>
+        reviews
+          .filter((r) => r.rating >= minRating && !!r.comment?.trim())
+          .sort((a, b) => {
+            if (b.rating !== a.rating) return b.rating - a.rating;
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          })
+          .slice(0, limit)
+      )
+    );
+  }
+
   /** تقييم جديد + تحديث متوسط تقييم الصنايعي + إشعار الصنايعي */
   create(dto: CreateReviewDto): Observable<Review> {
     const review: Omit<Review, 'id'> = {
@@ -71,9 +91,9 @@ export class ReviewsService {
   private notifyWorker(dto: CreateReviewDto): Observable<unknown> {
     return this.http.get<Worker>(`${this.workersBase}/${dto.workerId}`).pipe(
       switchMap((worker) => {
-        if (!worker.userId) return of(null); // مفيش userId معروف، تخطى الإشعار
+        if (!worker.userId) return of(null);
         return this.notificationsService.create({
-          userId: worker.userId, // ⚠️ user id الحقيقي، مش worker.id
+          userId: worker.userId,
           type: 'review_received',
           title: 'تقييم جديد',
           message: `${dto.clientName} قيّمك بـ ${dto.rating} نجوم`,

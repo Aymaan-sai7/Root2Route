@@ -1,8 +1,14 @@
-import { Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { forkJoin, of } from 'rxjs';
+import { switchMap, map, catchError } from 'rxjs/operators';
 import { ScrollRevealDirective } from '../../../../../shared/directive/scroll-reveal.directive';
+import { ReviewsService } from '../../../../../core/services/review.service';
+import { BookingsService } from '../../../../../core/services/bookings.service';
+import { generateAvatarColor } from '../../../../../core/utils/color.util';
+// ⚠️ لو اسم الملف/المسار مختلف عندك، عدّل السطر اللي فوق ده بس
 
-interface Testimonial {
+interface DisplayTestimonial {
   name: string;
   initial: string;
   color: string;
@@ -36,95 +42,22 @@ interface Testimonial {
   ],
 })
 export class TestimonialsComponent implements OnInit, OnDestroy {
-  testimonials: Testimonial[] = [
-  {
-    name: 'محمد حسن',
-    initial: 'م',
-    color: '#1B4F72',
-    service: 'سباكة',
-    rating: 5,
-    quote:
-      'الصنايعي وصل في المعاد، خلص الشغل بسرعة، وكان محترم جدًا. أكيد هستخدم التطبيق تاني لو احتجت أي حاجة.',
-  },
-  {
-    name: 'أحمد السيد',
-    initial: 'أ',
-    color: '#E8762C',
-    service: 'كهرباء',
-    rating: 5,
-    quote:
-      'عجبني إن السعر كان واضح من الأول، ومفيش أي مصاريف زيادة بعد ما الشغل خلص.',
-  },
-  {
-    name: 'سارة محمد',
-    initial: 'س',
-    color: '#3F7A52',
-    service: 'نقاشة',
-    rating: 4,
-    quote:
-      'حجزت من التطبيق لأول مرة، والتجربة كانت سهلة جدًا، والشغل طلع أنضف من اللي كنت متوقعاه.',
-  },
-  {
-    name: 'محمود علي',
-    initial: 'م',
-    color: '#7A5FA0',
-    service: 'تكييف',
-    rating: 5,
-    quote:
-      'التكييف كان واقف خالص، والصنايعي عرف المشكلة بسرعة وخلصها في نفس الزيارة.',
-  },
-  {
-    name: 'منة الله',
-    initial: 'م',
-    color: '#123550',
-    service: 'نجارة',
-    rating: 5,
-    quote:
-      'ركبلي مكتبة وحرفيًا الشغل كان نضيف جدًا، وحتى بعد ما خلص ساب المكان مترتب.',
-  },
-  {
-    name: 'عبدالله خالد',
-    initial: 'ع',
-    color: '#C05621',
-    service: 'تركيب دش',
-    rating: 5,
-    quote:
-      'كنت محتاج حد بشكل مستعجل، ولقيت صنايعي قريب مني وجالي في أقل من ساعة.',
-  },
-  {
-    name: 'نور أحمد',
-    initial: 'ن',
-    color: '#2563EB',
-    service: 'تنظيف خزانات',
-    rating: 5,
-    quote:
-      'التطبيق سهل جدًا، وعرفت أقارن بين أكتر من صنايعي واختارت اللي تقييمه أعلى.',
-  },
-  {
-    name: 'إبراهيم سعيد',
-    initial: 'إ',
-    color: '#059669',
-    service: 'صيانة غسالة',
-    rating: 4,
-    quote:
-      'الصيانة تمت في نفس اليوم، والصنايعي شرحلي سبب العطل وإزاي أتجنبه بعد كده.',
-  }
-];
+  private reviewsService = inject(ReviewsService);
+  private bookingsService = inject(BookingsService);
 
-  /** الـ index الحالي */
+  /** ⚠️ تقييمات حقيقية بس — بتتجاب من السيرفر، مفيش أي داتا وهمية هنا خالص */
+  testimonials = signal<DisplayTestimonial[]>([]);
+  loading = signal(true);
+
   activeIndex = signal(0);
-
-  /** مدة كل كارد بالـ ms */
   readonly stepDuration = 4500;
-
-  /** إيقاف مؤقت لما المستخدم يتفاعل */
   paused = signal(false);
 
   private intervalId?: ReturnType<typeof setInterval>;
   private pauseTimeoutId?: ReturnType<typeof setTimeout>;
 
   ngOnInit(): void {
-    this.startInterval();
+    this.loadTestimonials();
   }
 
   ngOnDestroy(): void {
@@ -132,20 +65,51 @@ export class TestimonialsComponent implements OnInit, OnDestroy {
     if (this.pauseTimeoutId) clearTimeout(this.pauseTimeoutId);
   }
 
-  /** الانتقال اليدوي عند دوس على نقطة */
   goTo(idx: number): void {
     this.activeIndex.set(idx);
-    /* وقف مؤقت ٨ ثواني بعد التفاعل اليدوي */
     this.pauseFor(8000);
   }
 
-  /** ==================== Private ==================== */
+  private loadTestimonials(): void {
+    this.loading.set(true);
+
+    this.reviewsService.getTopRated(8, 4).pipe(
+      switchMap((reviews) => {
+        if (reviews.length === 0) return of([] as (DisplayTestimonial | null)[]);
+
+        // ⚠️ الـ Review مفيهوش اسم التخصص مباشرة، فبنجيبه من الحجز المرتبط بيه
+        // (Booking.workerTrade متسجلة وقت إنشاء الحجز أصلًا)
+        const requests = reviews.map((r) =>
+          this.bookingsService.getById(r.bookingId).pipe(
+            map((booking) => ({
+              name: r.clientName,
+              initial: r.clientName.charAt(0),
+              color: generateAvatarColor(r.clientName),
+              service: booking.workerTrade,
+              rating: r.rating,
+              quote: r.comment,
+            })),
+            // لو الحجز اتمسح لأي سبب، نتجاهل التقييم ده بس بدل ما يكسر الباقي
+            catchError(() => of(null))
+          )
+        );
+
+        return forkJoin(requests);
+      }),
+      map((results) => results.filter((r): r is DisplayTestimonial => r !== null)),
+      catchError(() => of([] as DisplayTestimonial[]))
+    ).subscribe((list) => {
+      this.testimonials.set(list);
+      this.loading.set(false);
+      if (list.length > 0) this.startInterval();
+    });
+  }
 
   private startInterval(): void {
     this.intervalId = setInterval(() => {
       if (!this.paused()) {
         this.activeIndex.update(
-          (current) => (current + 1) % this.testimonials.length
+          (current) => (current + 1) % this.testimonials().length
         );
       }
     }, this.stepDuration);

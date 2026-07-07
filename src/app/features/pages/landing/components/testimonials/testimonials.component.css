@@ -199,6 +199,22 @@
   border-radius: 4px;
 }
 
+.testi-skeleton {
+  height: 260px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #F1F5F9 25%, #FAFBFC 37%, #F1F5F9 63%);
+  background-size: 400% 100%;
+  animation: testi-shimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes testi-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .testi-skeleton { animation: none; }
+}
 
 /* ===========================
    Reduced Motion

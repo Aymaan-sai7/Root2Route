@@ -1,0 +1,175 @@
+/* ============================================================
+   HAMBURGER TOGGLE (3 خطوط → X)
+   ============================================================ */
+.mnav-toggle {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-radius: 8px;
+  border: 1px solid #D9D2C3;
+  background: transparent;
+  cursor: pointer;
+}
+
+.mnav-toggle-line {
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: #1a2733;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+}
+
+.mnav-toggle.is-open .mnav-toggle-line:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.mnav-toggle.is-open .mnav-toggle-line:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.mnav-toggle.is-open .mnav-toggle-line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+
+/* ============================================================
+   PORTAL / BACKDROP / PANEL
+   ============================================================ */
+.mnav-portal { position: relative; }
+
+.mnav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(3px);
+  z-index: 100;
+}
+
+.mnav-panel {
+  position: fixed;
+  top: 0;
+  inset-inline: 0;
+  z-index: 101;
+  max-height: 88vh;
+  overflow-y: auto;
+  background: #FDFCFA;
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+  padding: 18px 20px 24px;
+}
+
+.mnav-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #EDE9DF;
+}
+
+.mnav-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #D9D2C3;
+  color: #5a6a78;
+  background: transparent;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.mnav-close-btn:hover {
+  background: rgba(37, 99, 235, 0.08);
+  color: #2563EB;
+}
+
+
+/* ============================================================
+   LINKS LIST
+   ============================================================ */
+.mnav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 0;
+}
+
+.mnav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 10px;
+  border-radius: 10px;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: #324653;
+  text-decoration: none;
+  transition: background-color 0.2s ease, gap 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.mnav-link:hover, .mnav-link:active {
+  background: rgba(37, 99, 235, 0.06);
+  gap: 15px;
+}
+
+.mnav-link-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(37, 99, 235, 0.08);
+  color: #2563EB;
+  flex-shrink: 0;
+}
+
+
+/* ============================================================
+   DIVIDER + ACTIONS (مش كل زرار عرض كامل)
+   ============================================================ */
+.mnav-divider {
+  height: 1px;
+  background: #EDE9DF;
+  margin: 6px 0 16px;
+}
+
+.mnav-actions {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.mnav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border-radius: 9px;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mnav-btn--outline {
+  border: 1px solid #D9D2C3;
+  color: #324653;
+  background: transparent;
+  flex-shrink: 0; /* ⚠️ ده اللي بيمنعه ياخد عرض زيادة */
+}
+.mnav-btn--outline:active { transform: scale(0.96); }
+
+.mnav-btn--filled {
+  flex: 1; /* ⚠️ ده اللي واخد المساحة الأكبر كـ CTA أساسي، مش كل الشاشة */
+  background: #F97316;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.3);
+}
+.mnav-btn--filled:active { transform: scale(0.97); }
+
+
+@media (min-width: 768px) {
+  .mnav-backdrop, .mnav-panel { display: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mnav-toggle-line, .mnav-link, .mnav-btn { transition: none; }
+}
