@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sanaye3i-six.vercel.app/sitemap.xml
