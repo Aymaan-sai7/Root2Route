@@ -34,7 +34,10 @@ export class SpecialistsListComponent implements OnInit {
   loading      = signal(true);
   currentTrade = signal<string>('');
 
-  // ── مفتوح/مقفول بتاع الفلاتر على الموبايل بس ──────────────
+  // ⚠️ جديد: اسم التخصص المخصص المطلوب البحث عنه (جاي من ?q= في الرابط)،
+  // مستخدم بس لما currentTrade === 'other'
+  searchLabel = signal<string>('');
+
   filtersOpen = signal(false);
 
   filters = signal<FilterState>({ ...DEFAULT_FILTERS });
@@ -59,7 +62,6 @@ export class SpecialistsListComponent implements OnInit {
 
   ratingOptions = [4.5, 4, 3.5];
 
-  // عدد الفلاتر المفعّلة فعليًا (مش شامل sortBy لإنه دايمًا له قيمة افتراضية)
   activeFilterCount = computed(() => {
     const f = this.filters();
     let count = 0;
@@ -71,10 +73,20 @@ export class SpecialistsListComponent implements OnInit {
     return count;
   });
 
-  // بيفلتر ويرتب محلياً بدون request جديد
   filteredWorkers = computed(() => {
     const f = this.filters();
+    const search = this.searchLabel();
     let list = [...this.allWorkers()];
+
+    // ⚠️ جديد: لو جاي من بحث عن تخصص مخصص، فلتر إضافي على tradeLabel
+    // الحقيقي (مش على enum trade الثابت)
+    if (search) {
+      const normalizedSearch = this.normalizeArabic(search);
+      list = list.filter((w) =>
+        this.normalizeArabic(w.tradeLabel).includes(normalizedSearch)
+      );
+    }
+
     if (f.city)          list = list.filter(w => w.city === f.city);
     if (f.availableOnly) list = list.filter(w => w.isAvailable);
     if (f.minRating)     list = list.filter(w => w.rating >= f.minRating!);
@@ -95,11 +107,20 @@ export class SpecialistsListComponent implements OnInit {
       this.currentTrade.set(trade);
       this.loadWorkers(trade);
     });
+
+    // ⚠️ جديد: بيقرأ ?q= لو موجود (بيتبعت من find-services لما البحث يطابق
+    // تخصص مخصص حقيقي)
+    this.route.queryParams.subscribe(qp => {
+      this.searchLabel.set(qp['q'] ?? '');
+    });
   }
 
   private loadWorkers(trade: string): void {
     this.loading.set(true);
-    const filter: WorkersFilter = trade !== 'other' ? { trade: trade as TradeType } : {};
+    // ⚠️ فيكس: كان فيه استثناء بيخلي trade === 'other' يجيب كل الصنايعية
+    // من غير فلترة خالص. دلوقتي بنفلتر دايمًا على التخصص الحقيقي المطلوب،
+    // بما فيه 'other' — فصفحة "خدمات أخرى" بتعرض بس اللي تخصصهم فعلًا 'other'
+    const filter: WorkersFilter = { trade: trade as TradeType };
     this.workers.getAll(filter).subscribe({
       next: (data) => {
         this.allWorkers.set(data);
@@ -107,6 +128,17 @@ export class SpecialistsListComponent implements OnInit {
       },
       error: () => this.loading.set(false),
     });
+  }
+
+  private normalizeArabic(text: string): string {
+    return text
+      .trim()
+      .toLowerCase()
+      .replace(/[\u064B-\u0652]/g, '')
+      .replace(/[أإآ]/g, 'ا')
+      .replace(/ة/g, 'ه')
+      .replace(/ى/g, 'ي')
+      .replace(/\s+/g, ' ');
   }
 
   setFilter(key: string, value: any): void {
@@ -117,7 +149,6 @@ export class SpecialistsListComponent implements OnInit {
     this.filters.set({ ...DEFAULT_FILTERS });
   }
 
-  // ── التحكم في drawer الموبايل + قفل scroll الخلفية ─────────
   openFilters(): void {
     this.filtersOpen.set(true);
     this.renderer.addClass(document.body, 'sl-no-scroll');
@@ -136,7 +167,12 @@ export class SpecialistsListComponent implements OnInit {
     this.router.navigate(['/specialist', id]);
   }
 
+  // ⚠️ فيكس: لو جاي من بحث تخصص مخصص، نوري الاسم الحقيقي اللي بحث عنه
+  // بدل "خدمات أخرى" العامة
   get tradeLabel(): string {
+    if (this.currentTrade() === 'other' && this.searchLabel()) {
+      return this.searchLabel();
+    }
     return this.tradeLabels[this.currentTrade()] ?? 'الخدمات';
   }
 }

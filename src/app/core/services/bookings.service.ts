@@ -1,24 +1,43 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { map, switchMap } from 'rxjs'; // ← switchMap مضاف
+import { map, switchMap, catchError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Booking, BookingStatus, BookingAddress } from '../models/booking.model';
-import { NotificationsService } from './notification.service'; // ← جديد
-import { WorkersService } from './workers.service'; // ← جديد (عشان نجيب worker.userId)
+import { TradeType } from '../models/worker.model';
+import { NotificationsService } from './notification.service';
+import { WorkersService } from './workers.service';
 
 export interface CreateBookingDto {
   clientId: string;
   clientName: string;
   workerId: string;
   workerName: string;
+  // ⚠️ workerTrade فضل زي ما هو (النص العربي المعروض، زي "كهربا") عشان
+  // مانلمسش أي حاجة بتعرضه في الفرونت. trade تحته هو الـ TradeType الحقيقي
+  // ("electrical") — لازم يتبعت منفصل عشان قيود الكوبون (تصنيف معين) تتحقق صح
   workerTrade: string;
+  trade: TradeType;
   workerAvatarColor: string;
   description: string;
   address: BookingAddress;
   scheduledAt: string;
   estimatedHours: number;
+  // ⚠️ السعر الأصلي قبل أي خصم — اسمه فضل totalAmount عمدًا عشان مانلمسش
+  // خطوات الحجز الأولى (تفاصيل/عنوان/معاد) اللي بتحسب الرقم ده زي ما هي.
+  // السيرفر هو اللي بيحوّله لـ originalAmount ويحسب السعر النهائي الفعلي
   totalAmount: number;
+  // ⚠️ اختياري — لو المستخدم كتب كود كوبون في خطوة المراجعة واتقبل فعليًا
+  couponCode?: string;
+}
+
+// ⚠️ شكل الكوبون العام (Public) — بيرجع من /coupons/active، مفيهوش
+// usedCount/usedByUserIds لأنها مش لازم تبان للعامة
+export interface ActiveCoupon {
+  code: string;
+  discountType: 'percentage' | 'fixed';
+  discountValue: number;
+  tradeRestriction: TradeType | null;
 }
 
 const BOOKING_STATUS_TEXT: Record<BookingStatus, string> = {
@@ -31,8 +50,8 @@ const BOOKING_STATUS_TEXT: Record<BookingStatus, string> = {
 @Injectable({ providedIn: 'root' })
 export class BookingsService {
   private http = inject(HttpClient);
-  private notificationsService = inject(NotificationsService); // ← جديد
-  private workersService = inject(WorkersService); // ← جديد
+  private notificationsService = inject(NotificationsService);
+  private workersService = inject(WorkersService);
   private base = `${environment.apiUrl}/bookings`;
 
   /** جيب حجوزات عميل معين */
@@ -84,11 +103,16 @@ export class BookingsService {
     return this.http.patch<Booking>(`${this.base}/${id}`, changes);
   }
 
-  /** حجز جديد — بعد الإنشاء، بنبلّغ الصنايعي بطلب جديد */
+  /**
+   * حجز جديد — بعد الإنشاء، بنبلّغ الصنايعي بطلب جديد
+   * ⚠️ لو dto فيه couponCode، بيتبعت للسيرفر زي ما هو والسيرفر هو اللي بيتحقق
+   * منه ويحسب الخصم الفعلي ويرجّع الحجز بـ totalAmount النهائي بعد الخصم —
+   * مفيش أي حساب خصم بيحصل هنا في الفرونت خالص
+   */
   create(dto: CreateBookingDto): Observable<Booking> {
-    const booking: Omit<Booking, 'id'> = {
+    const booking = {
       ...dto,
-      status: 'pending',
+      status: 'pending' as BookingStatus,
       createdAt: new Date().toISOString(),
     };
     return this.http.post<Booking>(this.base, booking).pipe(
@@ -123,6 +147,40 @@ export class BookingsService {
         }).pipe(map(() => updated))
       )
     );
+  }
+
+  /**
+   * جيب كل الكوبونات النشطة دلوقتي (Public، مش محتاج تسجيل دخول)
+   * ⚠️ بتتستخدم في سكشن "عروض وتنقل سريع" بصفحة find-services
+   */
+  getActiveCoupons(): Observable<ActiveCoupon[]> {
+    return this.http
+      .get<ActiveCoupon[]>(`${environment.apiUrl}/coupons/active`)
+      .pipe(catchError(() => of([])));
+  }
+
+  /**
+   * التحقق من كوبون قبل التأكيد النهائي (بيستخدم في خطوة Review & Confirm)
+   * ⚠️ ده validate بس، مش استهلاك — الاستهلاك الفعلي بيحصل جوه create() فوق
+   * وقت التأكيد النهائي بس
+   * ⚠️ الباك اند بيرجع status 400/404 لأي كوبون مش صالح (مش 200 مع valid:false)،
+   * فبنمسك الخطأ هنا ونحوّله لنفس الشكل { valid:false, message } عشان الكومبوننت
+   * يقدر يتعامل معاه كـ "نتيجة عادية" مش error بيكسر حاجة
+   */
+  validateCoupon(
+    code: string,
+    trade: string
+  ): Observable<{ valid: boolean; discountType?: 'percentage' | 'fixed'; discountValue?: number; code?: string; message?: string }> {
+    return this.http
+      .post<{ valid: boolean; discountType?: 'percentage' | 'fixed'; discountValue?: number; code?: string }>(
+        `${environment.apiUrl}/coupons/validate`,
+        { code, trade }
+      )
+      .pipe(
+        catchError((err: HttpErrorResponse) =>
+          of({ valid: false, message: err.error?.message ?? 'حصل خطأ، حاول تاني.' })
+        )
+      );
   }
 
   /** حذف حجز نهائيًا */

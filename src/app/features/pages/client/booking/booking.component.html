@@ -288,13 +288,75 @@
               <p class="text-ink font-medium">{{ formattedSchedule() }}</p>
             </div>
 
-            <!-- Price Breakdown -->
+            <!-- Coupon -->
             <div class="border-b border-steel/10 pb-3">
+              <p class="text-sm text-steel mb-2">عندك كود خصم؟</p>
+
+              <div class="flex gap-2">
+                <input
+                  title="كود الكوبون"
+                  type="text"
+                  [value]="couponCode()"
+                  (input)="onCouponInput($event)"
+                  [disabled]="couponStatus() === 'valid' || isSubmitting()"
+                  placeholder="اكتب الكود هنا"
+                  class="flex-1 border rounded-lg p-2.5 text-ink text-sm focus:outline-none focus:ring-2 focus:ring-blueprint/40 disabled:bg-steel/5"
+                  [class.border-danger]="couponStatus() === 'invalid'"
+                  [class.border-success]="couponStatus() === 'valid'"
+                  [class.border-steel]="couponStatus() === 'idle' || couponStatus() === 'checking'"
+                />
+
+                @if (couponStatus() === 'valid') {
+                  <button
+                    type="button"
+                    (click)="removeCoupon()"
+                    class="px-4 rounded-lg border border-steel/30 text-sm text-steel font-bold hover:bg-steel/5 transition-colors"
+                  >
+                    إلغاء
+                  </button>
+                } @else {
+                  <button
+                    type="button"
+                    (click)="checkCoupon()"
+                    [disabled]="!couponCode().trim() || couponStatus() === 'checking'"
+                    class="px-4 rounded-lg bg-ink text-paper text-sm font-bold hover:bg-ink/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    @if (couponStatus() === 'checking') {
+                      جاري التحقق...
+                    } @else {
+                      تحقق
+                    }
+                  </button>
+                }
+              </div>
+
+              @if (couponStatus() === 'invalid' && couponMessage()) {
+                <p class="text-danger text-sm mt-2">{{ couponMessage() }}</p>
+              }
+              @if (couponStatus() === 'valid') {
+                <p class="text-success text-sm mt-2 font-medium">
+                  تم تطبيق الكود "{{ appliedDiscount()?.code }}" بنجاح 🎉
+                </p>
+              }
+            </div>
+
+            <!-- Price Breakdown -->
+            <div class="pb-1">
               <p class="text-sm text-steel mb-1">التكلفة التقديرية</p>
               <div class="flex justify-between text-sm text-steel mb-1">
                 <span>{{ w.hourlyRate }} ج.م × {{ estimatedHours() }} ساعة (تقديري)</span>
               </div>
-              <p class="text-xl font-bold text-blueprint">{{ totalAmount() }} ج.م</p>
+
+              @if (couponStatus() === 'valid') {
+                <div class="flex items-center gap-2">
+                  <span class="text-steel line-through text-sm">{{ totalAmount() }} ج.م</span>
+                  <span class="text-success text-sm font-bold">- {{ discountAmount() }} ج.م</span>
+                </div>
+                <p class="text-xl font-bold text-blueprint">{{ finalAmount() }} ج.م</p>
+              } @else {
+                <p class="text-xl font-bold text-blueprint">{{ totalAmount() }} ج.م</p>
+              }
+
               <p class="text-xs text-steel mt-1">* السعر النهائي ممكن يختلف حسب حجم الشغل الفعلي، ويُدفع كاش بعد إتمام الشغل</p>
             </div>
           </div>

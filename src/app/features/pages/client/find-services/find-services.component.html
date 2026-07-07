@@ -51,6 +51,27 @@
   <div class="fs-body">
 
     <!-- ══════════════════════════════════════════
+         عروض وتنقل سريع
+    ══════════════════════════════════════════ -->
+    <section class="fs-section">
+      <div class="fs-promo-grid" appScrollReveal>
+        @for (promo of promoCards(); track promo.id) {
+          <button class="fs-promo-card fs-promo-card--{{ promo.badgeVariant }}" (click)="promo.action()">
+            <span class="fs-promo-badge">{{ promo.badge }}</span>
+            <h3 class="fs-promo-title">{{ promo.title }}</h3>
+            <p class="fs-promo-desc">{{ promo.desc }}</p>
+            <span class="fs-promo-cta">
+              {{ promo.ctaLabel }}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+              </svg>
+            </span>
+          </button>
+        }
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
          تصفح حسب الخدمة - Bento Grid
     ══════════════════════════════════════════ -->
     <section class="fs-section">
@@ -137,6 +158,51 @@
     </section>
 
     <!-- ══════════════════════════════════════════
+         خدمة عاجلة — صنايعية متاحين فورًا
+    ══════════════════════════════════════════ -->
+    <section class="fs-section" id="emergency-section">
+      <div class="fs-section-header" appScrollReveal>
+        <h2 class="fs-section-title fs-section-title--urgent">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/>
+          </svg>
+          محتاج حد دلوقتي؟
+        </h2>
+        <p class="fs-section-desc fs-hide-mobile">صنايعية متاحين فورًا في الحالات العاجلة</p>
+      </div>
+
+      @if (loadingEmergency()) {
+        <div class="fs-recent-grid" appScrollReveal>
+          @for (s of [1,2,3,4]; track s) {
+            <div class="fs-skeleton-card" style="height: 100px;"></div>
+          }
+        </div>
+      } @else if (emergencyWorkers().length === 0) {
+        <p class="fs-section-desc">مفيش صنايعية متاحين فورًا دلوقتي، جرب تاني بعد شوية.</p>
+      } @else {
+        <div class="fs-nearby-grid" appScrollReveal>
+          @for (w of emergencyWorkers(); track w.id) {
+            <button class="fs-nearby-card fs-nearby-card--urgent" (click)="goToProfile(w.id)">
+              <span class="fs-urgent-pulse">متاح الآن</span>
+              <div class="fs-nearby-avatar" [style.background]="w.avatarColor">
+                {{ w.fullName.charAt(0) }}
+              </div>
+              <p class="fs-nearby-name">{{ w.fullName }}</p>
+              <p class="fs-nearby-trade">{{ w.tradeLabel }}</p>
+              <div class="fs-nearby-rating">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="#F97316 " stroke="none">
+                  <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+                {{ w.rating }}
+              </div>
+              <p class="fs-nearby-price">{{ w.hourlyRate }} ج.م / ساعة</p>
+            </button>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- ══════════════════════════════════════════
          أحدث الخدمات + أفضل الصنايعية
     ══════════════════════════════════════════ -->
     <section class="fs-section">
@@ -182,7 +248,7 @@
         </div>
 
         <!-- توب اسبشيالست (3) -->
-        <div class="fs-split-side">
+        <div class="fs-split-side" id="top-specialists-section">
           <div class="fs-section-header">
             <h2 class="fs-section-title">توب سبشلست</h2>
           </div>

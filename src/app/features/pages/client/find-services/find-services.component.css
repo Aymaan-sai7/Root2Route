@@ -233,10 +233,126 @@
   font-size: 20px;
   font-weight: 700;
   color: #0F172A; /* ink */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.fs-section-title--urgent {
+  color: #DC2626; /* danger */
 }
 .fs-section-desc {
   font-size: 13px;
   color: #64748B; /* steel */
+}
+
+/* ══════════════════════════════════════════════════════════
+   عروض وتنقل سريع (Promo Cards)
+   ══════════════════════════════════════════════════════════ */
+.fs-promo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 860px) {
+  .fs-promo-grid { grid-template-columns: 1fr; }
+}
+
+.fs-promo-card {
+  position: relative;
+  text-align: right;
+  border: 1px solid rgba(37,99,235,0.1); /* primary */
+  border-radius: 14px;
+  padding: 20px;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.fs-promo-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(15,23,42,0.08);
+}
+
+.fs-promo-badge {
+  align-self: flex-start;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.fs-promo-card--new .fs-promo-badge {
+  background: rgba(37,99,235,0.1); /* primary */
+  color: #2563EB;
+}
+.fs-promo-card--popular .fs-promo-badge {
+  background: rgba(249,115,22,0.12); /* accent */
+  color: #EA580C;
+}
+.fs-promo-card--urgent .fs-promo-badge {
+  background: rgba(220,38,38,0.1); /* danger */
+  color: #DC2626;
+}
+
+.fs-promo-title {
+  font-family: var(--font-display, inherit);
+  font-size: 16px;
+  font-weight: 700;
+  color: #0F172A; /* ink */
+}
+.fs-promo-desc {
+  font-size: 13px;
+  color: #64748B; /* steel */
+  line-height: 1.6;
+  flex: 1;
+}
+.fs-promo-cta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2563EB; /* primary */
+  margin-top: 4px;
+}
+.fs-promo-card--urgent .fs-promo-cta { color: #DC2626; } /* danger */
+html[dir='rtl'] .fs-promo-cta svg {
+  transform: scaleX(-1);
+}
+
+/* ══════════════════════════════════════════════════════════
+   خدمة عاجلة — بادج "متاح الآن" + لمسة حمراء خفيفة على الكارت
+   ══════════════════════════════════════════════════════════ */
+.fs-nearby-card--urgent {
+  position: relative;
+  border-color: rgba(220,38,38,0.15); /* danger */
+}
+.fs-urgent-pulse {
+  position: absolute;
+  top: 10px;
+  inset-inline-end: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(22,163,74,0.1); /* success */
+  color: #16A34A; /* success */
+  font-size: 10px;
+  font-weight: 700;
+}
+.fs-urgent-pulse::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #16A34A; /* success */
+  animation: fs-pulse 1.4s ease-in-out infinite;
+}
+@keyframes fs-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.8); }
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -655,7 +771,8 @@ html[dir='rtl'] .fs-top-item:hover {
 
 @media (prefers-reduced-motion: reduce) {
   .fs-skeleton-card { animation: none; }
-  .fs-bento-card, .fs-top-item { transition: none; }
+  .fs-bento-card, .fs-top-item, .fs-promo-card, .fs-nearby-card { transition: none; }
+  .fs-urgent-pulse::before { animation: none; }
 }
 
 @media (max-width: 768px) {

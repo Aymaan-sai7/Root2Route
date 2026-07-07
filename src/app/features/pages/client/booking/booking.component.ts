@@ -117,6 +117,74 @@ export class BookingComponent implements OnInit {
     });
   });
 
+  // ══════════════════════════════════════════════════════════
+  // الكوبون — الجزء الجديد
+  // ⚠️ ده validate بس (بيتنادى من هنا في خطوة المراجعة قبل التأكيد). الاستهلاك
+  // الفعلي (خصم السعر الحقيقي + تسجيل الاستخدام) بيحصل في السيرفر جوه
+  // confirmBooking() تحت، مش هنا — عشان محدش يقدر يزوّر الخصم من الفرونت
+  // ══════════════════════════════════════════════════════════
+  couponCode = signal('');
+  couponStatus = signal<'idle' | 'checking' | 'valid' | 'invalid'>('idle');
+  couponMessage = signal<string | null>(null);
+  appliedDiscount = signal<{ discountType: 'percentage' | 'fixed'; discountValue: number; code: string } | null>(null);
+
+  discountAmount = computed(() => {
+    const discount = this.appliedDiscount();
+    const total = this.totalAmount();
+    if (!discount) return 0;
+    const raw =
+      discount.discountType === 'percentage'
+        ? (total * discount.discountValue) / 100
+        : discount.discountValue;
+    return Math.min(Math.round(raw * 100) / 100, total);
+  });
+
+  finalAmount = computed(() => {
+    return Math.max(0, Math.round((this.totalAmount() - this.discountAmount()) * 100) / 100);
+  });
+
+  onCouponInput(event: Event): void {
+    this.couponCode.set((event.target as HTMLInputElement).value);
+    // لو المستخدم بدأ يعدّل الكود بعد ما كان اتطبق واحد قبل كده، نلغي القديم
+    if (this.appliedDiscount() || this.couponStatus() === 'invalid') {
+      this.appliedDiscount.set(null);
+      this.couponStatus.set('idle');
+      this.couponMessage.set(null);
+    }
+  }
+
+  checkCoupon(): void {
+    const code = this.couponCode().trim();
+    const w = this.worker();
+    if (!code || !w) return;
+
+    this.couponStatus.set('checking');
+    this.couponMessage.set(null);
+
+    this.bookingsService.validateCoupon(code, w.trade).subscribe((result) => {
+      if (result.valid && result.discountType && result.discountValue != null) {
+        this.appliedDiscount.set({
+          discountType: result.discountType,
+          discountValue: result.discountValue,
+          code: result.code ?? code,
+        });
+        this.couponStatus.set('valid');
+        this.couponMessage.set(null);
+      } else {
+        this.appliedDiscount.set(null);
+        this.couponStatus.set('invalid');
+        this.couponMessage.set(result.message ?? 'الكود ده مش صالح.');
+      }
+    });
+  }
+
+  removeCoupon(): void {
+    this.couponCode.set('');
+    this.appliedDiscount.set(null);
+    this.couponStatus.set('idle');
+    this.couponMessage.set(null);
+  }
+
   ngOnInit(): void {
     const workerId = this.route.snapshot.paramMap.get('workerId');
 
@@ -196,12 +264,16 @@ export class BookingComponent implements OnInit {
       workerId: w.id,
       workerName: w.fullName,
       workerTrade: w.tradeLabel,
+      trade: w.trade, // ⚠️ الـ TradeType slug الحقيقي (مش tradeLabel) — للتحقق من قيود الكوبون في السيرفر
       workerAvatarColor: w.avatarColor,
       description: this.detailsForm.get('description')?.value,
       address: this.addressForm.value,
       scheduledAt,
       estimatedHours: this.estimatedHours(),
       totalAmount: this.totalAmount(),
+      // ⚠️ بنبعت الكود بس لو فعليًا اتقبل (couponStatus === 'valid') — السيرفر
+      // هو اللي هيتحقق ويحسب الخصم النهائي ويسجل الاستخدام، مش الفرونت
+      couponCode: this.couponStatus() === 'valid' ? this.appliedDiscount()?.code : undefined,
     }).subscribe({
       next: (booking) => {
         this.isSubmitting.set(false);
