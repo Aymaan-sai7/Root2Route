@@ -168,6 +168,9 @@
 
 @media (min-width: 768px) {
   .mnav-backdrop, .mnav-panel { display: none !important; }
+  .mnav-toggle {
+    display: none !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
