@@ -290,9 +290,24 @@ svg.apexcharts-svg{
   font-weight:700;
 }
 
-.ad-table-user div{
+.ad-table-user div:not(.ad-table-avatar){
   min-width:0;
   flex:1;
+}
+
+.ad-table-avatar{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  flex-grow:0;   /* ← جديد، تأكيد إضافي */
+  flex-basis:32px; /* ← جديد، تأكيد إضافي */
+  color:#fff;
+  font-size:13px;
+  font-weight:700;
 }
 
 .ad-table-name{

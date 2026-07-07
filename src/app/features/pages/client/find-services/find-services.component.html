@@ -20,10 +20,28 @@
   </div>
   <button class="fs-search-btn" (click)="submitSearch()">ابحث</button>
 </div>
+
+        <!-- رسالة "مفيش نتيجة" — بتظهر هنا بدل ما ننقل المستخدم لصفحة فيها
+             نتايج مالهاش علاقة بالكلمة اللي كتبها -->
+        @if (searchNotFound()) {
+          <div class="fs-search-not-found">
+            <p class="fs-search-not-found-text">
+              مفيش خدمة اسمها "<strong>{{ lastSearchedTerm() }}</strong>"، جرب واحدة من التصنيفات دي:
+            </p>
+            <div class="fs-search-not-found-tags">
+              @for (t of suggestedTrades(); track t.trade) {
+                <button class="fs-hint-tag" (click)="goToCategory(t.trade)">{{ t.label }}</button>
+              }
+            </div>
+          </div>
+        }
+
         <div class="fs-search-hints">
           <span class="fs-hint-label">الأكثر طلباً:</span>
           @for (cat of bentoCategories; track cat.id) {
-            <button class="fs-hint-tag" (click)="goToCategory(cat.trade)">{{ cat.label }}</button>
+            @if (cat.isMostPopular) {
+              <button class="fs-hint-tag" (click)="goToCategory(cat.trade)">{{ cat.label }}</button>
+            }
           }
         </div>
       </div>
@@ -43,7 +61,11 @@
 
       <div class="fs-bento-grid" appScrollReveal>
         @for (cat of bentoCategories; track cat.id) {
-          <button class="fs-bento-card fs-bento-card--{{ cat.size }}" [style.background-image]="'url(' + cat.imageUrl + ')'" (click)="goToCategory(cat.trade)">
+          <button
+            class="fs-bento-card fs-bento-card--{{ cat.size }} fs-bento-card--pos-{{ cat.posKey }}"
+            [style.background-image]="'url(' + cat.imageUrl + ')'"
+            (click)="goToCategory(cat.trade)"
+          >
             <span class="fs-bento-overlay"></span>
 
             @if (cat.isMostPopular) {

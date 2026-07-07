@@ -1,4 +1,13 @@
-export type TradeType = 'electrical' | 'plumbing' | 'carpentry' | 'painting' | 'ac' | 'other';
+export type TradeType =
+  | 'electrical'
+  | 'plumbing'
+  | 'carpentry'
+  | 'painting'
+  | 'ac'
+  | 'cleaning'
+  | 'moving'
+  | 'metalwork'
+  | 'other';
 
 export interface Worker {
   id: string;

@@ -14,13 +14,17 @@ interface BentoCategory {
   desc: string;
   imageUrl: string;
   isMostPopular: boolean;
+  // ⚠️ size بيتحكم بس في حجم الخط والـ badge (مقاسات تصميمية)، مش في مكان
+  // الكارت في الجريد — المكان بقى مسؤولية posKey لوحده (شوف fs-bento-card--pos-*
+  // في الـ CSS)
   size: 'large' | 'medium' | 'small';
+  posKey: string;
 }
 
 @Component({
   selector: 'app-find-services',
   standalone: true,
-  imports: [ ScrollRevealDirective],
+  imports: [ScrollRevealDirective],
   templateUrl: './find-services.component.html',
   styleUrl: './find-services.component.css',
 })
@@ -38,7 +42,19 @@ export class FindServicesComponent implements OnInit {
   topSpecialists = signal<Worker[]>([]);
   loadingTopSpecialists = signal(true);
 
+  // ══════════════════════════════════════════════════════════
+  // تصفح حسب الخدمة — Bento Grid
+  // ⚠️ البلوك الأول (4 تصنيفات الأولانيين: كهربا/سباكة/نجارة/دهانات) بيشغل
+  // نص الشاشة اليمين بصريًا (الكارت الكبير فيه على أقصى اليمين وطوله كامل).
+  // البلوك التاني (4 تصنيفات الجداد: تكييف/تنظيف/نقل عفش/حدادة) بيشغل نص
+  // الشاشة الشمال، بنفس التقسيمة بس معكوسة — الكارت الكبير فيه على أقصى الشمال.
+  // ⚠️ ملحوظة: القيم 'ac' و 'cleaning' و 'moving' و 'metalwork' لازم تكون
+  // موجودة في TradeType (union type) بتاعك في worker.model.ts، وإلا الكومبايلر
+  // هيرفض. 'ac' غالبًا موجود بالفعل (مستخدم في searchTradeMap تحت)، بس
+  // 'cleaning' و 'moving' و 'metalwork' محتاجين تتضاف لو مش موجودين.
+  // ══════════════════════════════════════════════════════════
   bentoCategories: BentoCategory[] = [
+    // ── البلوك الأول (يمين) ──────────────────────────────────
     {
       id: 'electrical',
       trade: 'electrical',
@@ -47,6 +63,7 @@ export class FindServicesComponent implements OnInit {
       imageUrl: 'https://images.pexels.com/photos/8005397/pexels-photo-8005397.jpeg?auto=compress&cs=tinysrgb&w=900',
       isMostPopular: true,
       size: 'large',
+      posKey: 'large-right',
     },
     {
       id: 'plumbing',
@@ -56,6 +73,7 @@ export class FindServicesComponent implements OnInit {
       imageUrl: 'https://images.pexels.com/photos/8005368/pexels-photo-8005368.jpeg?auto=compress&cs=tinysrgb&w=900',
       isMostPopular: false,
       size: 'medium',
+      posKey: 'medium-right',
     },
     {
       id: 'carpentry',
@@ -65,6 +83,7 @@ export class FindServicesComponent implements OnInit {
       imageUrl: 'https://images.pexels.com/photos/5974047/pexels-photo-5974047.jpeg?auto=compress&cs=tinysrgb&w=600',
       isMostPopular: false,
       size: 'small',
+      posKey: 'small-right-1',
     },
     {
       id: 'painting',
@@ -74,17 +93,86 @@ export class FindServicesComponent implements OnInit {
       imageUrl: 'https://images.pexels.com/photos/1797428/pexels-photo-1797428.jpeg?auto=compress&cs=tinysrgb&w=600',
       isMostPopular: false,
       size: 'small',
+      posKey: 'small-right-2',
+    },
+
+    // ── البلوك الثاني (شمال) — الإضافة الجديدة ──────────────
+    {
+      id: 'ac',
+      trade: 'ac',
+      label: 'تكييف',
+      desc: 'تركيب وصيانة وتنظيف كل أنواع التكييفات.',
+      imageUrl: 'https://images.pexels.com/photos/5463581/pexels-photo-5463581.jpeg?auto=compress&cs=tinysrgb&w=900',
+      isMostPopular: false,
+      size: 'medium',
+      posKey: 'medium-left',
+    },
+    {
+      id: 'cleaning',
+      trade: 'cleaning',
+      label: 'تنظيف',
+      desc: 'نظافة شاملة للبيت أو المكتب.',
+      imageUrl: 'https://images.pexels.com/photos/8055825/pexels-photo-8055825.jpeg?auto=compress&cs=tinysrgb&w=600',
+      isMostPopular: false,
+      size: 'small',
+      posKey: 'small-left-1',
+    },
+    {
+      id: 'moving',
+      trade: 'moving',
+      label: 'نقل عفش',
+      desc: 'نقل آمن وسريع لكل حاجاتك.',
+      imageUrl: 'https://images.pexels.com/photos/4487361/pexels-photo-4487361.jpeg?auto=compress&cs=tinysrgb&w=600',
+      isMostPopular: false,
+      size: 'small',
+      posKey: 'small-left-2',
+    },
+    {
+      id: 'metalwork',
+      trade: 'metalwork',
+      label: 'حدادة وألوميتال',
+      desc: 'شبابيك، أبواب، وشغل حديد ومعادن باحترافية.',
+      imageUrl: 'https://images.pexels.com/photos/2760343/pexels-photo-2760343.jpeg?auto=compress&cs=tinysrgb&w=900',
+      isMostPopular: false,
+      size: 'large',
+      posKey: 'large-left',
     },
   ];
 
-  // خريطة بحث شاملة لكل التريدز (مش بس اللي ظاهرين في الـ bento)
+  // ══════════════════════════════════════════════════════════
+  // السيرش الذكي (Fuzzy Search)
+  // ⚠️ الهدف: نتعامل مع أخطاء إملائية بسيطة واختلاف صيغ الكلمة (كهربا/كهرباء)،
+  // ولو مفيش أي تطابق معقول، نوري "مفيش نتيجة" بدل ما ننقل المستخدم لتصنيف
+  // عشوائي فيه صنايعية مالهمش علاقة بالكلمة اللي كتبها.
+  // ══════════════════════════════════════════════════════════
   private searchTradeMap: { trade: TradeType; keywords: string[] }[] = [
-    { trade: 'electrical', keywords: ['كهربا', 'كهرباء', 'electrical'] },
-    { trade: 'plumbing',   keywords: ['سباكة', 'سباك', 'plumbing'] },
-    { trade: 'carpentry',  keywords: ['نجارة', 'نجار', 'carpentry'] },
-    { trade: 'painting',   keywords: ['نقاشة', 'دهان', 'painting'] },
-    { trade: 'ac',         keywords: ['تكييف', 'تكييفات', 'ac'] },
+    { trade: 'electrical', keywords: ['كهربا', 'كهرباء', 'كهربائي', 'كهربجي', 'electrical', 'electric'] },
+    { trade: 'plumbing',   keywords: ['سباكة', 'سباك', 'مواسير', 'بلاعة', 'بلاعات', 'plumbing', 'plumber'] },
+    { trade: 'carpentry',  keywords: ['نجارة', 'نجار', 'موبيليا', 'اثاث', 'أثاث', 'carpentry', 'carpenter'] },
+    { trade: 'painting',   keywords: ['نقاشة', 'نقاش', 'دهان', 'دهانات', 'painting', 'painter'] },
+    { trade: 'ac',         keywords: ['تكييف', 'تكييفات', 'مكيف', 'مكيفات', 'ac', 'تبريد'] },
+    { trade: 'cleaning',   keywords: ['تنظيف', 'نظافة', 'شركة نظافة', 'cleaning', 'cleaner'] },
+    { trade: 'moving',     keywords: ['نقل عفش', 'نقل اثاث', 'عفش', 'وناسة', 'moving', 'movers'] },
+    { trade: 'metalwork',  keywords: ['حدادة', 'حداد', 'الوميتال', 'ألوميتال', 'حديد', 'metalwork', 'blacksmith'] },
   ];
+
+  // خريطة التصنيفات المتاحة كلها، بتتفرج للمستخدم لما السيرش يفشل
+  private allTradeLabels: { trade: TradeType; label: string }[] = [
+    { trade: 'electrical', label: 'كهربا' },
+    { trade: 'plumbing', label: 'سباكة' },
+    { trade: 'carpentry', label: 'نجارة' },
+    { trade: 'painting', label: 'نقاشة' },
+    { trade: 'ac', label: 'تكييف' },
+    { trade: 'cleaning', label: 'تنظيف' },
+    { trade: 'moving', label: 'نقل عفش' },
+    { trade: 'metalwork', label: 'حدادة وألوميتال' },
+  ];
+
+  // ⚠️ لما السيرش يفشل، مبنقلش المستخدم لأي حتة — بنعرض رسالة "مفيش نتيجة"
+  // مكانها هنا في نفس الصفحة، وبنقترح أقرب تصنيفات موجودة فعليًا
+  searchNotFound = signal(false);
+  lastSearchedTerm = signal('');
+  suggestedTrades = signal<{ trade: TradeType; label: string }[]>([]);
 
   ngOnInit(): void {
     this.loadRecentServices();
@@ -123,17 +211,102 @@ export class FindServicesComponent implements OnInit {
   onSearch(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.searchQuery.set(value);
+    // لو المستخدم بدأ يعدّل تاني بعد ما ظهرتله رسالة "مفيش نتيجة"، نخفيها
+    if (this.searchNotFound()) {
+      this.searchNotFound.set(false);
+    }
+  }
+
+  // ── Arabic text normalization ────────────────────────────────
+  // بنوحّد أشكال الحروف المختلفة اللي المستخدمين بيلخبطوا فيها كتير
+  // (همزات الألف، التاء المربوطة/الهاء، الياء/الألف المقصورة، التشكيل)
+  private normalizeArabic(text: string): string {
+    return text
+      .trim()
+      .toLowerCase()
+      .replace(/[\u064B-\u0652]/g, '')   // إزالة التشكيل
+      .replace(/[أإآ]/g, 'ا')            // توحيد أشكال الألف
+      .replace(/ة/g, 'ه')                // توحيد التاء المربوطة مع الهاء
+      .replace(/ى/g, 'ي')                // توحيد الألف المقصورة مع الياء
+      .replace(/\s+/g, ' ');             // إزالة أي مسافات زيادة
+  }
+
+  // ── Levenshtein distance ──────────────────────────────────────
+  // بيحسب "عدد التعديلات" (إضافة/حذف/تغيير حرف) المطلوبة عشان كلمة تبقى
+  // زي التانية — ده اللي بيخلينا نتسامح مع أخطاء إملائية بسيطة
+  private levenshtein(a: string, b: string): number {
+    const dp: number[][] = Array.from({ length: a.length + 1 }, () =>
+      new Array(b.length + 1).fill(0)
+    );
+    for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+    for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+
+    for (let i = 1; i <= a.length; i++) {
+      for (let j = 1; j <= b.length; j++) {
+        dp[i][j] =
+          a[i - 1] === b[j - 1]
+            ? dp[i - 1][j - 1]
+            : 1 + Math.min(dp[i - 1][j - 1], dp[i - 1][j], dp[i][j - 1]);
+      }
+    }
+    return dp[a.length][b.length];
+  }
+
+  // ── البحث الذكي عن أقرب تصنيف ───────────────────────────────
+  // بيرجع أفضل تطابق (لو موجود) مع "درجة ثقة" من 0 لـ 1، عشان نقدر نفرّق
+  // بين تطابق قوي (نروح له على طول) وتطابق ضعيف (نسيبه كاقتراح بس)
+  private findBestTradeMatch(query: string): { trade: TradeType; score: number } | null {
+    const q = this.normalizeArabic(query);
+    if (!q) return null;
+
+    let best: { trade: TradeType; score: number } | null = null;
+
+    for (const entry of this.searchTradeMap) {
+      for (const rawKeyword of entry.keywords) {
+        const keyword = this.normalizeArabic(rawKeyword);
+
+        // تطابق مباشر أو جزئي (substring) → ثقة كاملة
+        if (keyword.includes(q) || q.includes(keyword)) {
+          return { trade: entry.trade, score: 1 };
+        }
+
+        // تطابق تقريبي (فرق حرف أو اتنين — زي "كهربا" مقابل "كهرباء"،
+        // أو خطأ إملائي بسيط زي "سباكه" بدل "سباكة")
+        const distance = this.levenshtein(q, keyword);
+        const maxAllowedDistance = Math.max(1, Math.floor(keyword.length * 0.3));
+
+        if (distance <= maxAllowedDistance) {
+          const score = 1 - distance / Math.max(keyword.length, q.length, 1);
+          if (!best || score > best.score) {
+            best = { trade: entry.trade, score };
+          }
+        }
+      }
+    }
+
+    return best;
   }
 
   submitSearch(): void {
-    const q = this.searchQuery().trim().toLowerCase();
+    const q = this.searchQuery().trim();
     if (!q) return;
 
-    const match = this.searchTradeMap.find((entry) =>
-      entry.keywords.some((kw) => kw.toLowerCase().includes(q) || q.includes(kw.toLowerCase()))
-    );
+    const match = this.findBestTradeMatch(q);
 
-    this.router.navigate(['/find-services', match ? match.trade : 'other']);
+    // ⚠️ عتبة الثقة 0.45 اتحطت بعد تجربة: أعلى من كده بيرفض تطابقات
+    // معقولة زي "كهربا"، وأقل من كده بيقبل كلمات مالهاش علاقة خالص
+    if (match && match.score >= 0.45) {
+      this.searchNotFound.set(false);
+      this.router.navigate(['/find-services', match.trade]);
+      return;
+    }
+
+    // ⚠️ مفيش تطابق واضح — منروحش لصفحة تانية فيها صنايعية مالهمش علاقة.
+    // بدل كده، نعرض رسالة "مفيش نتيجة" هنا في نفس الصفحة، مع اقتراح
+    // التصنيفات المتاحة فعليًا عشان نساعد المستخدم يوصل لطلبه
+    this.lastSearchedTerm.set(q);
+    this.suggestedTrades.set(this.allTradeLabels);
+    this.searchNotFound.set(true);
   }
 
   goToCategory(trade: TradeType): void {
