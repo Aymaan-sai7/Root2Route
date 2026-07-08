@@ -1,0 +1,197 @@
+<div class="ac-page">
+
+  <!-- Header -->
+  <div class="ac-header">
+    <div>
+      <h1 class="ac-title">إدارة الكوبونات</h1>
+      <p class="ac-subtitle">إنشاء ومتابعة كوبونات الخصم على المنصة</p>
+    </div>
+    <button class="ac-btn ac-btn--primary" (click)="toggleCreateForm()">
+      @if (showCreateForm()) {
+        إلغاء
+      } @else {
+        + كوبون جديد
+      }
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="ac-stats-grid">
+    <div class="ac-stat-card">
+      <p class="ac-stat-label">إجمالي الكوبونات</p>
+      <p class="ac-stat-value">{{ totalCoupons() }}</p>
+    </div>
+    <div class="ac-stat-card ac-stat-card--success">
+      <p class="ac-stat-label">شغالة دلوقتي</p>
+      <p class="ac-stat-value">{{ activeCouponsCount() }}</p>
+    </div>
+    <div class="ac-stat-card ac-stat-card--accent">
+      <p class="ac-stat-label">مرات الاستخدام</p>
+      <p class="ac-stat-value">{{ totalRedemptions() }}</p>
+    </div>
+  </div>
+
+  <!-- Create Form -->
+  @if (showCreateForm()) {
+    <form [formGroup]="form" (ngSubmit)="submit()" class="ac-create-form">
+      <h2 class="ac-form-title">كوبون جديد</h2>
+
+      <div class="ac-form-grid">
+        <div class="ac-form-field">
+          <label class="ac-label">كود الكوبون (اختياري)</label>
+          <input
+            type="text"
+            formControlName="code"
+            placeholder="هيتولد تلقائي لو سبته فاضي"
+            class="ac-input"
+          />
+        </div>
+
+        <div class="ac-form-field">
+          <label class="ac-label">نوع الخصم</label>
+          <app-admin-select
+            [options]="discountTypeOptions"
+            [value]="form.get('discountType')?.value"
+            (valueChange)="onDiscountTypeChange($event)"
+          />
+        </div>
+
+        <div class="ac-form-field">
+          <label class="ac-label">قيمة الخصم</label>
+          <input
+            title="number"
+            type="number"
+            formControlName="discountValue"
+            min="1"
+            class="ac-input"
+            [class.ac-input--error]="discountValueControl?.invalid && discountValueControl?.touched"
+          />
+          @if (discountValueControl?.invalid && discountValueControl?.touched) {
+            <p class="ac-error-msg">قيمة الخصم لازم تكون رقم أكبر من صفر</p>
+          }
+        </div>
+
+        <div class="ac-form-field">
+          <label class="ac-label">مخصص لتصنيف؟</label>
+          <app-admin-select
+            [options]="tradeOptions"
+            [value]="form.get('tradeRestriction')?.value"
+            (valueChange)="onTradeChange($event)"
+          />
+        </div>
+
+        <div class="ac-form-field">
+          <label class="ac-label">حد الاستخدام الإجمالي (اختياري)</label>
+          <input
+            type="number"
+            formControlName="maxTotalUses"
+            min="1"
+            placeholder="بلا حد"
+            class="ac-input"
+          />
+        </div>
+
+        <div class="ac-form-field">
+          <label class="ac-label">تاريخ الانتهاء (اختياري)</label>
+          <input title="date" type="date" formControlName="expiryDate" class="ac-input" />
+        </div>
+      </div>
+
+      <button type="submit" class="ac-btn ac-btn--primary ac-btn--full" [disabled]="submitting()">
+        @if (submitting()) {
+          <span class="ac-spinner"></span>
+          جاري الإنشاء...
+        } @else {
+          إنشاء الكوبون
+        }
+      </button>
+    </form>
+  }
+
+  <!-- Filters -->
+  <div class="ac-filters">
+    <input
+      type="text"
+      placeholder="ابحث بكود الكوبون..."
+      class="ac-input ac-search-input"
+      [value]="searchTerm()"
+      (input)="onSearchInput($event)"
+    />
+    <div class="ac-status-filter">
+      <app-admin-select
+        [options]="statusFilterOptions"
+        [value]="statusFilter()"
+        placeholder="كل الحالات"
+        (valueChange)="onStatusFilterChange($event)"
+      />
+    </div>
+  </div>
+
+  <!-- List -->
+  @if (loading()) {
+    <div class="ac-skeleton-list">
+      @for (s of [1,2,3]; track s) {
+        <div class="ac-skeleton-row"></div>
+      }
+    </div>
+  } @else if (filteredCoupons().length === 0) {
+    <div class="ac-empty-state">
+      <p>مفيش كوبونات مطابقة.</p>
+    </div>
+  } @else {
+    <div class="ac-coupon-list">
+      @for (coupon of filteredCoupons(); track coupon.id) {
+        <div class="ac-coupon-card">
+          <div class="ac-coupon-main">
+            <div class="ac-coupon-code-wrap">
+              <span class="ac-coupon-code">{{ coupon.code }}</span>
+              <span class="ac-status-badge ac-status-badge--{{ couponStatus(coupon) }}">
+                @switch (couponStatus(coupon)) {
+                  @case ('active') { شغال }
+                  @case ('inactive') { موقوف }
+                  @case ('expired') { منتهي }
+                }
+              </span>
+            </div>
+            <p class="ac-coupon-discount">{{ discountLabel(coupon) }} خصم</p>
+          </div>
+
+          <div class="ac-coupon-meta">
+            <div class="ac-coupon-meta-item">
+              <span class="ac-meta-label">التصنيف</span>
+              <span class="ac-meta-value">{{ tradeLabel(coupon.tradeRestriction) }}</span>
+            </div>
+            <div class="ac-coupon-meta-item">
+              <span class="ac-meta-label">الاستخدام</span>
+              <span class="ac-meta-value">{{ usageLabel(coupon) }}</span>
+            </div>
+            <div class="ac-coupon-meta-item">
+              <span class="ac-meta-label">اتعمل</span>
+              <span class="ac-meta-value">{{ timeAgo(coupon.createdAt) }}</span>
+            </div>
+            @if (coupon.expiryDate) {
+              <div class="ac-coupon-meta-item">
+                <span class="ac-meta-label">ينتهي</span>
+                <span class="ac-meta-value">{{ coupon.expiryDate | date: 'd MMM y' }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="ac-coupon-actions">
+            <button
+              class="ac-btn ac-btn--ghost"
+              (click)="toggleActive(coupon, $event)"
+              [disabled]="couponStatus(coupon) === 'expired'"
+            >
+              {{ coupon.isActive ? 'إيقاف' : 'تفعيل' }}
+            </button>
+            <button class="ac-btn ac-btn--danger-ghost" (click)="deleteCoupon(coupon, $event)">
+              حذف
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</div>

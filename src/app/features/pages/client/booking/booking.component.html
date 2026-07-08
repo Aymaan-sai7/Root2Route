@@ -81,185 +81,298 @@
       }
 
       <!-- Step 2: Address -->
-      @if (currentStep() === 'address') {
-        <form [formGroup]="addressForm" (ngSubmit)="goToSchedule()" class="bg-white border border-steel/20 rounded-xl p-6">
-          <h2 class="text-lg font-bold text-ink mb-1">عنوان الحجز</h2>
-          <p class="text-sm text-steel mb-4">حدد العنوان اللي الصنايعي هيروحله بالظبط</p>
+@if (currentStep() === 'address') {
+  <form [formGroup]="addressForm" (ngSubmit)="goToSchedule()" class="bg-white border border-steel/20 rounded-xl p-6">
+    <h2 class="text-lg font-bold text-ink mb-1">عنوان الحجز</h2>
+    <p class="text-sm text-steel mb-4">حدد العنوان اللي الصنايعي هيروحله بالظبط</p>
 
+    <div class="space-y-4">
+
+      <!-- المحافظة -->
+      <div>
+        <label class="block text-sm font-bold text-ink mb-1">المحافظة</label>
+        <select
+          title="المحافظة"
+          formControlName="governorate"
+          class="w-full border rounded-lg p-3 text-ink focus:outline-none focus:ring-2 focus:ring-blueprint/40 bg-white"
+          [class.border-danger]="governorateControl?.invalid && governorateControl?.touched"
+          [class.border-steel]="!(governorateControl?.invalid && governorateControl?.touched)"
+        >
+          <option value="" disabled selected>اختار المحافظة</option>
+          @for (gov of governorates; track gov.name) {
+            <option [value]="gov.name">{{ gov.name }}</option>
+          }
+        </select>
+        @if (governorateControl?.invalid && governorateControl?.touched) {
+          <p class="text-danger text-sm mt-1">المحافظة مطلوبة</p>
+        }
+      </div>
+
+      <!-- المدينة -->
+      <div>
+        <label class="block text-sm font-bold text-ink mb-1">المدينة</label>
+        <select
+          title="المدينة"
+          formControlName="city"
+          class="w-full border rounded-lg p-3 text-ink focus:outline-none focus:ring-2 focus:ring-blueprint/40 bg-white disabled:bg-steel/5"
+          [disabled]="!governorateControl?.value"
+          [class.border-danger]="cityControl?.invalid && cityControl?.touched"
+          [class.border-steel]="!(cityControl?.invalid && cityControl?.touched)"
+        >
+          <option value="" disabled selected>
+            {{ governorateControl?.value ? 'اختار المدينة' : 'اختار المحافظة الأول' }}
+          </option>
+          @for (city of availableCities(); track city) {
+            <option [value]="city">{{ city }}</option>
+          }
+        </select>
+        @if (cityControl?.invalid && cityControl?.touched) {
+          <p class="text-danger text-sm mt-1">المدينة مطلوبة</p>
+        }
+      </div>
+
+      <!-- البلد -->
+      <div>
+        <label class="block text-sm font-bold text-ink mb-1">البلد / القرية</label>
+        <input
+          title="البلد"
+          type="text"
+          formControlName="village"
+          placeholder="اسم البلد أو المنطقة اللي بتسكن فيها"
+          class="w-full border rounded-lg p-3 text-ink focus:outline-none focus:ring-2 focus:ring-blueprint/40"
+          [class.border-danger]="villageControl?.invalid && villageControl?.touched"
+          [class.border-steel]="!(villageControl?.invalid && villageControl?.touched)"
+        />
+        @if (villageControl?.invalid && villageControl?.touched) {
+          <p class="text-danger text-sm mt-1">البلد مطلوب</p>
+        }
+      </div>
+
+      <!-- الشارع -->
+      <div>
+        <label class="block text-sm font-bold text-ink mb-1">الشارع</label>
+        <input
+          title="الشارع"
+          type="text"
+          formControlName="street"
+          placeholder="الفلل"
+          class="w-full border rounded-lg p-3 text-ink focus:outline-none focus:ring-2 focus:ring-blueprint/40"
+          [class.border-danger]="streetControl?.invalid && streetControl?.touched"
+          [class.border-steel]="!(streetControl?.invalid && streetControl?.touched)"
+        />
+        @if (streetControl?.invalid && streetControl?.touched) {
+          <p class="text-danger text-sm mt-1">الشارع مطلوب</p>
+        }
+      </div>
+
+      <!-- رقم العقار -->
+      <div>
+        <label class="block text-sm font-bold text-ink mb-1">رقم العقار</label>
+        <input
+          title="رقم العقار"
+          type="text"
+          formControlName="buildingNumber"
+          placeholder="15 برج النور"
+          class="w-full border rounded-lg p-3 text-ink focus:outline-none focus:ring-2 focus:ring-blueprint/40"
+          [class.border-danger]="buildingNumberControl?.invalid && buildingNumberControl?.touched"
+          [class.border-steel]="!(buildingNumberControl?.invalid && buildingNumberControl?.touched)"
+        />
+        @if (buildingNumberControl?.invalid && buildingNumberControl?.touched) {
+          <p class="text-danger text-sm mt-1">رقم العقار مطلوب</p>
+        }
+      </div>
+
+      <!-- تحديد الموقع على الخريطة -->
+      <div>
+        <button
+          type="button"
+          (click)="openLocationPicker()"
+          class="w-full flex items-center justify-center gap-2 border-2 border-dashed rounded-lg p-3 text-sm font-bold transition-colors"
+          [class.border-success]="locationPicked()"
+          [class.text-success]="locationPicked()"
+          [class.border-steel]="!locationPicked()"
+          [class.text-ink]="!locationPicked()"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+          @if (locationPicked()) {
+            تم تحديد الموقع على الخريطة ✓ (تعديل)
+          } @else {
+            حدد موقعك بالظبط على الخريطة
+          }
+        </button>
+        <p class="text-xs text-steel mt-1">اختياري، بس بيساعد الصنايعي يوصلك أسرع وأدق</p>
+      </div>
+
+      <!-- الملاحظات -->
+      <div>
+        <label class="block text-sm font-bold text-ink mb-1">ملاحظات (اختياري)</label>
+        <input
+          title="ملاحظات"
+          type="text"
+          formControlName="notes"
+          placeholder="ملاحظات إضافية عن العنوان او الشغل"
+          class="w-full border border-steel rounded-lg p-3 text-ink focus:outline-none focus:ring-2 focus:ring-blueprint/40"
+        />
+      </div>
+
+    </div>
+
+    <div class="flex gap-3 mt-6">
+      <button
+        type="button"
+        (click)="backToDetails()"
+        class="flex-1 border border-steel/30 text-ink font-bold py-3 rounded-lg hover:bg-steel/5 transition-colors"
+      >
+        رجوع
+      </button>
+      <button
+        type="submit"
+        class="flex-1 bg-blueprint text-paper font-bold py-3 rounded-lg hover:bg-blueprint/90 transition-colors"
+      >
+        التالي: تحديد الموعد
+      </button>
+    </div>
+  </form>
+
+  @if (showLocationPicker()) {
+    <app-location-picker
+      [searchHint]="mapSearchHint()"
+      [initialLat]="addressForm.get('lat')?.value"
+      [initialLng]="addressForm.get('lng')?.value"
+      (locationConfirmed)="onLocationConfirmed($event)"
+      (closed)="closeLocationPicker()"
+    />
+  }
+}
+
+<!-- Step 3: Schedule -->
+@if (currentStep() === 'schedule') {
+  <form [formGroup]="scheduleForm" (ngSubmit)="goToReview()" class="bg-white border border-steel/20 rounded-xl p-6">
+    <h2 class="text-lg font-bold text-ink mb-1">حدد الموعد المناسب</h2>
+    <p class="text-sm text-steel mb-4">اختار التاريخ والفترة اللي تناسبك عشان الصنايعي يجهز نفسه</p>
+
+    <!-- Date -->
+    <div>
+      <label class="block text-sm font-bold text-ink mb-1">التاريخ</label>
+      <input
+        title="التاريخ"
+        type="date"
+        formControlName="scheduledDate"
+        [min]="minDate()"
+        class="w-full border rounded-lg p-3 text-ink focus:outline-none focus:ring-2 focus:ring-blueprint/40"
+        [class.border-danger]="dateControl?.invalid && dateControl?.touched"
+        [class.border-steel]="!(dateControl?.invalid && dateControl?.touched)"
+      />
+      @if (dateControl?.invalid && dateControl?.touched) {
+        <p class="text-danger text-sm mt-1">التاريخ مطلوب</p>
+      }
+    </div>
+
+    <!-- Time Slots -->
+    @if (dateControl?.value) {
+      <div class="mt-5">
+        <label class="block text-sm font-bold text-ink mb-2">الوقت المناسب</label>
+
+        @if (loadingSlots()) {
+          <div class="flex items-center gap-2 text-sm text-steel py-4">
+            <div class="w-4 h-4 border-2 border-blueprint border-t-transparent rounded-full animate-spin"></div>
+            بنتأكد من مواعيد الصنايعي المتاحة...
+          </div>
+        } @else if (allSlotsOccupiedForDate()) {
+          <div class="bg-danger/5 border border-danger/20 rounded-lg p-3 text-sm text-danger">
+            كل المواعيد في اليوم ده محجوزة عند الصنايعي، جرب تاريخ تاني.
+          </div>
+        } @else {
           <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-bold text-ink mb-1">المنطقة</label>
-              <input
-                title="المنطقة"
-                type="text"
-                formControlName="area"
-                placeholder="بنها"
-                class="w-full border rounded-lg p-3 text-ink focus:outline-none focus:ring-2 focus:ring-blueprint/40"
-                [class.border-danger]="areaControl?.invalid && areaControl?.touched"
-                [class.border-steel]="!(areaControl?.invalid && areaControl?.touched)"
-              />
-              @if (areaControl?.invalid && areaControl?.touched) {
-                <p class="text-danger text-sm mt-1">المنطقة مطلوبة</p>
-              }
-            </div>
-
-            <div>
-              <label class="block text-sm font-bold text-ink mb-1">الشارع</label>
-              <input
-                title="الشارع"
-                type="text"
-                formControlName="street"
-                placeholder="الفلل"
-                class="w-full border rounded-lg p-3 text-ink focus:outline-none focus:ring-2 focus:ring-blueprint/40"
-                [class.border-danger]="streetControl?.invalid && streetControl?.touched"
-                [class.border-steel]="!(streetControl?.invalid && streetControl?.touched)"
-              />
-              @if (streetControl?.invalid && streetControl?.touched) {
-                <p class="text-danger text-sm mt-1">الشارع مطلوب</p>
-              }
-            </div>
-
-            <div>
-              <label class="block text-sm font-bold text-ink mb-1">رقم العقار</label>
-              <input
-                title="رقم العقار"
-                type="text"
-                formControlName="buildingNumber"
-                placeholder="15 برج النور"
-                class="w-full border rounded-lg p-3 text-ink focus:outline-none focus:ring-2 focus:ring-blueprint/40"
-                [class.border-danger]="buildingNumberControl?.invalid && buildingNumberControl?.touched"
-                [class.border-steel]="!(buildingNumberControl?.invalid && buildingNumberControl?.touched)"
-              />
-              @if (buildingNumberControl?.invalid && buildingNumberControl?.touched) {
-                <p class="text-danger text-sm mt-1">رقم العقار مطلوب</p>
-              }
-            </div>
-
-            <div>
-              <label class="block text-sm font-bold text-ink mb-1">ملاحظات (اختياري)</label>
-              <input
-                title="ملاحظات"
-                type="text"
-                formControlName="notes"
-                placeholder="ملاحظات إضافية عن العنوان او الشغل"
-                class="w-full border border-steel rounded-lg p-3 text-ink focus:outline-none focus:ring-2 focus:ring-blueprint/40"
-              />
-            </div>
-          </div>
-
-          <div class="flex gap-3 mt-6">
-            <button
-              type="button"
-              (click)="backToDetails()"
-              class="flex-1 border border-steel/30 text-ink font-bold py-3 rounded-lg hover:bg-steel/5 transition-colors"
-            >
-              رجوع
-            </button>
-            <button
-              type="submit"
-              class="flex-1 bg-blueprint text-paper font-bold py-3 rounded-lg hover:bg-blueprint/90 transition-colors"
-            >
-              التالي: تحديد الموعد
-            </button>
-          </div>
-        </form>
-      }
-
-      <!-- Step 3: Schedule -->
-      @if (currentStep() === 'schedule') {
-        <form [formGroup]="scheduleForm" (ngSubmit)="goToReview()" class="bg-white border border-steel/20 rounded-xl p-6">
-          <h2 class="text-lg font-bold text-ink mb-1">حدد الموعد المناسب</h2>
-          <p class="text-sm text-steel mb-4">اختار التاريخ والوقت اللي يناسبك عشان الصنايعي يجهز نفسه</p>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <!-- Date -->
-            <div>
-              <label class="block text-sm font-bold text-ink mb-1">التاريخ</label>
-              <input
-                title="التاريخ"
-                type="date"
-                formControlName="scheduledDate"
-                [min]="minDate()"
-                class="w-full border rounded-lg p-3 text-ink focus:outline-none focus:ring-2 focus:ring-blueprint/40"
-                [class.border-danger]="dateControl?.invalid && dateControl?.touched"
-                [class.border-steel]="!(dateControl?.invalid && dateControl?.touched)"
-              />
-              @if (dateControl?.invalid && dateControl?.touched) {
-                <p class="text-danger text-sm mt-1">التاريخ مطلوب</p>
-              }
-            </div>
-
-            <!-- Time -->
-            <div>
-              <label class="block text-sm font-bold text-ink mb-1">الوقت</label>
-              <input
-                title="الوقت"
-                type="time"
-                formControlName="scheduledTime"
-                class="w-full border rounded-lg p-3 text-ink focus:outline-none focus:ring-2 focus:ring-blueprint/40"
-                [class.border-danger]="timeControl?.invalid && timeControl?.touched"
-                [class.border-steel]="!(timeControl?.invalid && timeControl?.touched)"
-              />
-              @if (timeControl?.invalid && timeControl?.touched) {
-                <p class="text-danger text-sm mt-1">الوقت مطلوب</p>
-              }
-            </div>
-          </div>
-
-          <!-- Estimated Hours Stepper -->
-          <div class="mt-4">
-            <label class="block text-sm font-bold text-ink mb-1">عدد الساعات المتوقعة</label>
-            <p class="text-xs text-steel mb-2">تقدير تقريبي لحجم الشغل، السعر النهائي ممكن يختلف حسب الموقف الفعلي</p>
-
-            <div class="flex items-center gap-4">
-              <button
-                type="button"
-                (click)="decreaseHours()"
-                [disabled]="estimatedHours() <= minHours"
-                class="w-10 h-10 rounded-lg border border-steel/30 text-ink font-bold text-lg flex items-center justify-center hover:bg-steel/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                −
-              </button>
-
-              <div class="flex-1 text-center">
-                <span class="text-2xl font-bold text-blueprint">{{ estimatedHours() }}</span>
-                <span class="text-sm text-steel mr-1">ساعة</span>
+            @for (group of slotsByPeriod(); track group.key) {
+              <div>
+                <p class="text-xs font-bold text-steel mb-2">{{ group.label }}</p>
+                <div class="grid grid-cols-2 sm:grid-cols-2 gap-2">
+                  @for (slot of group.slots; track slot.time) {
+  <button
+    type="button"
+    (click)="selectSlot(slot.time)"
+    [disabled]="isSlotOccupied(slot.time)"
+    class="border rounded-lg py-2.5 text-sm font-bold transition-colors"
+    [ngClass]="{
+      'bg-blueprint text-paper border-blueprint': isSlotSelected(slot.time),
+      'border-steel/30 text-ink hover:bg-steel/5': !isSlotSelected(slot.time) && !isSlotOccupied(slot.time),
+      'bg-steel/5 text-steel border-steel/10 cursor-not-allowed opacity-50': isSlotOccupied(slot.time)
+    }"
+  >
+    {{ slot.label }}
+    @if (isSlotOccupied(slot.time)) {
+      <span class="block text-[10px] font-normal mt-0.5">محجوز</span>
+    }
+  </button>
+}
+                </div>
               </div>
-
-              <button
-                type="button"
-                (click)="increaseHours()"
-                [disabled]="estimatedHours() >= maxHours"
-                class="w-10 h-10 rounded-lg border border-steel/30 text-ink font-bold text-lg flex items-center justify-center hover:bg-steel/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                +
-              </button>
-            </div>
-
-            <p class="text-sm text-steel mt-2 text-center">
-              التكلفة التقديرية:
-              <span class="font-bold text-blueprint">{{ totalAmount() }} ج.م</span>
-            </p>
+            }
           </div>
+        }
 
-          <div class="flex gap-3 mt-6">
-            <button
-              type="button"
-              (click)="backToAddress()"
-              class="flex-1 border border-steel/30 text-ink font-bold py-3 rounded-lg hover:bg-steel/5 transition-colors"
-            >
-              رجوع
-            </button>
-            <button
-              type="submit"
-              class="flex-1 bg-blueprint text-paper font-bold py-3 rounded-lg hover:bg-blueprint/90 transition-colors"
-            >
-              التالي: المراجعة
-            </button>
-          </div>
-        </form>
-      }
+        @if (timeControl?.invalid && timeControl?.touched && !loadingSlots()) {
+          <p class="text-danger text-sm mt-2">اختار وقت مناسب من الفترات فوق</p>
+        }
+      </div>
+    }
 
+    <!-- Estimated Hours Stepper -->
+    <div class="mt-6">
+      <label class="block text-sm font-bold text-ink mb-1">عدد الساعات المتوقعة</label>
+      <p class="text-xs text-steel mb-2">تقدير تقريبي لحجم الشغل، السعر النهائي ممكن يختلف حسب الموقف الفعلي</p>
+
+      <div class="flex items-center gap-4">
+        <button
+          type="button"
+          (click)="decreaseHours()"
+          [disabled]="estimatedHours() <= minHours"
+          class="w-10 h-10 rounded-lg border border-steel/30 text-ink font-bold text-lg flex items-center justify-center hover:bg-steel/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          −
+        </button>
+
+        <div class="flex-1 text-center">
+          <span class="text-2xl font-bold text-blueprint">{{ estimatedHours() }}</span>
+          <span class="text-sm text-steel mr-1">ساعة</span>
+        </div>
+
+        <button
+          type="button"
+          (click)="increaseHours()"
+          [disabled]="estimatedHours() >= maxHours"
+          class="w-10 h-10 rounded-lg border border-steel/30 text-ink font-bold text-lg flex items-center justify-center hover:bg-steel/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          +
+        </button>
+      </div>
+
+      <p class="text-sm text-steel mt-2 text-center">
+        التكلفة التقديرية:
+        <span class="font-bold text-blueprint">{{ totalAmount() }} ج.م</span>
+      </p>
+    </div>
+
+    <div class="flex gap-3 mt-6">
+      <button
+        type="button"
+        (click)="backToAddress()"
+        class="flex-1 border border-steel/30 text-ink font-bold py-3 rounded-lg hover:bg-steel/5 transition-colors"
+      >
+        رجوع
+      </button>
+      <button
+        type="submit"
+        class="flex-1 bg-blueprint text-paper font-bold py-3 rounded-lg hover:bg-blueprint/90 transition-colors"
+      >
+        التالي: المراجعة
+      </button>
+    </div>
+  </form>
+}
       <!-- Step 4: Review & Confirm -->
       @if (currentStep() === 'review') {
         <div class="bg-white border border-steel/20 rounded-xl p-6">
@@ -274,13 +387,16 @@
             </div>
 
             <!-- Address -->
-            <div class="border-b border-steel/10 pb-3">
-              <p class="text-sm text-steel mb-1">العنوان</p>
-              <p class="text-ink">{{ formattedAddress() }}</p>
-              @if (addressForm.get('notes')?.value) {
-                <p class="text-sm text-steel mt-1">ملاحظة: {{ addressForm.get('notes')?.value }}</p>
-              }
-            </div>
+<div class="border-b border-steel/10 pb-3">
+  <p class="text-sm text-steel mb-1">العنوان</p>
+  <p class="text-ink">{{ formattedAddress() }}</p>
+  @if (locationPicked()) {
+    <p class="text-xs text-success mt-1">📍 تم تحديد الموقع بالظبط على الخريطة</p>
+  }
+  @if (addressForm.get('notes')?.value) {
+    <p class="text-sm text-steel mt-1">ملاحظة: {{ addressForm.get('notes')?.value }}</p>
+  }
+</div>
 
             <!-- Schedule -->
             <div class="border-b border-steel/10 pb-3">

@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import { User, UserRole, UserStatus } from '../models/user.model';
 import { Booking } from '../models/booking.model';
 import { Review } from '../models/review.model';
+import { Coupon, CreateCouponDto, UpdateCouponDto } from '../models/coupon.model';
 
 export interface AdminStats {
   totalUsers: number;
@@ -100,7 +101,35 @@ export class AdminService {
   }
 
   // ⚠️ جديد: بتتحدث من الـ WebSocket — رقم حقيقي جاي من السيرفر مباشرة
-setPendingApprovals(count: number): void {
-  this.pendingApprovals.set(count);
-}
+  setPendingApprovals(count: number): void {
+    this.pendingApprovals.set(count);
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // إدارة الكوبونات — كل الـ endpoints دي محمية بـ verifyAdmin في السيرفر
+  // ══════════════════════════════════════════════════════════
+
+  /** كل الكوبونات (كل الحالات — شغالة وموقوفة ومنتهية)، للأدمن بس */
+  getCoupons(): Observable<Coupon[]> {
+    return this.http.get<Coupon[]>(`${this.base}/coupons`).pipe(
+      map((list) =>
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      )
+    );
+  }
+
+  /** إنشاء كوبون جديد */
+  createCoupon(dto: CreateCouponDto): Observable<Coupon> {
+    return this.http.post<Coupon>(`${this.base}/coupons`, dto);
+  }
+
+  /** تعديل كوبون (تغيير قيمة الخصم، إيقاف/تفعيل، إلخ) */
+  updateCoupon(id: string, changes: UpdateCouponDto): Observable<Coupon> {
+    return this.http.patch<Coupon>(`${this.base}/coupons/${id}`, changes);
+  }
+
+  /** حذف كوبون نهائيًا */
+  deleteCoupon(id: string): Observable<{ success: boolean }> {
+    return this.http.delete<{ success: boolean }>(`${this.base}/coupons/${id}`);
+  }
 }

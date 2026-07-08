@@ -38,6 +38,7 @@ import { AdminBookingsComponent } from './features/pages/admin/admin-bookings/ad
 import { AdminUsersComponent } from './features/pages/admin/admin-users/admin-users.component';
 import { ForgotPasswordComponent } from './features/auth/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './features/auth/reset-password/reset-password.component';
+import { AdminCouponsComponent } from './features/pages/admin/admin-coupons/admin-coupons.component';
 
 export const routes: Routes = [
 
@@ -186,6 +187,11 @@ export const routes: Routes = [
         component: AdminReviewsComponent,
         title: 'Sanaye3i — إدارة التقييمات',
       },
+      {
+  path: 'coupons',
+  component: AdminCouponsComponent,
+        title: 'Sanaye3i — إدارة الكوبونات',
+},
     ],
   },
 

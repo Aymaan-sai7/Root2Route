@@ -3,17 +3,41 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 import { WorkersService } from '../../../../core/services/workers.service';
 import { BookingsService } from '../../../../core/services/bookings.service';
 import { AuthService } from '../../../../core/services/Auth.service';
 import { Worker } from '../../../../core/models/worker.model';
 import { BookingStep } from '../../../../core/models/booking.model';
+import { LocationPickerComponent } from '../../../../shared/components/location-picker/location-picker.component';
+import { EGYPT_GOVERNORATES, GovernorateData } from '../../../../core/data/egypt-governorates.data';
+
+interface TimeSlot {
+  time: string;   // "HH:mm"
+  label: string;
+  period: 'morning' | 'afternoon' | 'evening';
+}
+
+const TIME_SLOTS: TimeSlot[] = [
+  { time: '09:00', label: '9:00 ص',  period: 'morning' },
+  { time: '11:00', label: '11:00 ص', period: 'morning' },
+  { time: '13:00', label: '1:00 م',  period: 'afternoon' },
+  { time: '15:00', label: '3:00 م',  period: 'afternoon' },
+  { time: '17:00', label: '5:00 م',  period: 'evening' },
+  { time: '19:00', label: '7:00 م',  period: 'evening' },
+];
+
+const PERIODS: { key: TimeSlot['period']; label: string }[] = [
+  { key: 'morning',   label: 'الصباح' },
+  { key: 'afternoon', label: 'الظهر' },
+  { key: 'evening',   label: 'المساء' },
+];
 
 @Component({
   selector: 'app-booking',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, LocationPickerComponent],
   templateUrl: './booking.component.html',
 })
 export class BookingComponent implements OnInit {
@@ -52,7 +76,6 @@ export class BookingComponent implements OnInit {
     return w ? w.hourlyRate * this.estimatedHours() : 0;
   });
 
-  // أقل تاريخ متاح = بكرة
   minDate = computed(() => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -68,61 +91,217 @@ export class BookingComponent implements OnInit {
     return this.detailsForm.get('description');
   }
 
-  // ─── Step 2: Address ───────────────────────
+  // ─── Step 2: Address (محافظة / مدينة / بلد / شارع / رقم عقار) ──
+  governorates: GovernorateData[] = EGYPT_GOVERNORATES;
+
   addressForm: FormGroup = this.fb.group({
-    area: ['', Validators.required],
+    governorate: ['', Validators.required],
+    city: ['', Validators.required],
+    village: ['', Validators.required],
     street: ['', Validators.required],
     buildingNumber: ['', Validators.required],
     notes: [''],
+    lat: [null as number | null],
+    lng: [null as number | null],
   });
 
-  get areaControl() { return this.addressForm.get('area'); }
+  get governorateControl() { return this.addressForm.get('governorate'); }
+  get cityControl() { return this.addressForm.get('city'); }
+  get villageControl() { return this.addressForm.get('village'); }
   get streetControl() { return this.addressForm.get('street'); }
   get buildingNumberControl() { return this.addressForm.get('buildingNumber'); }
 
-  formattedAddress = computed(() => {
-    const { area, street, buildingNumber } = this.addressForm.value;
-    if (!area || !street || !buildingNumber) return '';
-    return `${street}، ${area}، عقار رقم ${buildingNumber}`;
+  private governorateValue = toSignal(this.addressForm.get('governorate')!.valueChanges, {
+    initialValue: this.addressForm.get('governorate')!.value,
   });
 
-  // ─── Step 3: Schedule ───────────────────────
+  availableCities = computed(() => {
+    const gov = this.governorateValue();
+    return this.governorates.find((g) => g.name === gov)?.cities ?? [];
+  });
+
+  formattedAddress = computed(() => {
+    const { governorate, city, village, street, buildingNumber } = this.addressForm.value;
+    if (!governorate || !city || !village || !street || !buildingNumber) return '';
+    return `${street}، ${village}، ${city}، محافظة ${governorate}، عقار رقم ${buildingNumber}`;
+  });
+
+  // ─── الخريطة ───────────────────────
+  showLocationPicker = signal(false);
+
+  mapSearchHint = computed(() => {
+    const { village, city, governorate } = this.addressForm.value;
+    return [village, city, governorate, 'مصر'].filter(Boolean).join(', ');
+  });
+
+  locationPicked = computed(() => {
+    const { lat, lng } = this.addressForm.value;
+    return lat != null && lng != null;
+  });
+
+  openLocationPicker(): void {
+    if (!this.governorateControl?.value || !this.cityControl?.value || !this.villageControl?.value) {
+      this.governorateControl?.markAsTouched();
+      this.cityControl?.markAsTouched();
+      this.villageControl?.markAsTouched();
+      this.toastr.warning('حدد المحافظة والمدينة والبلد الأول عشان نقدر نوريك الخريطة صح', 'محتاج بيانات كمان');
+      return;
+    }
+    this.showLocationPicker.set(true);
+  }
+
+  onLocationConfirmed(loc: { lat: number; lng: number }): void {
+    this.addressForm.patchValue({ lat: loc.lat, lng: loc.lng });
+    this.showLocationPicker.set(false);
+  }
+
+  closeLocationPicker(): void {
+    this.showLocationPicker.set(false);
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  // Step 3: Schedule — فترات زمنية جاهزة + منع تعارض المواعيد
+  // ═══════════════════════════════════════════════════════════
   scheduleForm: FormGroup = this.fb.group({
     scheduledDate: ['', Validators.required],
     scheduledTime: ['', Validators.required],
   });
 
-  get dateControl() {
-    return this.scheduleForm.get('scheduledDate');
-  }
-  get timeControl() {
-    return this.scheduleForm.get('scheduledTime');
+  get dateControl() { return this.scheduleForm.get('scheduledDate'); }
+  get timeControl() { return this.scheduleForm.get('scheduledTime'); }
+
+  periods = PERIODS;
+  timeSlots = TIME_SLOTS;
+
+  slotsByPeriod = computed(() => {
+    return this.periods.map((p) => ({
+      ...p,
+      slots: this.timeSlots.filter((s) => s.period === p.key),
+    }));
+  });
+
+  // ⚠️ الوقت المختار كـ signal حقيقي عشان الـ chips تعرف تتلوّن reactive
+  private selectedTimeValue = toSignal(this.scheduleForm.get('scheduledTime')!.valueChanges, {
+    initialValue: this.scheduleForm.get('scheduledTime')!.value,
+  });
+
+  // ⚠️ مواعيد فعليًا مشغولة عند نفس الصنايعي في نفس اليوم المختار — بناءً
+  // على حجوزاته الحقيقية (pending/active)، مش تخمين. مفيش عندنا نظام
+  // "جدول عمل" منفصل للصنايعي في الباك إند، فده أدق تفسير عملي متاح
+  occupiedSlots = signal<Set<string>>(new Set());
+  loadingSlots = signal(false);
+
+  ngOnInit(): void {
+    const workerId = this.route.snapshot.paramMap.get('workerId');
+
+    if (!workerId) {
+      this.router.navigate(['/find-services']);
+      return;
+    }
+
+    this.workersService.getById(workerId).subscribe({
+      next: (worker) => {
+        this.worker.set(worker);
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.toastr.error('الصنايعي غير موجود', 'خطأ');
+        this.router.navigate(['/find-services']);
+      },
+    });
+
+    this.addressForm.get('governorate')?.valueChanges.subscribe(() => {
+      this.addressForm.get('city')?.setValue('', { emitEvent: false });
+    });
+
+    // ⚠️ لما التاريخ يتغيّر: نصفّر الوقت المختار (ممكن يبقى مشغول في اليوم
+    // الجديد) ونعيد فحص المواعيد المشغولة للصنايعي في اليوم ده
+    this.scheduleForm.get('scheduledDate')?.valueChanges.subscribe((date) => {
+      this.scheduleForm.get('scheduledTime')?.setValue('');
+      this.loadOccupiedSlots(date);
+    });
   }
 
-  // عرض التاريخ/الوقت بشكل منسق في step 4
+  private loadOccupiedSlots(date: string): void {
+    const w = this.worker();
+    if (!w || !date) {
+      this.occupiedSlots.set(new Set());
+      return;
+    }
+
+    this.loadingSlots.set(true);
+    this.bookingsService.getByWorker(w.id).subscribe({
+      next: (bookings) => {
+        const active = bookings.filter((b) => b.status !== 'cancelled');
+        const occupied = new Set<string>();
+
+        for (const slot of this.timeSlots) {
+          const slotStart = this.toMinutes(slot.time);
+          const conflict = active.some((b) => {
+            const bDate = new Date(b.scheduledAt);
+            if (this.toDateStr(bDate) !== date) return false;
+            const bStart = bDate.getHours() * 60 + bDate.getMinutes();
+            const bEnd = bStart + b.estimatedHours * 60;
+            return slotStart >= bStart && slotStart < bEnd;
+          });
+          if (conflict) occupied.add(slot.time);
+        }
+
+        this.occupiedSlots.set(occupied);
+        this.loadingSlots.set(false);
+      },
+      error: () => {
+        this.occupiedSlots.set(new Set());
+        this.loadingSlots.set(false);
+      },
+    });
+  }
+
+  private toMinutes(time: string): number {
+    const [h, m] = time.split(':').map(Number);
+    return h * 60 + m;
+  }
+
+  private toDateStr(d: Date): string {
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  }
+
+  isSlotOccupied(time: string): boolean {
+    return this.occupiedSlots().has(time);
+  }
+
+  isSlotSelected(time: string): boolean {
+    return this.selectedTimeValue() === time;
+  }
+
+  selectSlot(time: string): void {
+    if (this.isSlotOccupied(time)) return;
+    const control = this.scheduleForm.get('scheduledTime');
+    control?.setValue(time);
+    control?.markAsTouched();
+  }
+
+  allSlotsOccupiedForDate = computed(() => {
+    const date = this.dateControl?.value;
+    if (!date) return false;
+    return this.occupiedSlots().size === this.timeSlots.length;
+  });
+
   formattedSchedule = computed(() => {
     const date = this.scheduleForm.get('scheduledDate')?.value;
-    const time = this.scheduleForm.get('scheduledTime')?.value;
+    const time = this.selectedTimeValue();
     if (!date || !time) return '';
 
     const dt = new Date(`${date}T${time}`);
     return dt.toLocaleDateString('ar-EG', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
     }) + ' — ' + dt.toLocaleTimeString('ar-EG', {
-      hour: '2-digit',
-      minute: '2-digit',
+      hour: '2-digit', minute: '2-digit',
     });
   });
 
-  // ══════════════════════════════════════════════════════════
-  // الكوبون — الجزء الجديد
-  // ⚠️ ده validate بس (بيتنادى من هنا في خطوة المراجعة قبل التأكيد). الاستهلاك
-  // الفعلي (خصم السعر الحقيقي + تسجيل الاستخدام) بيحصل في السيرفر جوه
-  // confirmBooking() تحت، مش هنا — عشان محدش يقدر يزوّر الخصم من الفرونت
-  // ══════════════════════════════════════════════════════════
+  // ─── الكوبون ───────────────────────
   couponCode = signal('');
   couponStatus = signal<'idle' | 'checking' | 'valid' | 'invalid'>('idle');
   couponMessage = signal<string | null>(null);
@@ -145,7 +324,6 @@ export class BookingComponent implements OnInit {
 
   onCouponInput(event: Event): void {
     this.couponCode.set((event.target as HTMLInputElement).value);
-    // لو المستخدم بدأ يعدّل الكود بعد ما كان اتطبق واحد قبل كده، نلغي القديم
     if (this.appliedDiscount() || this.couponStatus() === 'invalid') {
       this.appliedDiscount.set(null);
       this.couponStatus.set('idle');
@@ -185,26 +363,6 @@ export class BookingComponent implements OnInit {
     this.couponMessage.set(null);
   }
 
-  ngOnInit(): void {
-    const workerId = this.route.snapshot.paramMap.get('workerId');
-
-    if (!workerId) {
-      this.router.navigate(['/find-services']);
-      return;
-    }
-
-    this.workersService.getById(workerId).subscribe({
-      next: (worker) => {
-        this.worker.set(worker);
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.toastr.error('الصنايعي غير موجود', 'خطأ');
-        this.router.navigate(['/find-services']);
-      },
-    });
-  }
-
   // ─── Navigation between steps ───────────────────────
   goToAddress(): void {
     if (this.detailsForm.invalid) {
@@ -242,7 +400,6 @@ export class BookingComponent implements OnInit {
     this.currentStep.set('schedule');
   }
 
-  // ─── Step 4: Confirm & Submit ───────────────────────
   confirmBooking(): void {
     const w = this.worker();
     const currentUser = this.authService.currentUser();
@@ -264,15 +421,13 @@ export class BookingComponent implements OnInit {
       workerId: w.id,
       workerName: w.fullName,
       workerTrade: w.tradeLabel,
-      trade: w.trade, // ⚠️ الـ TradeType slug الحقيقي (مش tradeLabel) — للتحقق من قيود الكوبون في السيرفر
+      trade: w.trade,
       workerAvatarColor: w.avatarColor,
       description: this.detailsForm.get('description')?.value,
       address: this.addressForm.value,
       scheduledAt,
       estimatedHours: this.estimatedHours(),
       totalAmount: this.totalAmount(),
-      // ⚠️ بنبعت الكود بس لو فعليًا اتقبل (couponStatus === 'valid') — السيرفر
-      // هو اللي هيتحقق ويحسب الخصم النهائي ويسجل الاستخدام، مش الفرونت
       couponCode: this.couponStatus() === 'valid' ? this.appliedDiscount()?.code : undefined,
     }).subscribe({
       next: (booking) => {

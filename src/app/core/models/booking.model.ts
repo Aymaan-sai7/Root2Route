@@ -7,6 +7,11 @@ export interface BookingAddress {
   street: string;
   buildingNumber: string;
   notes?: string;
+   governorate: string;
+  city: string;
+  village: string;      // ⚠️ جديد: "البلد" — كتابة حرة، مش قايمة ثابتة
+  lat?: number;          // ⚠️ جديد: إحداثيات الموقع من الخريطة (اختياري)
+  lng?: number;
 }
 
 export interface Booking {
