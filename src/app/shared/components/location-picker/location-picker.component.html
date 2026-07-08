@@ -10,7 +10,20 @@
       </button>
     </div>
 
-    <p class="lp-hint">اسحب الدبوس أو دوس على مكانك بالظبط على الخريطة</p>
+    <p class="lp-hint">اضغط الزرار تحت عشان نحدد مكانك تلقائيًا، أو اسحب الدبوس بنفسك</p>
+
+    <!-- ⚠️ جديد: أسهل طريقة — GPS مباشر بدل السحب اليدوي -->
+    <button type="button" class="lp-gps-btn" (click)="useMyLocation()" [disabled]="gpsLoading()">
+      @if (gpsLoading()) {
+        <div class="lp-gps-spinner"></div>
+        بيحدد موقعك...
+      } @else {
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+        </svg>
+        استخدم موقعي الحالي (الأسهل)
+      }
+    </button>
 
     <div class="lp-map-wrap">
       <div #mapContainer class="lp-map"></div>
@@ -21,6 +34,12 @@
         </div>
       }
     </div>
+
+    @if (matchedLevel() === 'city' || matchedLevel() === 'governorate') {
+      <p class="lp-approx-note">
+        📍 دي أقرب نقطة لقيناها لمنطقتك — اسحب الدبوس لمكانك بالظبط أو استخدم موقعك الحالي.
+      </p>
+    }
 
     <div class="lp-footer">
       <button type="button" class="lp-btn-outline" (click)="close()">إلغاء</button>

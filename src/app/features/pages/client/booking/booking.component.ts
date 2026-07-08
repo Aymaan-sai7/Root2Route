@@ -94,70 +94,65 @@ export class BookingComponent implements OnInit {
   // ─── Step 2: Address (محافظة / مدينة / بلد / شارع / رقم عقار) ──
   governorates: GovernorateData[] = EGYPT_GOVERNORATES;
 
-  addressForm: FormGroup = this.fb.group({
-    governorate: ['', Validators.required],
-    city: ['', Validators.required],
-    village: ['', Validators.required],
-    street: ['', Validators.required],
-    buildingNumber: ['', Validators.required],
-    notes: [''],
-    lat: [null as number | null],
-    lng: [null as number | null],
-  });
+  // ⚠️ شيل buildingNumber من الفورم
+addressForm: FormGroup = this.fb.group({
+  governorate: ['', Validators.required],
+  city: ['', Validators.required],
+  village: ['', Validators.required],
+  street: ['', Validators.required],
+  notes: [''],
+  lat: [null as number | null],
+  lng: [null as number | null],
+});
 
-  get governorateControl() { return this.addressForm.get('governorate'); }
-  get cityControl() { return this.addressForm.get('city'); }
-  get villageControl() { return this.addressForm.get('village'); }
-  get streetControl() { return this.addressForm.get('street'); }
-  get buildingNumberControl() { return this.addressForm.get('buildingNumber'); }
+get governorateControl() { return this.addressForm.get('governorate'); }
+get cityControl() { return this.addressForm.get('city'); }
+get villageControl() { return this.addressForm.get('village'); }
+get streetControl() { return this.addressForm.get('street'); }
+// ⚠️ get buildingNumberControl() اتشالت
 
-  private governorateValue = toSignal(this.addressForm.get('governorate')!.valueChanges, {
-    initialValue: this.addressForm.get('governorate')!.value,
-  });
+private governorateValue = toSignal(this.addressForm.get('governorate')!.valueChanges, {
+  initialValue: this.addressForm.get('governorate')!.value,
+});
 
-  availableCities = computed(() => {
-    const gov = this.governorateValue();
-    return this.governorates.find((g) => g.name === gov)?.cities ?? [];
-  });
+availableCities = computed(() => {
+  const gov = this.governorateValue();
+  return this.governorates.find((g) => g.name === gov)?.cities ?? [];
+});
 
-  formattedAddress = computed(() => {
-    const { governorate, city, village, street, buildingNumber } = this.addressForm.value;
-    if (!governorate || !city || !village || !street || !buildingNumber) return '';
-    return `${street}، ${village}، ${city}، محافظة ${governorate}، عقار رقم ${buildingNumber}`;
-  });
+// ⚠️ اتشال رقم العقار من التنسيق
+formattedAddress = computed(() => {
+  const { governorate, city, village, street } = this.addressForm.value;
+  if (!governorate || !city || !village || !street) return '';
+  return `${street}، ${village}، ${city}، محافظة ${governorate}`;
+});
 
-  // ─── الخريطة ───────────────────────
-  showLocationPicker = signal(false);
+showLocationPicker = signal(false);
 
-  mapSearchHint = computed(() => {
-    const { village, city, governorate } = this.addressForm.value;
-    return [village, city, governorate, 'مصر'].filter(Boolean).join(', ');
-  });
+locationPicked = computed(() => {
+  const { lat, lng } = this.addressForm.value;
+  return lat != null && lng != null;
+});
 
-  locationPicked = computed(() => {
-    const { lat, lng } = this.addressForm.value;
-    return lat != null && lng != null;
-  });
-
-  openLocationPicker(): void {
-    if (!this.governorateControl?.value || !this.cityControl?.value || !this.villageControl?.value) {
-      this.governorateControl?.markAsTouched();
-      this.cityControl?.markAsTouched();
-      this.villageControl?.markAsTouched();
-      this.toastr.warning('حدد المحافظة والمدينة والبلد الأول عشان نقدر نوريك الخريطة صح', 'محتاج بيانات كمان');
-      return;
-    }
-    this.showLocationPicker.set(true);
+openLocationPicker(): void {
+  if (!this.governorateControl?.value || !this.cityControl?.value || !this.villageControl?.value) {
+    this.governorateControl?.markAsTouched();
+    this.cityControl?.markAsTouched();
+    this.villageControl?.markAsTouched();
+    this.toastr.warning('حدد المحافظة والمدينة والبلد الأول عشان نقدر نوريك الخريطة صح', 'محتاج بيانات كمان');
+    return;
   }
+  this.showLocationPicker.set(true);
+}
 
-  onLocationConfirmed(loc: { lat: number; lng: number }): void {
-    this.addressForm.patchValue({ lat: loc.lat, lng: loc.lng });
-    this.showLocationPicker.set(false);
-  }
+onLocationConfirmed(loc: { lat: number; lng: number }): void {
+  this.addressForm.patchValue({ lat: loc.lat, lng: loc.lng });
+  this.showLocationPicker.set(false);
+}
 
-  closeLocationPicker(): void {
-    this.showLocationPicker.set(false);
-  }
+closeLocationPicker(): void {
+  this.showLocationPicker.set(false);
+}
 
   // ═══════════════════════════════════════════════════════════
   // Step 3: Schedule — فترات زمنية جاهزة + منع تعارض المواعيد

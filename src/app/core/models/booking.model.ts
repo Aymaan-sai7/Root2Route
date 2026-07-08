@@ -3,14 +3,12 @@ import { TradeType } from './worker.model';
 export type BookingStatus = 'pending' | 'active' | 'completed' | 'cancelled';
 
 export interface BookingAddress {
-  area: string;
-  street: string;
-  buildingNumber: string;
-  notes?: string;
    governorate: string;
   city: string;
-  village: string;      // ⚠️ جديد: "البلد" — كتابة حرة، مش قايمة ثابتة
-  lat?: number;          // ⚠️ جديد: إحداثيات الموقع من الخريطة (اختياري)
+  village: string;
+  street: string;
+  notes?: string;
+  lat?: number;
   lng?: number;
 }
 

@@ -215,18 +215,23 @@ export class OrderDetailsComponent implements OnInit {
   }
 
   // ─── Location Helpers ───────────────────────
-  clientAddressText = computed(() => {
-    const o = this.order();
-    if (!o?.address) return '';
-    const { street, area, buildingNumber } = o.address;
-    return `${street}، ${area}، عقار رقم ${buildingNumber}`;
-  });
+clientAddressText = computed(() => {
+  const o = this.order();
+  if (!o?.address) return '';
+  const { governorate, city, village, street } = o.address;
+  return `${street}، ${village}، ${city}، محافظة ${governorate}`;
+});
 
-  openInMaps(query: string): void {
-    if (!query) return;
-    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
-    window.open(url, '_blank');
-  }
+openInMaps(query: string): void {
+  const o = this.order();
+  const { lat, lng } = o?.address ?? {};
+
+  const url = (lat != null && lng != null)
+    ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+
+  window.open(url, '_blank');
+}
 
   // ─── Review ───────────────────────
   existingReview = signal<Review | null>(null);
