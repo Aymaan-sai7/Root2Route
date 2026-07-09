@@ -41,6 +41,12 @@ export class OrderDetailsComponent implements OnInit {
   isEditing = signal(false);
   isSaving  = signal(false);
 
+  // ⚠️ جديد: رقم تلفون الصنايعي — بيتجاب من endpoint محمي منفصل (مش من
+  // Worker model العام)، عشان يبان بس للعميل صاحب الحجز ده بالظبط.
+  // null لحد ما يتحمّل، وممكن يفضل null لو الصنايعي مالوش رقم مسجل
+  workerPhone = signal<string | null>(null);
+  loadingContact = signal(true);
+
   minDate = computed(() => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -68,6 +74,7 @@ export class OrderDetailsComponent implements OnInit {
       next: (booking) => {
         this.order.set(booking);
         this.loadWorker(booking.workerId);
+        this.loadContact(id);
 
         if (booking.status === 'completed') {
           this.reviews.getByBooking(booking.id).subscribe({
@@ -89,6 +96,20 @@ export class OrderDetailsComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => this.loading.set(false),
+    });
+  }
+
+  // ⚠️ جديد: بيجيب رقم تلفون الصنايعي (والعميل، لو حبينا نستخدمه لاحقًا)
+  // بتاعين الحجز ده بس. لو حصل أي خطأ (403 مثلاً لو مش من طرفي الحجز)،
+  // بنسيب workerPhone على null من غير ما نكسر الصفحة كلها
+  private loadContact(bookingId: string): void {
+    this.loadingContact.set(true);
+    this.bookings.getBookingContact(bookingId).subscribe({
+      next: (contact) => {
+        this.workerPhone.set(contact.workerPhone);
+        this.loadingContact.set(false);
+      },
+      error: () => this.loadingContact.set(false),
     });
   }
 

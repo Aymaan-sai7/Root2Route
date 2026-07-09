@@ -183,6 +183,17 @@ export class BookingsService {
       );
   }
 
+  /**
+   * أرقام تلفون العميل والصنايعي بتاعين حجز معين
+   * ⚠️ السيرفر بيتحقق إن اللي بيطلب هو فعلاً أحد طرفي الحجز ده (مش أي حد تاني)،
+   * فالـ endpoint ده مايشتغلش غير للعميل صاحب الحجز أو الصنايعي المحجوز
+   */
+  getBookingContact(bookingId: string): Observable<{ clientPhone: string | null; workerPhone: string | null }> {
+    return this.http.get<{ clientPhone: string | null; workerPhone: string | null }>(
+      `${this.base}/${bookingId}/contact`
+    );
+  }
+
   /** حذف حجز نهائيًا */
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}`);
