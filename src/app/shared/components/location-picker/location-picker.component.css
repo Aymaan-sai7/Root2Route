@@ -89,10 +89,47 @@
   border: 1px solid #E2E8F0;
 }
 
+/* ⚠️ خريطة أكبر عشان يبقى التفاعل أسهل */
 .lp-map {
   width: 100%;
-  height: 320px;
+  height: 420px;
   z-index: 1;
+}
+
+.lp-modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+/* ⚠️ جديد: صندوق معاينة اسم الموقع */
+.lp-address-preview {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(37, 99, 235, 0.06);
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  font-size: 12.5px;
+  min-height: 20px;
+}
+
+.lp-address-loading {
+  color: #94A3B8;
+}
+
+.lp-address-label {
+  font-weight: 700;
+  color: #2563EB;
+  margin-inline-end: 4px;
+}
+
+.lp-address-value {
+  color: #324653;
 }
 
 .lp-loading-overlay {

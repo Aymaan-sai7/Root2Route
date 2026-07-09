@@ -57,6 +57,9 @@ export class LocationPickerComponent implements AfterViewInit, OnDestroy {
   loading = signal(true);
   matchedLevel = signal<'village' | 'city' | 'governorate' | null>(null);
   gpsLoading = signal(false);
+  resolvedAddress = signal<string | null>(null);
+  resolvingAddress = signal(false);
+
 
   // ⚠️ جديد: بحث يدوي بيتحكم فيه المستخدم نفسه
   manualQuery = signal('');
@@ -131,39 +134,57 @@ export class LocationPickerComponent implements AfterViewInit, OnDestroy {
   }
 
   private initMap(lat: number, lng: number): void {
-    this.selectedLat = lat;
-    this.selectedLng = lng;
+  this.selectedLat = lat;
+  this.selectedLng = lng;
+  this.reverseGeocode(lat, lng); // ⚠️ جديد
 
-    if (this.map) {
-      this.map.setView([lat, lng], 15);
-      this.marker.setLatLng([lat, lng]);
-      return;
-    }
-
-    this.map = L.map(this.mapContainerRef.nativeElement).setView([lat, lng], 15);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
-      maxZoom: 19,
-    }).addTo(this.map);
-
-    this.marker = L.marker([lat, lng], { draggable: true }).addTo(this.map);
-
-    this.marker.on('dragend', () => {
-      const pos = this.marker.getLatLng();
-      this.selectedLat = pos.lat;
-      this.selectedLng = pos.lng;
-    });
-
-    this.map.on('click', (e: L.LeafletMouseEvent) => {
-      this.marker.setLatLng(e.latlng);
-      this.selectedLat = e.latlng.lat;
-      this.selectedLng = e.latlng.lng;
-    });
-
-    setTimeout(() => this.map.invalidateSize(), 100);
+  if (this.map) {
+    this.map.setView([lat, lng], 16);
+    this.marker.setLatLng([lat, lng]);
+    return;
   }
 
+  this.map = L.map(this.mapContainerRef.nativeElement, { zoomControl: true }).setView([lat, lng], 16);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors',
+    maxZoom: 19,
+  }).addTo(this.map);
+
+  this.marker = L.marker([lat, lng], { draggable: true }).addTo(this.map);
+
+  this.marker.on('dragend', () => {
+    const pos = this.marker.getLatLng();
+    this.selectedLat = pos.lat;
+    this.selectedLng = pos.lng;
+    this.reverseGeocode(pos.lat, pos.lng); // ⚠️ جديد
+  });
+
+  this.map.on('click', (e: L.LeafletMouseEvent) => {
+    this.marker.setLatLng(e.latlng);
+    this.selectedLat = e.latlng.lat;
+    this.selectedLng = e.latlng.lng;
+    this.reverseGeocode(e.latlng.lat, e.latlng.lng); // ⚠️ جديد
+  });
+
+  setTimeout(() => this.map.invalidateSize(), 150);
+}
+// ⚠️ جديد: اسم المكان الحقيقي بالعربي، بيتحدّث لحظيًا كل ما الدبوس يتحرك
+private reverseGeocode(lat: number, lng: number): void {
+  this.resolvingAddress.set(true);
+  const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar`;
+
+  this.http.get<{ display_name: string }>(url).subscribe({
+    next: (res) => {
+      this.resolvedAddress.set(res.display_name ?? null);
+      this.resolvingAddress.set(false);
+    },
+    error: () => {
+      this.resolvedAddress.set(null);
+      this.resolvingAddress.set(false);
+    },
+  });
+}
   useMyLocation(): void {
     if (!navigator.geolocation) return;
 

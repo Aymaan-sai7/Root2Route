@@ -60,25 +60,35 @@
     }
 
     <div class="lp-map-wrap">
-      <div #mapContainer class="lp-map"></div>
-      @if (loading()) {
-        <div class="lp-loading-overlay">
-          <div class="lp-spinner"></div>
-          <span>بيحمل الخريطة...</span>
-        </div>
-      }
+  <div #mapContainer class="lp-map"></div>
+  @if (loading()) {
+    <div class="lp-loading-overlay">
+      <div class="lp-spinner"></div>
+      <span>بيحمل الخريطة...</span>
     </div>
+  }
+</div>
 
-    @if (matchedLevel() === 'city' || matchedLevel() === 'governorate') {
-      <p class="lp-approx-note">
-        📍 دي نقطة تقريبية بس (المكان الدقيق مش لاقينه) — اسحب الدبوس أو دور يدوي فوق للمكان الصح.
-      </p>
-    }
+<!-- ⚠️ جديد: معاينة اسم المكان الحقيقي — تأكيد بصري قبل ما تحفظ -->
+<div class="lp-address-preview">
+  @if (resolvingAddress()) {
+    <span class="lp-address-loading">بنحدد اسم المكان...</span>
+  } @else if (resolvedAddress()) {
+    <span class="lp-address-label">📍 الموقع المحدد:</span>
+    <span class="lp-address-value">{{ resolvedAddress() }}</span>
+  }
+</div>
 
-    <div class="lp-footer">
-      <button type="button" class="lp-btn-outline" (click)="close()">إلغاء</button>
-      <button type="button" class="lp-btn-fill" (click)="confirm()">تأكيد الموقع</button>
-    </div>
+@if (matchedLevel() === 'city' || matchedLevel() === 'governorate') {
+  <p class="lp-approx-note">
+    📍 دي نقطة تقريبية بس (المكان الدقيق مش لاقينه) — اسحب الدبوس أو دور يدوي فوق للمكان الصح.
+  </p>
+}
+
+<div class="lp-footer">
+  <button type="button" class="lp-btn-outline" (click)="close()">إلغاء</button>
+  <button type="button" class="lp-btn-fill" (click)="confirm()">تأكيد هذا الموقع</button>
+</div>
 
   </div>
 </div>
