@@ -41,18 +41,12 @@ html[dir='ltr'] body {
   }
 }
 
-/* Signature element: measuring-tape divider */
-/* ============================================================
-   TAPE RULE — نسخة "شريط القياس" الهادية
-   استخدام: <div class="tape-rule"></div>
-   ============================================================ */
 .tape-rule {
   position: relative;
   height: 24px;
   width: 100%;
 }
 
-/* الخط الأساسي — بيدوب تدريجياً من الطرفين */
 .tape-rule::before {
   content: '';
   position: absolute;
@@ -70,7 +64,6 @@ html[dir='ltr'] body {
   transform: translateY(-50%);
 }
 
-/* علامات قياس خفيفة جداً حوالين النص — إشارة مهموسة لهوية شريط القياس */
 .tape-rule::after {
   content: '';
   position: absolute;
@@ -127,10 +120,6 @@ html[dir='rtl'] .tape-rule {
     linear-gradient(90deg, rgba(37, 99, 235, 0.05) 1px, transparent 1px);
   background-size: 24px 24px;
 }
-
-/* ---------------------------------------------------------------- */
-/* Subtle animations                                                */
-/* ---------------------------------------------------------------- */
 @keyframes fade-up {
   from {
     opacity: 0;
@@ -146,7 +135,6 @@ html[dir='rtl'] .tape-rule {
   animation: fade-up 0.6s ease-out both;
 }
 
-/* خلفية أبيض نضيفة + نقط زرقاء خفيفة بس، بدون أي تدرجات ألوان إضافية */
 .bg-blueprint-faint-animated {
   position: relative;
   background-color: #FFFFFF;

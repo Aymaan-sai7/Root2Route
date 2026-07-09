@@ -44,7 +44,6 @@ export class AdminBookingsComponent implements OnInit {
     return [...list].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   });
 
-  // ===== إحصائيات سريعة محسوبة من كل الحجوزات (بدون تأثر بالفلاتر) =====
   totalRevenue = computed(() =>
     this.bookings()
       .filter((b) => b.status === 'completed')

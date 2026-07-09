@@ -21,8 +21,14 @@ L.Icon.Default.mergeOptions({
 });
 
 interface GeocodeQuery {
-  label: string;
+  label: 'village' | 'city' | 'governorate';
   query: string;
+}
+
+interface SearchResult {
+  lat: number;
+  lng: number;
+  displayName: string;
 }
 
 @Component({
@@ -33,8 +39,6 @@ interface GeocodeQuery {
   styleUrl: './location-picker.component.css',
 })
 export class LocationPickerComponent implements AfterViewInit, OnDestroy {
-  // ⚠️ بدل ما ناخد نص واحد جاهز، بناخد الأجزاء منفصلة عشان نقدر ندور
-  // تدريجيًا (محافظة → مدينة → بلد) بدل بحث واحد ممكن يفشل
   @Input() governorate = '';
   @Input() city = '';
   @Input() village = '';
@@ -54,6 +58,12 @@ export class LocationPickerComponent implements AfterViewInit, OnDestroy {
   matchedLevel = signal<'village' | 'city' | 'governorate' | null>(null);
   gpsLoading = signal(false);
 
+  // ⚠️ جديد: بحث يدوي بيتحكم فيه المستخدم نفسه
+  manualQuery = signal('');
+  manualSearching = signal(false);
+  manualResults = signal<SearchResult[]>([]);
+  manualSearchTried = signal(false);
+
   private selectedLat = 30.0444;
   private selectedLng = 31.2357;
 
@@ -70,33 +80,17 @@ export class LocationPickerComponent implements AfterViewInit, OnDestroy {
     this.map?.remove();
   }
 
-  /**
-   * ⚠️ البحث التدريجي: بندور بالتفاصيل الأدق الأول (بلد+مدينة+محافظة)،
-   * لو فشل ندور بمدينة+محافظة بس، ولو فشل ندور بالمحافظة وحدها (بتنجح
-   * دايمًا لأن المحافظات كلها موجودة في خرائط OpenStreetMap). كده
-   * الخريطة دايمًا بتوصل لأقرب مكان معقول حتى لو اسم البلد الصغير
-   * مش معروف عالميًا، وبعدين المستخدم يظبط بالظبط بنفسه أو بموقعه الحالي.
-   */
   private progressiveGeocode(): void {
     const attempts: GeocodeQuery[] = [];
 
     if (this.village && this.city && this.governorate) {
-      attempts.push({
-        label: 'village',
-        query: `${this.village}, ${this.city}, ${this.governorate}, مصر`,
-      });
+      attempts.push({ label: 'village', query: `${this.village}, ${this.city}, ${this.governorate}, مصر` });
     }
     if (this.city && this.governorate) {
-      attempts.push({
-        label: 'city',
-        query: `${this.city}, ${this.governorate}, مصر`,
-      });
+      attempts.push({ label: 'city', query: `${this.city}, ${this.governorate}, مصر` });
     }
     if (this.governorate) {
-      attempts.push({
-        label: 'governorate',
-        query: `${this.governorate}, مصر`,
-      });
+      attempts.push({ label: 'governorate', query: `${this.governorate}, مصر` });
     }
 
     this.tryNext(attempts, 0);
@@ -104,7 +98,7 @@ export class LocationPickerComponent implements AfterViewInit, OnDestroy {
 
   private tryNext(attempts: GeocodeQuery[], index: number): void {
     if (index >= attempts.length) {
-      this.initMap(30.0444, 31.2357); // fallback نهائي: وسط القاهرة
+      this.initMap(30.0444, 31.2357);
       this.matchedLevel.set(null);
       this.loading.set(false);
       return;
@@ -113,11 +107,20 @@ export class LocationPickerComponent implements AfterViewInit, OnDestroy {
     const attempt = attempts[index];
     const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=eg&q=${encodeURIComponent(attempt.query)}`;
 
-    this.http.get<Array<{ lat: string; lon: string }>>(url).subscribe({
+    this.http.get<Array<{ lat: string; lon: string; display_name: string }>>(url).subscribe({
       next: (results) => {
-        if (results.length > 0) {
-          this.initMap(+results[0].lat, +results[0].lon);
-          this.matchedLevel.set(attempt.label as any);
+        const result = results[0];
+
+        // ⚠️ الفيكس الأساسي: نتحقق إن اسم المحافظة فعلًا موجود جوه النتيجة
+        // اللي رجعت، وإلا نعتبرها تطابق غلط ونروح لمحاولة أوسع بدل ما نثق
+        // فيها عمياني. ده اللي كان بيخلي البلاد الصغيرة توصل لمكان بعيد تمامًا.
+        const isPlausible = result && (
+          !this.governorate || result.display_name.includes(this.governorate)
+        );
+
+        if (isPlausible) {
+          this.initMap(+result.lat, +result.lon);
+          this.matchedLevel.set(attempt.label);
           this.loading.set(false);
         } else {
           this.tryNext(attempts, index + 1);
@@ -161,10 +164,6 @@ export class LocationPickerComponent implements AfterViewInit, OnDestroy {
     setTimeout(() => this.map.invalidateSize(), 100);
   }
 
-  /**
-   * ⚠️ جديد: زرار "استخدم موقعي الحالي" — أسهل بكتير من السحب اليدوي،
-   * بيستخدم GPS المتصفح مباشرة (يحتاج إذن الموقع من المستخدم)
-   */
   useMyLocation(): void {
     if (!navigator.geolocation) return;
 
@@ -180,6 +179,46 @@ export class LocationPickerComponent implements AfterViewInit, OnDestroy {
       },
       { enableHighAccuracy: true, timeout: 8000 }
     );
+  }
+
+  /**
+   * ⚠️ جديد: بحث يدوي حقيقي — بيرجع لحد 5 نتائج، والمستخدم نفسه يختار
+   * الصح منهم بدل ما النظام يخمّن ويوديه لمكان غلط. ده الحل الأساسي
+   * لمشكلة القرى الصغيرة اللي مش متغطية كويس في خرائط OSM.
+   */
+  searchManually(): void {
+    const q = this.manualQuery().trim();
+    if (!q) return;
+
+    this.manualSearching.set(true);
+    this.manualSearchTried.set(true);
+    const fullQuery = q.includes('مصر') ? q : `${q}, مصر`;
+    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=eg&q=${encodeURIComponent(fullQuery)}`;
+
+    this.http.get<Array<{ lat: string; lon: string; display_name: string }>>(url).subscribe({
+      next: (results) => {
+        this.manualResults.set(
+          results.map((r) => ({ lat: +r.lat, lng: +r.lon, displayName: r.display_name }))
+        );
+        this.manualSearching.set(false);
+      },
+      error: () => {
+        this.manualResults.set([]);
+        this.manualSearching.set(false);
+      },
+    });
+  }
+
+  onManualQueryInput(event: Event): void {
+    this.manualQuery.set((event.target as HTMLInputElement).value);
+  }
+
+  pickManualResult(result: SearchResult): void {
+    this.initMap(result.lat, result.lng);
+    this.matchedLevel.set(null);
+    this.manualResults.set([]);
+    this.manualQuery.set('');
+    this.manualSearchTried.set(false);
   }
 
   confirm(): void {

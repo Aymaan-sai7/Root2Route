@@ -1,14 +1,6 @@
-```css
-/* =========================================
-   FixIt (اطلب صنايعي) - Design System
-   ========================================= */
 
 /* Google Font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-/* =========================================
-   Root Variables
-   ========================================= */
 
 :root {
   /* Font */
@@ -53,10 +45,6 @@
   --space-8: 32px;
 }
 
-/* =========================================
-   Global Styles
-   ========================================= */
-
 body {
   font-family: var(--font-family);
   background-color: var(--background);
@@ -65,9 +53,6 @@ body {
   padding: 0;
 }
 
-/* =========================================
-   Buttons
-   ========================================= */
 
 .btn-primary {
   background-color: var(--primary);
@@ -97,10 +82,6 @@ body {
   background-color: var(--primary-light);
 }
 
-/* =========================================
-   Inputs
-   ========================================= */
-
 .input {
   width: 100%;
   padding: 12px;
@@ -115,10 +96,6 @@ body {
   border-color: #3B82F6;
 }
 
-/* =========================================
-   Cards
-   ========================================= */
-
 .card {
   background-color: var(--white);
   border: 1px solid var(--border-color);
@@ -132,9 +109,6 @@ body {
   box-shadow: var(--shadow-md);
 }
 
-/* =========================================
-   Badges
-   ========================================= */
 
 .badge-success {
   background-color: var(--success);
@@ -157,10 +131,6 @@ body {
   border-radius: var(--radius-md);
 }
 
-/* =========================================
-   Rating Stars
-   ========================================= */
-
 .star-filled {
   color: var(--star-filled);
 }
@@ -168,10 +138,6 @@ body {
 .star-empty {
   color: var(--star-empty);
 }
-
-/* =========================================
-   Utility Classes
-   ========================================= */
 
 .rounded-md {
   border-radius: var(--radius-md);
@@ -217,19 +183,11 @@ body {
   gap: var(--space-8);
 }
 
-/* =========================================
-   Responsive Breakpoints
-   ========================================= */
 
-/* sm */
 @media (min-width: 640px) {}
 
-/* md */
 @media (min-width: 768px) {}
 
-/* lg */
 @media (min-width: 1024px) {}
 
-/* xl */
 @media (min-width: 1280px) {}
-```

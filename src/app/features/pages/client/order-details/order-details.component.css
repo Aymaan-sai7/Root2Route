@@ -1,6 +1,3 @@
-/* ============================================================
-   PAGE
-   ============================================================ */
 .od-page {
   min-height: 100vh;
   background: #F7F9FC; /* surface-alt */
@@ -25,10 +22,6 @@
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-
-/* ============================================================
-   HEADER
-   ============================================================ */
 .od-header {
   position: relative;
   background: #0F172A; /* ink */
@@ -104,15 +97,13 @@
 /* ملاحظة: مفيش success.light / danger.light معرّفين في tailwind.config
    فاستخدمت أقرب توكن متاح. التباين هيبقى أقل شوية من الأصل على الخلفية الغامقة.
    لو عايز نفس الوضوح الأصلي، ضيف success.light و danger.light في الكونفيج. */
+
 .status--pending   { background: rgba(249,115,22,0.18); color: #FB923C; } /* accent / signal.light */
 .status--active    { background: rgba(37,99,235,0.2);   color: #60A5FA; } /* primary / blueprint.light */
 .status--completed { background: rgba(22,163,74,0.15);  color: #16A34A; } /* success */
 .status--cancelled { background: rgba(220,38,38,0.15);  color: #DC2626; } /* danger */
 
 
-/* ============================================================
-   BODY
-   ============================================================ */
 .od-body {
   max-width: 1100px;
   margin: 0 auto;
@@ -128,9 +119,6 @@
 }
 
 
-/* ============================================================
-   CARDS
-   ============================================================ */
 .od-main { display: flex; flex-direction: column; gap: 16px; }
 .od-sidebar { display: flex; flex-direction: column; gap: 16px; }
 
@@ -150,9 +138,6 @@
 }
 
 
-/* ============================================================
-   TIMELINE
-   ============================================================ */
 .od-timeline {
   display: flex;
   flex-direction: column;
@@ -240,9 +225,6 @@
 }
 
 
-/* ============================================================
-   INFO GRID
-   ============================================================ */
 .od-info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -275,9 +257,6 @@
 }
 
 
-/* ============================================================
-   LOCATION
-   ============================================================ */
 .od-location {
   display: flex;
   flex-direction: column;
@@ -312,9 +291,6 @@
 .od-location-value { font-size: 13px; font-weight: 500; color: #0F172A; } /* ink */
 
 
-/* ============================================================
-   WORKER CARD
-   ============================================================ */
 .od-worker-top {
   display: flex;
   align-items: center;
@@ -376,9 +352,6 @@
 .od-view-profile:hover { background: rgba(37,99,235,0.05); } /* primary */
 
 
-/* ============================================================
-   ACTIONS
-   ============================================================ */
 .od-actions { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
 
 .od-btn {
@@ -426,9 +399,6 @@
 }
 .od-trust svg { flex-shrink: 0; }
 
-/* ============================================================
-   EDIT MODE
-   ============================================================ */
 .od-card-header-row {
   display: flex;
   align-items: center;
@@ -492,9 +462,6 @@
 .od-edit-actions { display: flex; gap: 10px; }
 .od-edit-actions .od-btn { flex: 1; }
 
-/* ============================================================
-   LOCATION — CLICKABLE
-   ============================================================ */
 .od-location-item--clickable {
   width: 100%;
   border: 1px solid rgba(37,99,235,0.08); /* primary */
@@ -522,9 +489,6 @@
   transform: rotate(180deg); /* RTL: السهم يشاور شمال */
 }
 
-/* ============================================================
-   REVIEW
-   ============================================================ */
 .od-review-form { display: flex; flex-direction: column; gap: 12px; }
 .od-review-label { font-size: 13px; color: #64748B; } /* steel */
 

@@ -1,6 +1,3 @@
-/* ===========================
-   Section Background Lines
-   =========================== */
 .testimonials-section {
   position: relative;
 }
@@ -14,19 +11,11 @@
     radial-gradient(ellipse 50% 35% at 80% 50%, rgba(232, 118, 44, 0.04) 0%, transparent 70%);
 }
 
-
-/* ===========================
-   Stage (حاوية الكارد)
-   =========================== */
 .testi-stage {
   min-height: 290px;
   position: relative;
 }
 
-
-/* ===========================
-   Card
-   =========================== */
 .testi-card {
   position: absolute;
   inset: 0;
@@ -51,9 +40,6 @@
 }
 
 
-/* ===========================
-   Progress Bar
-   =========================== */
 .testi-progress-track {
   position: absolute;
   inset-inline-start: 0;
@@ -88,9 +74,6 @@
 }
 
 
-/* ===========================
-   Stars
-   =========================== */
 .testi-star {
   transition: transform 0.15s ease;
 }
@@ -100,9 +83,6 @@
 }
 
 
-/* ===========================
-   Quote Text
-   =========================== */
 .testi-quote {
   font-family: var(--font-display, inherit);
   font-size: 1.1rem;
@@ -137,7 +117,6 @@
   font-weight: 600;
   color: #fff;
   flex-shrink: 0;
-  /* ring خفيف حوا الـ avatar */
   box-shadow: 0 0 0 3px white, 0 0 0 4px var(--avatar-color, #1B4F72);
   font-family: var(--font-display, inherit);
 }
@@ -157,9 +136,6 @@
 }
 
 
-/* ===========================
-   Verified Badge
-   =========================== */
 .testi-verified {
   display: flex;
   align-items: center;
@@ -175,9 +151,6 @@
 }
 
 
-/* ===========================
-   Dots Navigation
-   =========================== */
 .testimonial-tick {
   width: 7px;
   height: 7px;
@@ -216,9 +189,6 @@
   .testi-skeleton { animation: none; }
 }
 
-/* ===========================
-   Reduced Motion
-   =========================== */
 @media (prefers-reduced-motion: reduce) {
   .testi-progress-fill {
     animation: none;

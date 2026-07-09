@@ -13,7 +13,6 @@
   margin-top: 4px;
 }
 
-/* ===== Stats ===== */
 .ab-stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -45,7 +44,6 @@
   white-space: nowrap;
 }
 
-/* ===== Filters ===== */
 .ab-filters {
   display: flex;
   align-items: center;
@@ -79,7 +77,6 @@
 }
 .ab-search input::placeholder { color: #94A3B8; }
 
-/* ===== List ===== */
 .ab-list {
   display: flex;
   flex-direction: column;
@@ -184,7 +181,6 @@
 }
 .ab-chevron--open { transform: rotate(180deg); color: #2563EB; }
 
-/* ===== Expanded ===== */
 .ab-expanded {
   display: flex;
   flex-wrap: wrap;
@@ -214,7 +210,6 @@
   line-height: 1.5;
 }
 
-/* ===== Skeleton ===== */
 .ab-skeleton {
   height: 76px;
   border-radius: 12px;
@@ -227,9 +222,6 @@
   100% { background-position: 0% 50%; }
 }
 
-/* ============================================================
-   RESPONSIVE — الأهم: الموبايل
-   ============================================================ */
 @media (max-width: 960px) {
   .ab-stats-grid { grid-template-columns: repeat(2, 1fr); }
 }

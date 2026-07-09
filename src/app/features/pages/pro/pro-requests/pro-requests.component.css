@@ -1,15 +1,9 @@
-/* ============================================================
-   PAGE
-   ============================================================ */
 .pr-page {
   min-height: 100vh;
   background: #F7F9FC;
 }
 
 
-/* ============================================================
-   HEADER
-   ============================================================ */
 .pr-header {
   padding: 28px 32px 0;
 }
@@ -26,9 +20,6 @@
 }
 
 
-/* ============================================================
-   TABS
-   ============================================================ */
 .pr-tabs-wrap {
   padding: 20px 32px 0;
   border-bottom: 1px solid #E2E8F0;
@@ -81,9 +72,6 @@
 }
 
 
-/* ============================================================
-   BODY
-   ============================================================ */
 .pr-body {
   padding: 24px 32px;
 }
@@ -134,9 +122,6 @@
 .pr-empty-desc  { font-size: 13px; }
 
 
-/* ============================================================
-   CARDS
-   ============================================================ */
 .pr-list {
   display: flex;
   flex-direction: column;
@@ -181,7 +166,6 @@
 .pr-card-client { font-size: 15px; font-weight: 600; color: #0F172A; }
 .pr-card-desc   { font-size: 13px; color: #475569; }
 
-/* Meta row */
 .pr-card-meta {
   display: flex;
   align-items: center;
@@ -200,7 +184,6 @@
 }
 .pr-meta-item svg { color: #94A3B8; flex-shrink: 0; }
 
-/* Actions */
 .pr-actions {
   display: flex;
   gap: 10px;
@@ -243,7 +226,6 @@
 }
 .pr-btn--complete:hover { background: #1D4ED8; }
 
-/* Status badges */
 .status-badge {
   display: inline-block;
   padding: 3px 10px;

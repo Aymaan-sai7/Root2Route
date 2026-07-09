@@ -3,12 +3,6 @@
   background: #F7F9FC; /* surface.alt */
 }
 
-/* ===== Sidebar ===== */
-/* ⚠️ التغيير الأساسي: fixed بدل sticky — كده السايدبار ثابت تمامًا
-   بالنسبة للشاشة دايمًا، بغض النظر عن طول محتوى الصفحة أو الـ scroll.
-   position:sticky كانت بتاخد ارتفاعها من الـ grid row، ولو المحتوى
-   في .pro-content طويل عن الشاشة، السايدبار كانت "بتسيب" مكانها
-   تدريجيًا وهي بتقرب من نهاية الصفحة. */
 .pro-sidebar {
   position: fixed;
   top: 0;
@@ -141,9 +135,6 @@
   color: #f87171;
 }
 
-/* ===== Content ===== */
-/* ⚠️ بما إن السايدبار بقت fixed (خارج تدفق الصفحة الطبيعي)، لازم
-   نعمل margin بعرضها بالظبط عشان المحتوى مايتغطاش تحتها على الديسكتوب */
 .pro-content {
   min-height: 100vh;
 }
@@ -153,7 +144,6 @@
   }
 }
 
-/* ===== Topbar ===== */
 .pro-topbar {
   display: flex;
   align-items: center;
@@ -163,7 +153,6 @@
   background: #FFFFFF; /* surface */
 }
 
-/* ===== Custom Scrollbars ===== */
 .pro-sidebar::-webkit-scrollbar { width: 6px; }
 .pro-sidebar::-webkit-scrollbar-track { background: transparent; }
 .pro-sidebar::-webkit-scrollbar-thumb {
@@ -182,7 +171,6 @@
 .pro-content::-webkit-scrollbar-thumb:hover { background: rgba(15,23,42,0.25); }
 .pro-content { scrollbar-width: thin; scrollbar-color: rgba(15,23,42,0.15) transparent; }
 
-/* ===== Mobile Bottom Nav ===== */
 .mobile-bottom-nav {
   display: none;
 }

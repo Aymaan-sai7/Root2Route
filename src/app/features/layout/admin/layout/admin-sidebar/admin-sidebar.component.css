@@ -6,7 +6,7 @@
   width: 240px;
   height: 100dvh;
 
-  background: #0F172A;
+  background: #0f172a;
   display: flex;
   flex-direction: column;
 
@@ -17,12 +17,14 @@
 
 .admin-sidebar-logo {
   padding: 0 8px 24px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   margin-bottom: 20px;
 }
+
 .admin-sidebar-badge-label {
   font-size: 10px;
-  color: #60A5FA; /* blueprint.light */
+  color: #60a5fa;
+  /* blueprint.light */
   font-weight: 500;
   margin-top: 3px;
 }
@@ -42,28 +44,37 @@
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
   text-decoration: none;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-.admin-nav-link:hover {
-  background: rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.85);
-}
-.admin-nav-link--active {
-  background: rgba(37,99,235,0.18); /* primary */
-  color: #60A5FA; /* primary.light */
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
-.admin-nav-label { flex: 1; }
+.admin-nav-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.admin-nav-link--active {
+  background: rgba(37, 99, 235, 0.18);
+  /* primary */
+  color: #60a5fa;
+  /* primary.light */
+}
+
+.admin-nav-label {
+  flex: 1;
+}
 
 .admin-nav-badge {
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
   border-radius: 999px;
-  background: #DC2626; /* danger */
+  background: #dc2626;
+  /* danger */
   color: #fff;
   font-size: 10.5px;
   font-weight: 700;
@@ -74,9 +85,10 @@
 }
 
 .admin-sidebar-footer {
-  border-top: 1px solid rgba(255,255,255,0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 16px;
 }
+
 .admin-logout-btn {
   display: flex;
   align-items: center;
@@ -86,29 +98,41 @@
   border-radius: 8px;
   border: none;
   background: transparent;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.4);
   font-size: 13px;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
+
 .admin-logout-btn:hover {
-  background: rgba(220,38,38,0.1); /* danger */
+  background: rgba(220, 38, 38, 0.1);
   color: #e05566;
 }
 
-/* ===== Custom Scrollbar ===== */
-.admin-sidebar::-webkit-scrollbar { width: 6px; }
-.admin-sidebar::-webkit-scrollbar-track { background: transparent; }
+.admin-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .admin-sidebar::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 999px;
 }
-.admin-sidebar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
-.admin-sidebar { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
 
-/* ============================================================
-   MOBILE: بدل ما يختفي (display:none) — بقى درج (drawer) فعلي
-   ============================================================ */
+.admin-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.admin-sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
 @media (max-width: 860px) {
   .admin-sidebar {
     position: fixed;
@@ -118,9 +142,10 @@
     max-width: 300px;
     height: 100dvh;
     z-index: 200;
-    box-shadow: 0 0 40px rgba(0,0,0,0.35);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
     transition: inset-inline-start 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
+
   .admin-sidebar--open {
     inset-inline-start: 0;
   }
@@ -129,17 +154,28 @@
 .admin-sidebar-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15,23,42,0.5);
+  background: rgba(15, 23, 42, 0.5);
   backdrop-filter: blur(1px);
   z-index: 150;
   animation: admin-backdrop-in 0.2s ease;
 }
+
 @keyframes admin-backdrop-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .admin-sidebar { transition: none; }
-  .admin-sidebar-backdrop { animation: none; }
+  .admin-sidebar {
+    transition: none;
+  }
+
+  .admin-sidebar-backdrop {
+    animation: none;
+  }
 }

@@ -30,7 +30,6 @@ export class AdminDashboardComponent implements OnInit {
       .slice(0, 6)
   );
 
-  // ===== Chart 1: تسجيلات جديدة آخر 7 أيام (Bar) =====
   registrationsSeries: ApexAxisChartSeries = [];
   registrationsOptions: Partial<{ chart: ApexChart; xaxis: ApexXAxis; colors: string[]; dataLabels: any; plotOptions: any; grid: any; responsive: ApexResponsive[] }> = {
     chart: { type: 'bar', height: 240, toolbar: { show: false }, fontFamily: 'Inter, IBM Plex Sans Arabic, sans-serif' },
@@ -42,7 +41,6 @@ export class AdminDashboardComponent implements OnInit {
     responsive: [{ breakpoint: 640, options: { chart: { height: 200 }, xaxis: { labels: { style: { fontSize: '9px' }, rotate: -45, rotateAlways: true } } } }],
   };
 
-  // ===== Chart 2: توزيع المستخدمين حسب الدور (Donut) =====
   rolesSeries: ApexNonAxisChartSeries = [];
 
   rolesOptions: any = {
@@ -75,7 +73,6 @@ export class AdminDashboardComponent implements OnInit {
   },
 };
 
-  // ===== Chart 3: توزيع الحسابات حسب الحالة (Donut) =====
   statusSeries: ApexNonAxisChartSeries = [];
   statusOptions: any = {
   chart: {
@@ -109,7 +106,6 @@ export class AdminDashboardComponent implements OnInit {
   },
 };
 
-  // ===== Chart 4: الحجوزات حسب الحالة (Bar أفقي) =====
   bookingsSeries: ApexAxisChartSeries = [];
   bookingsOptions: any = {
     chart: {

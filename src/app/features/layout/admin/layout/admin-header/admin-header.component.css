@@ -27,7 +27,6 @@
   white-space: nowrap;
 }
 
-/* ===== Mobile menu button — مخفي دائمًا على الديسكتوب ===== */
 .admin-header-menu-btn {
   display: none;
   position: relative;
@@ -54,7 +53,6 @@
 .admin-header-menu-btn--open .admin-menu-bar--top { transform: translateY(0) rotate(45deg); }
 .admin-header-menu-btn--open .admin-menu-bar--bottom { transform: translateY(0) rotate(-45deg); }
 
-/* ===== User dropdown trigger ===== */
 .admin-header-user-wrap {
   position: relative;
   flex-shrink: 0;
@@ -116,7 +114,6 @@
 }
 .admin-header-chevron--open { transform: rotate(180deg); color: #2563EB; }
 
-/* ===== Dropdown panel ===== */
 .admin-header-dropdown {
   position: absolute;
   inset-inline-end: 0;
@@ -175,7 +172,6 @@
   background: rgba(220,38,38,0.06);
 }
 
-/* ===== Responsive ===== */
 @media (max-width: 860px) {
   .admin-header-menu-btn {
     display: flex;

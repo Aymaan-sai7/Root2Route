@@ -13,7 +13,6 @@
   margin-top: 4px;
 }
 
-/* ===== Filters ===== */
 .au-filters {
   display: flex;
   align-items: center;
@@ -58,7 +57,6 @@
 }
 .au-search button:hover { background: #1D4ED8; }
 
-/* ===== List ===== */
 .au-list {
   display: flex;
   flex-direction: column;
@@ -153,7 +151,6 @@
 .au-btn--block { background: #DC2626; color: #fff; }
 .au-btn--block:hover:not(:disabled) { background: #B91C1C; }
 
-/* ===== Skeleton ===== */
 .au-skeleton {
   height: 76px;
   border-radius: 12px;
@@ -190,7 +187,6 @@
 .au-title { font-family: var(--font-display, inherit); font-size: 20px; font-weight: 700; color: #0F172A; }
 .au-desc { font-size: 13px; color: #64748B; margin-top: 4px; }
 
-/* ===== Filters ===== */
 .au-filters {
   display: flex;
   align-items: center;
@@ -233,7 +229,6 @@
 }
 .au-search button:hover { background: #1D4ED8; }
 
-/* ===== List ===== */
 .au-list { display: flex; flex-direction: column; gap: 10px; }
 .au-empty { text-align: center; padding: 50px 20px; color: #64748B; font-size: 13px; }
 
@@ -298,7 +293,6 @@
 .au-chevron { color: #94A3B8; flex-shrink: 0; transition: transform 0.2s ease; }
 .au-chevron--open { transform: rotate(180deg); color: #2563EB; }
 
-/* ===== Expanded Details ===== */
 .au-details {
   padding: 16px 18px 20px;
   border-top: 1px solid #F1F5F9;
@@ -346,7 +340,6 @@
 .au-doc-thumb span { font-size: 10.5px; color: #64748B; }
 .au-no-docs { font-size: 12px; color: #94A3B8; font-style: italic; }
 
-/* ===== Skeleton ===== */
 .au-skeleton {
   height: 76px; border-radius: 14px;
   background: linear-gradient(90deg, #E2E8F0 25%, #F7F9FC 37%, #E2E8F0 63%);

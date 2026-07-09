@@ -1,6 +1,3 @@
-/* ===========================
-   Dark Grid Background
-   =========================== */
 .dark-grid {
   position: relative;
 }
@@ -34,9 +31,6 @@
 }
 
 
-/* ===========================
-   Focus Cards
-   =========================== */
 .focus-card {
   background-color: rgba(255, 255, 255, 0.03);
   border-color: rgba(255, 255, 255, 0.1);
@@ -71,35 +65,25 @@
 }
 
 
-/* ===========================
-   Comparison Section Layout
-   =========================== */
 .comparison-section {
   position: relative;
 }
-
-/* الحاوية الرئيسية: ثلاث أعمدة — كارت | VS | كارت */
 .comparison-layout {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 0;
-  /* منع الكارتين من الطلوع برا لما بيتحركوا */
   overflow: hidden;
   border-radius: 12px;
 }
 
 
-/* ===========================
-   Comparison Cards
-   =========================== */
 .comparison-card {
   padding: 32px 28px;
   min-height: 220px;
   position: relative;
 }
 
-/* كارت "من غير صنايعي" — يجي من الشمال */
 .comparison-card--without {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -107,7 +91,6 @@
   border-radius: 10px 0 0 10px;
 }
 
-/* كارت "مع صنايعي" — يجي من اليمين */
 .comparison-card--with {
   background: linear-gradient(135deg, rgba(37, 99, 235, 0.4), rgba(232, 118, 44, 0.14));
   border: 1px solid rgba(37, 99, 235, 0.4);
@@ -116,7 +99,6 @@
   box-shadow: 0 20px 50px rgba(37, 99, 235, 0.18);
 }
 
-/* الهيدر في الكارت */
 .card-header {
   display: flex;
   align-items: center;
@@ -124,7 +106,6 @@
   margin-bottom: 22px;
 }
 
-/* أيقونة الكارت */
 .card-icon-wrap {
   display: flex;
   align-items: center;
@@ -137,7 +118,6 @@
 .card-icon-wrap--danger  { background: rgba(220, 53, 69, 0.15); color: #e05566; }
 .card-icon-wrap--success { background: rgba(40, 167, 69, 0.2);  color: #44cc77; }
 
-/* عنوان الكارت */
 .card-title {
   font-size: 15px;
   font-weight: 600;
@@ -146,7 +126,6 @@
 .card-title--muted  { color: rgba(255, 255, 255, 0.6); }
 .card-title--bright { color: rgba(255, 255, 255, 0.97); }
 
-/* قائمة العناصر */
 .card-list {
   list-style: none;
   padding: 0;
@@ -164,7 +143,6 @@
 .comparison-card--without:hover .card-list li { transform: translateX(2px); }
 .comparison-card--with:hover    .card-list li { transform: translateX(-2px); }
 
-/* النقطة */
 .card-dot {
   width: 6px;
   height: 6px;
@@ -175,7 +153,6 @@
 .card-dot--danger  { background: rgba(220, 53, 69, 0.7); }
 .card-dot--success { background: #44cc77; }
 
-/* النص */
 .card-text {
   font-size: 13px;
   line-height: 1.6;
@@ -184,21 +161,16 @@
 .card-text--bright { color: rgba(255, 255, 255, 0.88); }
 
 
-/* ===========================
-   VS Center Column
-   =========================== */
 .vs-center {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  /* عشان الـ VS يبقى فوق كل حاجة تانية */
   position: relative;
   z-index: 10;
   flex-shrink: 0;
 }
 
-/* زرار VS */
 .vs-btn {
   position: relative;
   width: 62px;
@@ -220,7 +192,6 @@
 .vs-btn--open { transform: rotate(180deg); }
 .vs-btn--open:hover { transform: rotate(180deg) scale(1.1); }
 
-/* نص VS */
 .vs-label {
   font-size: 11px;
   font-weight: 700;
@@ -230,7 +201,6 @@
   z-index: 1;
 }
 
-/* الأسهم على جنبي الزرار */
 .vs-arrow {
   position: absolute;
   color: rgba(255, 255, 255, 0.85);
@@ -245,7 +215,6 @@
 .vs-btn:hover .vs-arrow--start { transform: translateX(-3px); }
 .vs-btn:hover .vs-arrow--end   { transform: translateX(3px); }
 
-/* نص التلميح */
 .vs-hint {
   font-size: 11px;
   font-weight: 500;
@@ -259,9 +228,6 @@
 }
 
 
-/* ===========================
-   Responsive — Mobile
-   =========================== */
 @media (max-width: 640px) {
   .comparison-layout {
     grid-template-columns: 1fr;
@@ -297,9 +263,6 @@
 }
 
 
-/* ===========================
-   Reduced Motion
-   =========================== */
 @media (prefers-reduced-motion: reduce) {
   .dark-grid::before,
   .focus-card.is-active .why-icon-glow,

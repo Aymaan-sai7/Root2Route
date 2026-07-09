@@ -86,7 +86,6 @@
 .asel-panel::-webkit-scrollbar { width: 5px; }
 .asel-panel::-webkit-scrollbar-thumb { background: rgba(37,99,235,0.15); border-radius: 999px; }
 
-/* ===== Mobile: أهداف لمس أكبر ===== */
 @media (max-width: 480px) {
   .asel-trigger {
     padding: 12px 14px;

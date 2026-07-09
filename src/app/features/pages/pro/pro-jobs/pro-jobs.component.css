@@ -1,15 +1,9 @@
-/* ============================================================
-   PAGE
-   ============================================================ */
 .pj-page {
   min-height: 100vh;
   background: #F7F9FC;
 }
 
 
-/* ============================================================
-   HEADER
-   ============================================================ */
 .pj-header {
   padding: 28px 32px 0;
   display: flex;
@@ -45,9 +39,6 @@
 .pj-earnings svg { flex-shrink: 0; }
 
 
-/* ============================================================
-   TABS
-   ============================================================ */
 .pj-tabs-wrap {
   padding: 20px 32px 0;
   border-bottom: 1px solid #E2E8F0;
@@ -96,10 +87,6 @@
   color: #fff;
 }
 
-
-/* ============================================================
-   BODY
-   ============================================================ */
 .pj-body {
   padding: 24px 32px;
 }
@@ -150,10 +137,6 @@
 }
 .pj-empty-title { font-size: 16px; font-weight: 600; color: #475569; }
 
-
-/* ============================================================
-   JOB CARDS
-   ============================================================ */
 .pj-list {
   display: flex;
   flex-direction: column;
@@ -176,7 +159,6 @@
   border-color: rgba(37,99,235,0.2);
 }
 
-/* Colored left indicator */
 .pj-card-indicator {
   width: 4px;
   flex-shrink: 0;
@@ -194,7 +176,6 @@
   gap: 12px;
 }
 
-/* Top */
 .pj-card-top {
   display: flex;
   align-items: center;
@@ -220,7 +201,6 @@
 .pj-amount-val  { font-size: 18px; font-weight: 700; color: #0F172A; }
 .pj-amount-unit { font-size: 12px; color: #64748B; }
 
-/* Meta */
 .pj-card-meta {
   display: flex;
   align-items: center;
@@ -237,8 +217,6 @@
 .pj-meta-item svg { color: #94A3B8; }
 .pj-meta-item--success { color: #16A34A; }
 .pj-meta-item--success svg { color: #16A34A; }
-
-/* Complete button */
 .pj-complete-btn {
   align-self: flex-start;
   display: inline-flex;

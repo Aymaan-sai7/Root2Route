@@ -28,7 +28,6 @@ export class ProDashboardComponent implements OnInit {
   loading = signal(true);
   error   = signal<string | null>(null);
 
-  // ===== Stats =====
   totalEarnings = computed(() =>
     this.allJobs()
       .filter((j) => j.status === 'completed')
@@ -49,7 +48,6 @@ export class ProDashboardComponent implements OnInit {
       .slice(0, 5)
   );
 
-  // ===== Bar Chart: أرباح آخر 7 أيام =====
   earningsChartSeries: ApexAxisChartSeries = [];
   earningsChartOptions: Partial<{
     chart: ApexChart;
@@ -84,7 +82,6 @@ export class ProDashboardComponent implements OnInit {
     ],
   };
 
-  // ===== Donut Chart: توزيع الحالات =====
   statusChartSeries: ApexNonAxisChartSeries = [];
   statusChartOptions: any = {
     chart: { type: 'donut', height: 260, fontFamily: 'Inter, IBM Plex Sans Arabic, sans-serif' },

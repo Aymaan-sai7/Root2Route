@@ -10,9 +10,9 @@
       </button>
     </div>
 
-    <p class="lp-hint">اضغط الزرار تحت عشان نحدد مكانك تلقائيًا، أو اسحب الدبوس بنفسك</p>
+    <p class="lp-hint">لو الخريطة وصلت لمكان غلط، دور يدوي بالاسم اللي انت عارفه، أو استخدم موقعك الحالي</p>
 
-    <!-- ⚠️ جديد: أسهل طريقة — GPS مباشر بدل السحب اليدوي -->
+    <!-- زرار GPS -->
     <button type="button" class="lp-gps-btn" (click)="useMyLocation()" [disabled]="gpsLoading()">
       @if (gpsLoading()) {
         <div class="lp-gps-spinner"></div>
@@ -24,6 +24,40 @@
         استخدم موقعي الحالي (الأسهل)
       }
     </button>
+
+    <!-- ⚠️ جديد: بحث يدوي -->
+    <div class="lp-search-row">
+      <input
+        type="text"
+        class="lp-search-input"
+        placeholder="أو دور بنفسك... اكتب اسم مكان قريب أو معلم مشهور"
+        [value]="manualQuery()"
+        (input)="onManualQueryInput($event)"
+        (keydown.enter)="searchManually()"
+      />
+      <button type="button" class="lp-search-btn" (click)="searchManually()" [disabled]="manualSearching()">
+        @if (manualSearching()) {
+          <div class="lp-gps-spinner"></div>
+        } @else {
+          دور
+        }
+      </button>
+    </div>
+
+    @if (manualResults().length > 0) {
+      <div class="lp-results-list">
+        @for (result of manualResults(); track result.displayName) {
+          <button type="button" class="lp-result-item" (click)="pickManualResult(result)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" class="shrink-0">
+              <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span>{{ result.displayName }}</span>
+          </button>
+        }
+      </div>
+    } @else if (manualSearchTried() && !manualSearching()) {
+      <p class="lp-no-results">مفيش نتائج، جرب اسم مكان تاني أو استخدم موقعك الحالي.</p>
+    }
 
     <div class="lp-map-wrap">
       <div #mapContainer class="lp-map"></div>
@@ -37,7 +71,7 @@
 
     @if (matchedLevel() === 'city' || matchedLevel() === 'governorate') {
       <p class="lp-approx-note">
-        📍 دي أقرب نقطة لقيناها لمنطقتك — اسحب الدبوس لمكانك بالظبط أو استخدم موقعك الحالي.
+        📍 دي نقطة تقريبية بس (المكان الدقيق مش لاقينه) — اسحب الدبوس أو دور يدوي فوق للمكان الصح.
       </p>
     }
 
