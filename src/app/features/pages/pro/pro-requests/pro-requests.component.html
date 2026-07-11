@@ -3,7 +3,7 @@
   <!-- Header -->
   <div class="pr-header">
     <h1 class="pr-title">الطلبات</h1>
-    <p class="pr-subtitle">تابع وأدر كل طلبات الشغل بتاعتك</p>
+    <p class="pr-subtitle">راجع الطلبات الجديدة وتابع أرشيف اللي اتقفل</p>
   </div>
 
   <!-- Tabs -->
@@ -55,7 +55,6 @@
         <p class="pr-empty-desc">
           @switch (activeTab()) {
             @case ('pending')   { مفيش طلبات معلقة دلوقتي. }
-            @case ('active')    { مفيش شغل جاري دلوقتي. }
             @case ('completed') { مفيش طلبات مكتملة لسه. }
             @case ('cancelled') { مفيش طلبات ملغية. }
           }
@@ -71,8 +70,8 @@
             <!-- Card Top -->
             <div class="pr-card-top">
               <div class="pr-avatar" [style.background]="getAvatarColor(job.clientName)">
-  {{ (job.clientName || '؟').charAt(0) }}
-</div>
+                {{ (job.clientName || '؟').charAt(0) }}
+              </div>
               <div class="pr-card-info">
                 <div class="pr-card-name-row">
                   <p class="pr-card-client">{{ job.clientName }}</p>
@@ -120,17 +119,6 @@
                     <path d="M18 6 6 18M6 6l12 12"/>
                   </svg>
                   رفض
-                </button>
-              </div>
-            }
-
-            @if (job.status === 'active') {
-              <div class="pr-actions">
-                <button class="pj-complete-btn" (click)="completeJob(job.id, job.workerId)">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/>
-                  </svg>
-                  تأكيد إنهاء الشغل
                 </button>
               </div>
             }

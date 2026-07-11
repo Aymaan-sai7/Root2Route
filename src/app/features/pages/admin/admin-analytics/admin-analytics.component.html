@@ -1,0 +1,110 @@
+<div class="an-page">
+
+  <!-- Header -->
+  <div class="an-header">
+    <h1 class="an-title">التحليلات والأداء</h1>
+    <p class="an-subtitle">نظرة شاملة على الإيرادات والأداء والتحويل على المنصة</p>
+  </div>
+
+  @if (loading()) {
+    <div class="an-skeleton-grid">
+      @for (s of [1,2,3,4]; track s) {
+        <div class="an-skeleton-card"></div>
+      }
+    </div>
+  } @else {
+
+    <!-- Stat Cards -->
+    <div class="an-stats-grid">
+      <div class="an-stat-card">
+        <p class="an-stat-label">إجمالي الإيرادات</p>
+        <p class="an-stat-value">{{ totalRevenue() }} <span class="an-stat-unit">ج.م</span></p>
+      </div>
+      <div class="an-stat-card">
+        <p class="an-stat-label">متوسط قيمة الحجز</p>
+        <p class="an-stat-value">{{ avgBookingValue() }} <span class="an-stat-unit">ج.م</span></p>
+      </div>
+      <div class="an-stat-card an-stat-card--accent">
+        <p class="an-stat-label">إجمالي الخصومات الممنوحة</p>
+        <p class="an-stat-value">{{ totalDiscountsGiven() }} <span class="an-stat-unit">ج.م</span></p>
+      </div>
+      <div class="an-stat-card an-stat-card--success">
+        <p class="an-stat-label">معدل التحويل</p>
+        <p class="an-stat-value">{{ conversionRate() }}<span class="an-stat-unit">%</span></p>
+      </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="an-charts-grid">
+      <div class="an-chart-card">
+        <h2 class="an-chart-title">الإيرادات آخر 14 يوم</h2>
+        <apx-chart
+          [series]="revenueChartSeries"
+          [chart]="revenueChart"
+          [xaxis]="revenueChartXaxis"
+          [dataLabels]="revenueChartDataLabels"
+          [stroke]="revenueChartStroke"
+          [fill]="revenueChartFill"
+          [tooltip]="revenueChartTooltip"
+          [colors]="['#2563EB']"
+        ></apx-chart>
+      </div>
+
+      <div class="an-chart-card an-chart-card--narrow">
+        <h2 class="an-chart-title">التصنيفات الأكثر طلبًا</h2>
+        @if (tradesChartSeries.length === 0) {
+          <p class="an-no-data">مفيش حجوزات كفاية لعرض الرسم البياني.</p>
+        } @else {
+          <apx-chart
+            [series]="tradesChartSeries"
+            [chart]="tradesChart"
+            [labels]="tradesChartLabels"
+            [colors]="tradesChartColors"
+            [legend]="tradesChartLegend"
+          ></apx-chart>
+        }
+      </div>
+    </div>
+
+    <!-- Funnel + Top Workers Row -->
+    <div class="an-charts-grid">
+      <div class="an-chart-card an-chart-card--narrow">
+        <h2 class="an-chart-title">قمع التحويل</h2>
+        <p class="an-chart-desc">من التسجيل للموافقة لأول حجز فعلي</p>
+        <apx-chart
+          [series]="funnelChartSeries"
+          [chart]="funnelChart"
+          [xaxis]="funnelChartXaxis"
+          [plotOptions]="funnelChartPlotOptions"
+          [colors]="funnelChartColors"
+          [dataLabels]="funnelChartDataLabels"
+        ></apx-chart>
+      </div>
+
+      <div class="an-chart-card">
+        <h2 class="an-chart-title">أفضل 5 صنايعية بالإيراد</h2>
+        @if (topWorkers().length === 0) {
+          <p class="an-no-data">مفيش حجوزات مكتملة كفاية لعرض ترتيب.</p>
+        } @else {
+          <div class="an-top-workers-list">
+            @for (w of topWorkers(); track w.workerId; let rank = $index) {
+              <div class="an-top-worker-row">
+                <span class="an-top-worker-rank">{{ rank + 1 }}</span>
+                <div class="an-top-worker-avatar" [style.background]="w.workerAvatarColor">
+                  {{ w.workerName.charAt(0) }}
+                </div>
+                <div class="an-top-worker-info">
+                  <p class="an-top-worker-name">{{ w.workerName }}</p>
+                  <p class="an-top-worker-jobs">{{ w.completedJobs }} حجز مكتمل</p>
+                </div>
+                <span class="an-top-worker-revenue">{{ w.revenue }} ج.م</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+  }
+
+</div>

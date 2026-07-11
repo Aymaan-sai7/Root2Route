@@ -136,6 +136,26 @@
             </div>
           </section>
 
+          <!-- Section: المهارات (جديد) -->
+          @if (availableSkills().length > 0) {
+            <section class="ps-section">
+              <h2 class="ps-section-title">مهاراتك</h2>
+              <p class="ps-section-desc">اختار المهارات اللي فعلاً بتشتغل بيها — بتبان في صفحة بروفايلك للعملاء.</p>
+              <div class="ps-skills-grid">
+                @for (skill of availableSkills(); track skill) {
+                  <button
+                    type="button"
+                    (click)="toggleSkill(skill)"
+                    class="ps-skill-chip"
+                    [class.ps-skill-chip--selected]="isSkillSelected(skill)"
+                  >
+                    {{ skill }}
+                  </button>
+                }
+              </div>
+            </section>
+          }
+
           <!-- Section: الإتاحة -->
           <section class="ps-section">
             <h2 class="ps-section-title">الإتاحة</h2>

@@ -4,11 +4,21 @@
   overflow: hidden;
 }
 
+/* ⚠️ الفيكس الأساسي: بدل ما نكرر المحتوى 4 مرات ونعمل translateX(-25%)
+   (اللي بيسبب تقطيع بسيط بسبب rounding errors في عرض البكسل بعد التكرار)،
+   بقينا نستخدم مجموعتين بس (marquee-group) ونعمل translateX(-50%) —
+   ده الـ pattern القياسي لأي لفة لانهائية سلسة 100% */
 .marquee-track {
   display: inline-flex;
-  white-space: nowrap;
+  width: max-content;
   direction: ltr;
-  animation: marquee-scroll 48s linear infinite;
+  will-change: transform;
+  animation: marquee-scroll 40s linear infinite;
+}
+
+.marquee-group {
+  display: inline-flex;
+  flex-shrink: 0;
 }
 
 .trust-badge {
@@ -31,12 +41,19 @@
   flex-shrink: 0;
 }
 
+/* translate3d بدل translateX العادي بيفعّل تسريع الـ GPU، فبيمنع أي هزّ أو
+   تقطيع في الأداء نفسه (مش بس في المحتوى) خصوصًا على الأجهزة الأضعف */
 @keyframes marquee-scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-25%);
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+/* ⚠️ الشاشة على الموبايل أضيق، فبيبان جزء أصغر من الشريط في نفس اللحظة —
+   ده مش تقطيع، بس إحساس السرعة بيختلف لأنك شايف مساحة أقل من الشريط الكامل.
+   بنقلل مدة الأنيميشن هنا عشان الإحساس بالسرعة يفضل قريب من اللابتوب */
+@media (max-width: 640px) {
+  .marquee-track {
+    animation-duration: 24s;
   }
 }
 

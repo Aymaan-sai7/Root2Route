@@ -21,7 +21,7 @@ export class ReviewsService {
     );
   }
 
-  /** كل تقييمات صنايعي معين (لعرضها في specialist-profile) */
+  /** كل تقييمات صنايعي معين (لعرضها في specialist-profile وتاب pro-reviews) */
   getByWorker(workerId: string): Observable<Review[]> {
     const params = new HttpParams().set('workerId', workerId);
     return this.http.get<Review[]>(this.reviewsBase, { params }).pipe(
@@ -32,10 +32,7 @@ export class ReviewsService {
   }
 
   /**
-   * ⚠️ جديد: أعلى التقييمات على مستوى المنصة كلها — للاستخدام في اللاندج بيدج (تقييمات حقيقية).
-   * الـ backend مبيدعمش فلترة "أكبر من أو يساوي" في الـ query العام (بس exact match)،
-   * فبنجيب كل التقييمات ونفلتر/نرتب من عندنا. الداتا صغيرة (db.json)، فمفيش مشكلة أداء.
-   * بنستبعد أي تقييم من غير تعليق نصي، عشان مفيش حاجة نعرضها كـ "quote".
+   * أعلى التقييمات على مستوى المنصة كلها — للاستخدام في اللاندج بيدج (تقييمات حقيقية).
    */
   getTopRated(limit = 8, minRating = 4): Observable<Review[]> {
     return this.http.get<Review[]>(this.reviewsBase).pipe(
@@ -80,6 +77,14 @@ export class ReviewsService {
     );
   }
 
+  /**
+   * رد الصنايعي على تقييم — بينادي endpoint محمي مخصص (مش الـ PATCH العام)
+   * عشان يضمن إن الصنايعي صاحب البروفايل بس هو اللي يقدر يرد
+   */
+  replyToReview(reviewId: string, reply: string): Observable<Review> {
+    return this.http.patch<Review>(`${this.reviewsBase}/${reviewId}/reply`, { reply });
+  }
+
   adminDelete(reviewId: string, workerId: string): Observable<void> {
     return this.http.delete<void>(`${this.reviewsBase}/${reviewId}`).pipe(
       switchMap(() => this.recalculateWorkerRating(workerId)),
@@ -97,7 +102,7 @@ export class ReviewsService {
           type: 'review_received',
           title: 'تقييم جديد',
           message: `${dto.clientName} قيّمك بـ ${dto.rating} نجوم`,
-          link: '/pro/dashboard',
+          link: '/pro/reviews',
         });
       })
     );

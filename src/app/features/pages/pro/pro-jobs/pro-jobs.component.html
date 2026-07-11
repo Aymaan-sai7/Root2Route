@@ -3,8 +3,8 @@
   <!-- Header -->
   <div class="pj-header">
     <div>
-      <h1 class="pj-title">الشغل</h1>
-      <p class="pj-subtitle">تابع شغلك الجاري والمكتمل</p>
+      <h1 class="pj-title">الشغل الجاري</h1>
+      <p class="pj-subtitle">تابع مراحل شغلك الحالي وأرشيف اللي خلص</p>
     </div>
     <!-- Earnings summary -->
     @if (!loading() && totalEarnings() > 0) {
@@ -81,8 +81,8 @@
               <!-- Top -->
               <div class="pj-card-top">
                 <div class="pj-avatar" [style.background]="getAvatarColor(job.clientName)">
-  {{ (job.clientName || '؟').charAt(0) }}
-</div>
+                  {{ (job.clientName || '؟').charAt(0) }}
+                </div>
                 <div class="pj-card-info">
                   <p class="pj-card-client">{{ job.clientName }}</p>
                   <p class="pj-card-desc">{{ job.description }}</p>
@@ -99,7 +99,7 @@
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                     <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
                   </svg>
-                  {{ job.scheduledAt | date: 'd MMM y' }}
+                  {{ job.scheduledAt | date: 'd MMM y - h:mm a' }}
                 </div>
                 <div class="pj-meta-item">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -115,16 +115,78 @@
                     تم الإنهاء
                   </div>
                 }
+
+                <!-- تنبيه الموعد -->
+                @if (isOverdue(job)) {
+                  <span class="pj-time-badge pj-time-badge--overdue">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    متأخر عن الموعد
+                  </span>
+                }
+                @else if (isUpcoming(job)) {
+                  <span class="pj-time-badge pj-time-badge--upcoming">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    الموعد قريب
+                  </span>
+                }
               </div>
 
-              <!-- Action لو جاري -->
+              <!-- مراحل الشغل (Timeline) — الشغل الجاري بس -->
               @if (job.status === 'active') {
-                <button class="pj-complete-btn" (click)="completeJob(job.id, job.workerId)">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/>
-                  </svg>
-                  تأكيد إنهاء الشغل
-                </button>
+                <div class="pj-stage-row">
+                  @for (stage of stages; track stage.id; let i = $index) {
+                    <div class="pj-stage-step" [class.pj-stage-step--done]="isStageDone(job, i)">
+                      <span class="pj-stage-dot"></span>
+                      <span class="pj-stage-label">{{ stage.shortLabel }}</span>
+                    </div>
+                    @if (i < stages.length - 1) {
+                      <span class="pj-stage-line" [class.pj-stage-line--done]="isStageDone(job, i + 1)"></span>
+                    }
+                  }
+                </div>
+
+                <!-- بيانات العميل الكاملة -->
+                <div class="pj-contact-box">
+                  <div class="pj-contact-item">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <span>{{ addressText(job) }}</span>
+                  </div>
+                  <div class="pj-contact-item">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                    @if (getClientPhone(job.id) === undefined) {
+                      <span class="pj-contact-loading">بيجيب الرقم...</span>
+                    } @else if (getClientPhone(job.id)) {
+                      <a [href]="'tel:' + getClientPhone(job.id)" class="pj-contact-phone">{{ getClientPhone(job.id) }}</a>
+                    } @else {
+                      <span class="pj-contact-loading">رقم التلفون مش متاح</span>
+                    }
+                  </div>
+                </div>
+
+                <!-- زرار المرحلة التالية أو تأكيد الإنهاء -->
+                @if (!isLastStage(job)) {
+                  <button class="pj-stage-btn" (click)="advanceStage(job)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                    انتقل للمرحلة التالية
+                  </button>
+                } @else {
+                  <button class="pj-complete-btn" (click)="completeJob(job.id, job.workerId)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/>
+                    </svg>
+                    تأكيد إنهاء الشغل
+                  </button>
+                }
               }
 
               <!-- Message -->

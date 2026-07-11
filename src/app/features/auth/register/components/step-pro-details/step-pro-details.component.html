@@ -1,7 +1,5 @@
 <div [formGroup]="form()" class="space-y-5">
-
   <p class="text-sm text-ink-soft">دي البيانات اللي العملاء هيشوفوها في صفحتك، اكتبها بدقة عشان تبان بشكل محترف.</p>
-
   <div>
     <label class="mb-1.5 block text-sm font-medium text-ink">التخصص</label>
     <app-admin-select
@@ -14,7 +12,6 @@
       <p class="mt-1 text-xs text-danger">لازم تختار تخصص.</p>
     }
   </div>
-
   <!-- يظهر بس لو اختار "تخصص تاني / مش موجود" -->
   @if (isOtherTrade()) {
     <div>
@@ -28,6 +25,31 @@
       @if (form().get('customTrade')?.invalid && form().get('customTrade')?.touched) {
         <p class="mt-1 text-xs text-danger">اكتب اسم التخصص (حرفين على الأقل).</p>
       }
+    </div>
+  }
+
+  <!-- ⚠️ جديد: اختيار المهارات — بتتغيّر القايمة تلقائيًا حسب التخصص، ومش
+       ظاهرة خالص لو اختار "تخصص تاني" (مفيش قايمة جاهزة لتخصص مش معروف) -->
+  @if (!isOtherTrade() && availableSkills().length > 0) {
+    <div>
+      <label class="mb-1.5 block text-sm font-medium text-ink">مهاراتك (اختياري)</label>
+      <p class="mb-2 text-xs text-steel">اختار المهارات اللي فعلاً بتشتغل بيها، عشان تبان أكتر احترافية للعملاء.</p>
+      <div class="flex flex-wrap gap-2">
+        @for (skill of availableSkills(); track skill) {
+          <button
+            type="button"
+            (click)="toggleSkill(skill)"
+            class="rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors"
+            [class.border-blueprint]="isSkillSelected(skill)"
+            [class.bg-blueprint]="isSkillSelected(skill)"
+            [class.text-white]="isSkillSelected(skill)"
+            [class.border-line-strong]="!isSkillSelected(skill)"
+            [class.text-ink-soft]="!isSkillSelected(skill)"
+          >
+            {{ skill }}
+          </button>
+        }
+      </div>
     </div>
   }
 
@@ -45,7 +67,6 @@
         <p class="mt-1 text-xs text-danger">اكتب سعر صحيح أكبر من صفر.</p>
       }
     </div>
-
     <div>
       <label class="mb-1.5 block text-sm font-medium text-ink">سنين الخبرة</label>
       <input
@@ -60,7 +81,6 @@
       }
     </div>
   </div>
-
   <div>
     <label class="mb-1.5 block text-sm font-medium text-ink">المدينة / المنطقة</label>
     <input
@@ -73,7 +93,6 @@
       <p class="mt-1 text-xs text-danger">اكتب المدينة أو المنطقة اللي بتشتغل فيها.</p>
     }
   </div>
-
   <div>
     <label class="mb-1.5 block text-sm font-medium text-ink">نطاق الخدمة (كم)</label>
     <input
@@ -85,5 +104,4 @@
     />
     <p class="mt-1 text-xs text-steel">أقصى مسافة مستعد تتحرك ليها لتنفيذ شغلانة (اختياري).</p>
   </div>
-
 </div>

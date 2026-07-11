@@ -2,6 +2,11 @@ import { TradeType } from './worker.model';
 
 export type BookingStatus = 'pending' | 'active' | 'completed' | 'cancelled';
 
+// ⚠️ جديد: مراحل الشغل الجاري — بتتحدث من صفحة pro-jobs عن طريق
+// endpoint محمي مخصص (PATCH /bookings/:id/work-stage)، الصنايعي صاحب
+// الحجز بس يقدر يحركها
+export type WorkStage = 'on_the_way' | 'in_progress' | 'done';
+
 export interface BookingAddress {
    governorate: string;
   city: string;
@@ -36,6 +41,9 @@ export interface Booking {
   originalAmount?: number;
   discountAmount?: number;
   couponCode?: string | null;
+  // ⚠️ جديد — null لحد ما الطلب يتقبل ويبقى active، وقتها بيبدأ من
+  // 'on_the_way' تلقائي (شوف updateStatus في bookings.service.ts)
+  workStage?: WorkStage | null;
   createdAt: string;
 }
 

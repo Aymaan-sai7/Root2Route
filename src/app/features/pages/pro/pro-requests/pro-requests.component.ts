@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { BookingsService } from '../../../../core/services/bookings.service';
 import { AuthService } from '../../../../core/services/Auth.service';
 import { WorkersService } from '../../../../core/services/workers.service';
@@ -8,12 +8,14 @@ import { Booking } from '../../../../core/models/booking.model';
 import { generateAvatarColor } from '../../../../core/utils/color.util';
 import { switchMap } from 'rxjs';
 import { confirmDelete } from '../../../../core/utils/confirm.util';
-type TabFilter = 'pending' | 'active' | 'completed' | 'cancelled';
+
+// جارية اتشالت من هنا خالص — دلوقتي مكانها الوحيد صفحة "الشغل الجاري"
+type TabFilter = 'pending' | 'completed' | 'cancelled';
 
 @Component({
   selector: 'app-pro-requests',
   standalone: true,
-  imports: [DatePipe, ],
+  imports: [DatePipe],
   templateUrl: './pro-requests.component.html',
   styleUrl: './pro-requests.component.css',
 })
@@ -23,16 +25,17 @@ export class ProRequestsComponent implements OnInit {
   private workers  = inject(WorkersService);
   private router   = inject(Router);
 
+  private workerId: string | null = null;
+
   allJobs   = signal<Booking[]>([]);
   activeTab = signal<TabFilter>('pending');
   loading   = signal(true);
   error     = signal<string | null>(null);
 
   tabs = [
-    { id: 'pending'   as TabFilter, label: 'معلقة'    },
-    { id: 'active'    as TabFilter, label: 'جارية'     },
-    { id: 'completed' as TabFilter, label: 'مكتملة'    },
-    { id: 'cancelled' as TabFilter, label: 'ملغية'     },
+    { id: 'pending'   as TabFilter, label: 'معلقة'  },
+    { id: 'completed' as TabFilter, label: 'مكتملة' },
+    { id: 'cancelled' as TabFilter, label: 'ملغية'  },
   ];
 
   filtered = computed(() =>
@@ -51,6 +54,7 @@ export class ProRequestsComponent implements OnInit {
       switchMap((list) => {
         const worker = list[0];
         if (!worker) throw new Error('مش لاقي بيانات الصنايعي.');
+        this.workerId = worker.id;
         return this.bookings.getByWorker(worker.id);
       })
     ).subscribe({
@@ -69,12 +73,13 @@ export class ProRequestsComponent implements OnInit {
     this.activeTab.set(tab);
   }
 
+  // القبول بيحوّل الطلب لـ active + بيبدأ مرحلة "في الطريق" تلقائي
+  // (updateStatus في bookings.service.ts هي اللي بتعمل ده)، وبعدها الطلب
+  // مكانه الطبيعي بقى صفحة "الشغل الجاري" مش هنا
   acceptJob(id: string): void {
     this.bookings.updateStatus(id, 'active').subscribe({
-      next: (updated) => {
-        this.allJobs.update((jobs) =>
-          jobs.map((j) => (j.id === id ? updated : j))
-        );
+      next: () => {
+        this.allJobs.update((jobs) => jobs.filter((j) => j.id !== id));
       },
     });
   }
@@ -85,17 +90,6 @@ export class ProRequestsComponent implements OnInit {
         this.allJobs.update((jobs) =>
           jobs.map((j) => (j.id === id ? updated : j))
         );
-      },
-    });
-  }
-
-  completeJob(id: string, workerId: string): void {
-    this.bookings.updateStatus(id, 'completed').subscribe({
-      next: (updated) => {
-        this.allJobs.update((jobs) =>
-          jobs.map((j) => (j.id === id ? updated : j))
-        );
-        this.workers.incrementCompletedJobs(workerId).subscribe();
       },
     });
   }
@@ -113,7 +107,6 @@ export class ProRequestsComponent implements OnInit {
   getStatusLabel(status: string): string {
     const map: Record<string, string> = {
       pending:   'قيد الانتظار',
-      active:    'جارية',
       completed: 'مكتملة',
       cancelled: 'ملغية',
     };
@@ -123,21 +116,20 @@ export class ProRequestsComponent implements OnInit {
   getStatusClass(status: string): string {
     const map: Record<string, string> = {
       pending:   'status--pending',
-      active:    'status--active',
       completed: 'status--completed',
       cancelled: 'status--cancelled',
     };
     return map[status] ?? '';
   }
 
-async deleteJob(id: string): Promise<void> {
-  const confirmed = await confirmDelete();
-  if (!confirmed) return;
+  async deleteJob(id: string): Promise<void> {
+    const confirmed = await confirmDelete();
+    if (!confirmed) return;
 
-  this.bookings.delete(id).subscribe({
-    next: () => {
-      this.allJobs.update((jobs) => jobs.filter((j) => j.id !== id));
-    },
-  });
-}
+    this.bookings.delete(id).subscribe({
+      next: () => {
+        this.allJobs.update((jobs) => jobs.filter((j) => j.id !== id));
+      },
+    });
+  }
 }

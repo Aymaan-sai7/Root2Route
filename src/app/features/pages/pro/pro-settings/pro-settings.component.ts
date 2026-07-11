@@ -1,11 +1,11 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../../core/services/Auth.service';
 import { WorkersService } from '../../../../core/services/workers.service';
 import { Worker } from '../../../../core/models/worker.model';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
-import { switchMap } from 'rxjs';
+import { getSkillsForTrade } from '../../../../core/constant/skills';
 
 @Component({
   selector: 'app-pro-settings',
@@ -72,12 +72,28 @@ cities = [
     yearsOfExperience: [null, [Validators.required, Validators.min(0)]],
     serviceRadius:     [null, [Validators.required, Validators.min(1)]],
     bio:               ['', Validators.maxLength(300)],
+    // ⚠️ جديد: مهارات قابلة للتعديل بعد التسجيل — نفس القايمة المستخدمة
+    // في خطوة step-pro-details وقت التسجيل بالظبط (مصدر واحد مشترك)
+    skills:            [[] as string[]],
     isAvailable:       [true],
+  });
+
+  // ⚠️ جديد: قايمة المهارات المتاحة تتغيّر تلقائيًا حسب التخصص الحالي في
+  // الفورم (حتى لو غيّره من نفس الصفحة)
+  availableSkills = computed<string[]>(() => {
+    const trade = this.form.get('trade')?.value;
+    return trade && trade !== 'other' ? getSkillsForTrade(trade) : [];
   });
 
   ngOnInit(): void {
     const user = this.auth.currentUser();
     if (!user) return;
+
+    // ⚠️ لو التخصص اتغيّر، نصفّر المهارات المختارة (زي ما بنعمل بالظبط
+    // في خطوة التسجيل — مهارات تخصص قديم مالهاش معنى مع تخصص جديد)
+    this.form.get('trade')?.valueChanges.subscribe(() => {
+      this.form.get('skills')?.setValue([]);
+    });
 
     this.workers.getByUserId(user.id).subscribe({
       next: (list) => {
@@ -92,6 +108,7 @@ cities = [
           yearsOfExperience: w.yearsOfExperience,
           serviceRadius:     w.serviceRadius,
           bio:               w.bio,
+          skills:            w.skills ?? [],
           isAvailable:       w.isAvailable,
         });
         this.loading.set(false);
@@ -101,6 +118,19 @@ cities = [
         this.loading.set(false);
       },
     });
+  }
+
+  isSkillSelected(skill: string): boolean {
+    const current: string[] = this.form.get('skills')?.value ?? [];
+    return current.includes(skill);
+  }
+
+  toggleSkill(skill: string): void {
+    const current: string[] = this.form.get('skills')?.value ?? [];
+    const updated = current.includes(skill)
+      ? current.filter((s) => s !== skill)
+      : [...current, skill];
+    this.form.get('skills')?.setValue(updated);
   }
 
   save(): void {

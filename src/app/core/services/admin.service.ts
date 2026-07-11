@@ -28,6 +28,19 @@ export interface AdminUserDetail {
   worker: any | null;
 }
 
+// ⚠️ سجل نشاط الأدمن — كل عملية حساسة (قبول/رفض/حظر مستخدم، كوبونات،
+// تعديل إيميل الأدمن) بتتسجل هنا تلقائيًا من الباك اند
+export interface AdminLog {
+  id: string;
+  adminId: string;
+  adminName: string | null;
+  action: string;
+  targetType: string;
+  targetId: string;
+  details: Record<string, any> | null;
+  createdAt: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AdminService {
   private http = inject(HttpClient);
@@ -131,5 +144,14 @@ export class AdminService {
   /** حذف كوبون نهائيًا */
   deleteCoupon(id: string): Observable<{ success: boolean }> {
     return this.http.delete<{ success: boolean }>(`${this.base}/coupons/${id}`);
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // سجل نشاط الأدمن (Audit Log)
+  // ══════════════════════════════════════════════════════════
+
+  /** أحدث العمليات الحساسة اللي حصلت من أي أدمن (limit افتراضي 100) */
+  getAuditLogs(limit = 100): Observable<AdminLog[]> {
+    return this.http.get<AdminLog[]>(`${this.base}/logs`, { params: { limit } });
   }
 }

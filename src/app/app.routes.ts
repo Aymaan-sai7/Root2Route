@@ -39,6 +39,8 @@ import { AdminUsersComponent } from './features/pages/admin/admin-users/admin-us
 import { ForgotPasswordComponent } from './features/auth/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './features/auth/reset-password/reset-password.component';
 import { AdminCouponsComponent } from './features/pages/admin/admin-coupons/admin-coupons.component';
+import { AdminLogComponent } from './features/pages/admin/admin-log/admin-log.component';
+import { AdminAnalyticsComponent } from './features/pages/admin/admin-analytics/admin-analytics.component';
 
 export const routes: Routes = [
 
@@ -191,6 +193,16 @@ export const routes: Routes = [
   path: 'coupons',
   component: AdminCouponsComponent,
         title: 'Sanaye3i — إدارة الكوبونات',
+},
+{
+  path: 'audit-log',
+  component: AdminLogComponent,
+        title: 'Sanaye3i — إدارة السجلات',
+},
+{
+  path: 'analytics',
+  component: AdminAnalyticsComponent,
+        title: 'Sanaye3i — التحليلات',
 },
     ],
   },

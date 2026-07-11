@@ -1,0 +1,117 @@
+.al-page {
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.al-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.al-title {
+  font-family: var(--font-display, inherit);
+  font-size: 22px;
+  font-weight: 700;
+  color: #0F172A; /* ink */
+}
+
+.al-subtitle {
+  font-size: 13px;
+  color: #64748B; /* steel */
+  margin-top: 4px;
+}
+
+.al-filter {
+  min-width: 200px;
+}
+
+/* ── List ────────────────────────────────────────────────── */
+.al-log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.al-log-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid rgba(37,99,235,0.1); /* primary */
+  border-radius: 12px;
+  flex-wrap: wrap;
+}
+
+.al-action-badge {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.al-action-badge--primary { background: rgba(37,99,235,0.1); color: #2563EB; }  /* primary */
+.al-action-badge--success { background: rgba(22,163,74,0.1); color: #16A34A; } /* success */
+.al-action-badge--danger  { background: rgba(220,38,38,0.1); color: #DC2626; } /* danger */
+.al-action-badge--steel   { background: rgba(100,116,139,0.1); color: #64748B; } /* steel */
+
+.al-log-main {
+  flex: 1;
+  min-width: 200px;
+}
+.al-log-desc {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0F172A; /* ink */
+}
+.al-log-meta {
+  font-size: 11.5px;
+  color: #64748B; /* steel */
+  margin-top: 3px;
+}
+.al-log-meta strong {
+  color: #0F172A; /* ink */
+  font-weight: 600;
+}
+
+.al-log-date {
+  flex-shrink: 0;
+  font-size: 11.5px;
+  color: #94A3B8; /* steel.light */
+  white-space: nowrap;
+}
+
+/* ── Empty / Skeleton ────────────────────────────────────── */
+.al-empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: #64748B; /* steel */
+  font-size: 14px;
+}
+
+.al-skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.al-skeleton-row {
+  height: 62px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #E2E8F0 25%, #F7F9FC 37%, #E2E8F0 63%);
+  background-size: 400% 100%;
+  animation: al-shimmer 1.6s ease-in-out infinite;
+}
+@keyframes al-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .al-skeleton-row { animation: none; }
+}

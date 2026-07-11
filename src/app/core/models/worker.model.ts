@@ -25,6 +25,9 @@ export interface Worker {
   bio: string;
   serviceRadius: number;
   avatarColor: string;
+  // ⚠️ جديد: مهارات حقيقية بيختارها الصنايعي بنفسه (من قايمة محددة حسب
+  // تخصصه) — مش نص ثابت متحط في الفرونت. شوف core/constants/skills-by-trade.ts
+  skills: string[];
   // ── جديد ──
   idFrontUrl?: string;
   idBackUrl?: string;

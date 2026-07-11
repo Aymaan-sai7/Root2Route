@@ -82,9 +82,9 @@
       maxlength="14"
       class="w-full rounded-sm border border-line-strong bg-paper px-3.5 py-2.5 text-sm text-ink placeholder:text-steel focus:border-blueprint focus:outline-none"
     />
-    <p class="mt-1 text-xs text-steel">
+    <!-- <p class="mt-1 text-xs text-steel">
       بيتفحص إنه مش مسجل بحساب تاني — بيمنع تسجيل نفس الشخص كـ عميل وصنايعي مع بعض.
-    </p>
+    </p> -->
     @if (form().get('nationalId')?.invalid && form().get('nationalId')?.touched) {
       <p class="mt-1 text-xs text-danger">الرقم القومي لازم يكون 14 رقم بالظبط.</p>
     }

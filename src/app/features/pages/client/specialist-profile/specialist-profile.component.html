@@ -99,18 +99,25 @@
         </section>
 
         <!-- Core Skills -->
+        <!-- ⚠️ دلوقتي w.skills الحقيقية (اختارها الصنايعي بنفسه)، مش قايمة
+             ثابتة حسب التخصص. لو لسه مضافش مهارات، بنوري رسالة بديلة بدل
+             ما نسيب السكشن فاضي أو نرجع لقايمة وهمية -->
         <section class="sp-card">
           <h2 class="sp-card-title">المهارات الأساسية</h2>
-          <div class="sp-skills">
-            @for (skill of getSkills(w.trade); track skill) {
-              <span class="sp-skill-tag">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                  <path d="M20 6 9 17l-5-5"/>
-                </svg>
-                {{ skill }}
-              </span>
-            }
-          </div>
+          @if (w.skills && w.skills.length > 0) {
+            <div class="sp-skills">
+              @for (skill of w.skills; track skill) {
+                <span class="sp-skill-tag">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <path d="M20 6 9 17l-5-5"/>
+                  </svg>
+                  {{ skill }}
+                </span>
+              }
+            </div>
+          } @else {
+            <p class="sp-no-reviews">الصنايعي لسه مضافش مهارات تفصيلية.</p>
+          }
         </section>
 
         <!-- Certifications -->

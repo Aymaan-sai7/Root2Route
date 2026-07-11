@@ -346,6 +346,46 @@
 }
 .ps-logout-btn:hover { background: rgba(220,38,38,0.12); }
 
+/* ⚠️ ضيف الكود ده في آخر pro-settings.component.css عندك — مش ملف مستقل،
+   ده إضافة بس للـ CSS الموجود بالفعل عندك (مش عندي باقي الملف عشان أدمجه) */
+
+.ps-section-desc {
+  font-size: 13px;
+  color: #64748B; /* steel */
+  margin-top: -8px;
+  margin-bottom: 14px;
+}
+
+.ps-skills-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ps-skill-chip {
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(37,99,235,0.2); /* primary */
+  background: #fff;
+  color: #64748B; /* steel */
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.ps-skill-chip:hover {
+  border-color: rgba(37,99,235,0.4); /* primary */
+}
+
+.ps-skill-chip--selected {
+  background: #2563EB; /* primary */
+  border-color: #2563EB; /* primary */
+  color: #fff;
+}
+.ps-skill-chip--selected:hover {
+  background: #1D4ED8; /* primary.deep */
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ps-spinner, .ps-btn-spinner { animation: none; }
   .ps-toggle, .ps-toggle-thumb { transition: none; }

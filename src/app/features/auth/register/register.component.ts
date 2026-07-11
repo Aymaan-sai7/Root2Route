@@ -52,6 +52,9 @@ export class RegisterComponent implements OnInit {
     trade:            [''],
     // ⚠️ جديد: يتفعّل بس لو اختار "other" في التخصص
     customTrade:      [''],
+    // ⚠️ جديد: مهارات الصنايعي — array من النصوص، بتتغير قائمتها المتاحة
+    // حسب التخصص المختار (شوف step-pro-details)
+    skills:           [[] as string[]],
     hourlyRate:       [null],
     yearsOfExperience:[null],
     city:             [''],
@@ -93,7 +96,12 @@ export class RegisterComponent implements OnInit {
 
     // ⚠️ جديد: أي تغيير في التخصص يعيد ضبط فاليديشن customTrade فورًا
     // (عشان لو اختار "أخرى" يبقى الحقل مطلوب على طول من غير ما ينتقل خطوة)
-    this.form.get('trade')?.valueChanges.subscribe(() => this.syncProValidators());
+    // وكمان بيصفّر skills المختارة — عشان مهارات تخصص قديم متفضلش متحطة
+    // على تخصص جديد اختاره (مثلاً اختار سباكة بعد ما كان مختار كهربا)
+    this.form.get('trade')?.valueChanges.subscribe(() => {
+      this.syncProValidators();
+      this.form.get('skills')?.setValue([]);
+    });
   }
 
   goNext(): void {
@@ -145,6 +153,8 @@ export class RegisterComponent implements OnInit {
       serviceRadius:     Number(v.serviceRadius) || 15,
       bio:               '',
       avatarColor:       this.randomColor(),
+      // ⚠️ جديد
+      skills:            v.skills ?? [],
     } : undefined;
 
     this.auth.register(
@@ -206,6 +216,9 @@ export class RegisterComponent implements OnInit {
       carpentry:  'نجارة',
       painting:   'نقاشة',
       ac:         'تكييف وتبريد',
+      cleaning:   'تنظيف',
+      moving:     'نقل عفش',
+      metalwork:  'حدادة وألوميتال',
       other:      'خدمات أخرى',
     };
     return map[trade] ?? trade;

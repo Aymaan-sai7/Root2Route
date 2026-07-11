@@ -24,14 +24,9 @@ export class SpecialistProfileComponent implements OnInit {
   loading = signal(true);
   error   = signal<string | null>(null);
 
-  skills: Record<string, string[]> = {
-    electrical: ['تركيب لوحات كهرباء', 'أسلاك وإنارة', 'فحص أمان', 'كهرباء صناعية'],
-    plumbing:   ['تصليح تسريبات', 'تركيب مواسير', 'سخانات', 'صرف صحي'],
-    carpentry:  ['تفصيل موبيليا', 'تركيب أرفف', 'أبواب وشبابيك', 'ديكور خشبي'],
-    painting:   ['دهان داخلي', 'دهان خارجي', 'ورق حائط', 'تشطيب نهائي'],
-    ac:         ['تركيب تكييفات', 'صيانة دورية', 'تصليح أعطال', 'تكييف مركزي'],
-    other:      ['خدمات متنوعة'],
-  };
+  // ⚠️ اتشالت القايمة الثابتة والـ getSkills() القديمة — دلوقتي المهارات
+  // بتيجي من w.skills الحقيقية (اللي الصنايعي اختارها بنفسه وقت التسجيل
+  // أو من صفحة الإعدادات)، مش نص ثابت لكل التخصصات. شوف الـ HTML.
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -57,10 +52,6 @@ export class SpecialistProfileComponent implements OnInit {
     this.reviewsService.getByWorker(workerId).subscribe({
       next: (r) => this.reviews.set(r),
     });
-  }
-
-  getSkills(trade: string): string[] {
-    return this.skills[trade] ?? this.skills['other'];
   }
 
   getStars(rating: number): boolean[] {

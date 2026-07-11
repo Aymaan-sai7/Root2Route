@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Observable, of } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Booking, BookingStatus, BookingAddress } from '../models/booking.model';
+import { Booking, BookingStatus, BookingAddress, WorkStage } from '../models/booking.model';
 import { TradeType } from '../models/worker.model';
 import { NotificationsService } from './notification.service';
 import { WorkersService } from './workers.service';
@@ -13,9 +13,6 @@ export interface CreateBookingDto {
   clientName: string;
   workerId: string;
   workerName: string;
-  // ⚠️ workerTrade فضل زي ما هو (النص العربي المعروض، زي "كهربا") عشان
-  // مانلمسش أي حاجة بتعرضه في الفرونت. trade تحته هو الـ TradeType الحقيقي
-  // ("electrical") — لازم يتبعت منفصل عشان قيود الكوبون (تصنيف معين) تتحقق صح
   workerTrade: string;
   trade: TradeType;
   workerAvatarColor: string;
@@ -23,16 +20,10 @@ export interface CreateBookingDto {
   address: BookingAddress;
   scheduledAt: string;
   estimatedHours: number;
-  // ⚠️ السعر الأصلي قبل أي خصم — اسمه فضل totalAmount عمدًا عشان مانلمسش
-  // خطوات الحجز الأولى (تفاصيل/عنوان/معاد) اللي بتحسب الرقم ده زي ما هي.
-  // السيرفر هو اللي بيحوّله لـ originalAmount ويحسب السعر النهائي الفعلي
   totalAmount: number;
-  // ⚠️ اختياري — لو المستخدم كتب كود كوبون في خطوة المراجعة واتقبل فعليًا
   couponCode?: string;
 }
 
-// ⚠️ شكل الكوبون العام (Public) — بيرجع من /coupons/active، مفيهوش
-// usedCount/usedByUserIds لأنها مش لازم تبان للعامة
 export interface ActiveCoupon {
   code: string;
   discountType: 'percentage' | 'fixed';
@@ -103,12 +94,7 @@ export class BookingsService {
     return this.http.patch<Booking>(`${this.base}/${id}`, changes);
   }
 
-  /**
-   * حجز جديد — بعد الإنشاء، بنبلّغ الصنايعي بطلب جديد
-   * ⚠️ لو dto فيه couponCode، بيتبعت للسيرفر زي ما هو والسيرفر هو اللي بيتحقق
-   * منه ويحسب الخصم الفعلي ويرجّع الحجز بـ totalAmount النهائي بعد الخصم —
-   * مفيش أي حساب خصم بيحصل هنا في الفرونت خالص
-   */
+  /** حجز جديد — بعد الإنشاء، بنبلّغ الصنايعي بطلب جديد */
   create(dto: CreateBookingDto): Observable<Booking> {
     const booking = {
       ...dto,
@@ -119,9 +105,9 @@ export class BookingsService {
       switchMap((created) =>
         this.workersService.getById(created.workerId).pipe(
           switchMap((worker) => {
-            if (!worker.userId) return of(null); // مفيش userId معروف، تخطى الإشعار من غير ما يكسر الحجز
+            if (!worker.userId) return of(null);
             return this.notificationsService.create({
-              userId: worker.userId, // ⚠️ user id الحقيقي، مش worker.id
+              userId: worker.userId,
               type: 'booking_created',
               title: 'طلب جديد',
               message: `${created.clientName} طلب خدمتك`,
@@ -134,9 +120,18 @@ export class BookingsService {
     );
   }
 
-  /** تحديث status حجز — بعد التحديث، بنبلّغ الـ client بالتغيير */
+  /**
+   * تحديث status حجز — بعد التحديث، بنبلّغ الـ client بالتغيير
+   * ⚠️ لما الطلب يتقبل وينقل لـ active، بيبدأ من أول مرحلة شغل تلقائي
+   * ("في الطريق") — عشان صفحة "الشغل الجاري" تلاقي مرحلة واضحة من أول لحظة
+   */
   updateStatus(id: string, status: BookingStatus): Observable<Booking> {
-    return this.http.patch<Booking>(`${this.base}/${id}`, { status }).pipe(
+    const patch: Partial<Booking> & { status: BookingStatus } = { status };
+    if (status === 'active') {
+      patch.workStage = 'on_the_way';
+    }
+
+    return this.http.patch<Booking>(`${this.base}/${id}`, patch).pipe(
       switchMap((updated) =>
         this.notificationsService.create({
           userId: updated.clientId,
@@ -150,23 +145,22 @@ export class BookingsService {
   }
 
   /**
-   * جيب كل الكوبونات النشطة دلوقتي (Public، مش محتاج تسجيل دخول)
-   * ⚠️ بتتستخدم في سكشن "عروض وتنقل سريع" بصفحة find-services
+   * تحديث مرحلة الشغل (في الطريق / بدأ الشغل / خلّص) لحجز جاري
+   * ⚠️ بينادي endpoint محمي مخصص (مش PATCH عام) — السيرفر بيتحقق إن
+   * الصنايعي صاحب الحجز ده بالظبط هو اللي بيحرّك المرحلة
    */
+  updateWorkStage(id: string, workStage: WorkStage): Observable<Booking> {
+    return this.http.patch<Booking>(`${this.base}/${id}/work-stage`, { workStage });
+  }
+
+  /** جيب كل الكوبونات النشطة دلوقتي (Public، مش محتاج تسجيل دخول) */
   getActiveCoupons(): Observable<ActiveCoupon[]> {
     return this.http
       .get<ActiveCoupon[]>(`${environment.apiUrl}/coupons/active`)
       .pipe(catchError(() => of([])));
   }
 
-  /**
-   * التحقق من كوبون قبل التأكيد النهائي (بيستخدم في خطوة Review & Confirm)
-   * ⚠️ ده validate بس، مش استهلاك — الاستهلاك الفعلي بيحصل جوه create() فوق
-   * وقت التأكيد النهائي بس
-   * ⚠️ الباك اند بيرجع status 400/404 لأي كوبون مش صالح (مش 200 مع valid:false)،
-   * فبنمسك الخطأ هنا ونحوّله لنفس الشكل { valid:false, message } عشان الكومبوننت
-   * يقدر يتعامل معاه كـ "نتيجة عادية" مش error بيكسر حاجة
-   */
+  /** التحقق من كوبون قبل التأكيد النهائي (بيستخدم في خطوة Review & Confirm) */
   validateCoupon(
     code: string,
     trade: string
@@ -183,11 +177,7 @@ export class BookingsService {
       );
   }
 
-  /**
-   * أرقام تلفون العميل والصنايعي بتاعين حجز معين
-   * ⚠️ السيرفر بيتحقق إن اللي بيطلب هو فعلاً أحد طرفي الحجز ده (مش أي حد تاني)،
-   * فالـ endpoint ده مايشتغلش غير للعميل صاحب الحجز أو الصنايعي المحجوز
-   */
+  /** أرقام تلفون العميل والصنايعي بتاعين حجز معين */
   getBookingContact(bookingId: string): Observable<{ clientPhone: string | null; workerPhone: string | null }> {
     return this.http.get<{ clientPhone: string | null; workerPhone: string | null }>(
       `${this.base}/${bookingId}/contact`

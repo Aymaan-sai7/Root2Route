@@ -1,19 +1,14 @@
 <div class="space-y-5">
-
   <p class="text-sm text-ink-soft">راجع بياناتك، ولو كله تمام اضغط تأكيد.</p>
-
   <div class="space-y-3 rounded-md border border-line bg-paper-dim p-5">
-
     <div class="flex items-center justify-between border-b border-line pb-3">
       <span class="text-sm text-steel">الاسم</span>
       <span class="text-sm font-medium text-ink">{{ form().get('fullName')?.value || '—' }}</span>
     </div>
-
     <div class="flex items-center justify-between border-b border-line pb-3">
       <span class="text-sm text-steel">البريد الإلكتروني</span>
       <span class="text-sm font-medium text-ink">{{ form().get('email')?.value || '—' }}</span>
     </div>
-
     <div class="flex items-center justify-between">
       <span class="text-sm text-steel">نوع الحساب</span>
       <span class="text-sm font-medium text-ink">
@@ -26,7 +21,6 @@
         }
       </span>
     </div>
-
   </div>
 @if (form().get('role')?.value === 'pro') {
     <div class="mt-3 space-y-3 rounded-md border border-line bg-paper-dim p-5">
@@ -42,10 +36,23 @@
         <span class="text-sm text-steel">سنين الخبرة</span>
         <span class="text-sm font-medium text-ink">{{ form().get('yearsOfExperience')?.value || '—' }}</span>
       </div>
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between" [class.border-b]="(form().get('skills')?.value ?? []).length > 0" [class.border-line]="(form().get('skills')?.value ?? []).length > 0" [class.pb-3]="(form().get('skills')?.value ?? []).length > 0">
         <span class="text-sm text-steel">المنطقة</span>
         <span class="text-sm font-medium text-ink">{{ form().get('city')?.value || '—' }}</span>
       </div>
+      <!-- ⚠️ جديد: عرض المهارات المختارة، لو اختار أي حاجة -->
+      @if ((form().get('skills')?.value ?? []).length > 0) {
+        <div>
+          <span class="mb-2 block text-sm text-steel">المهارات</span>
+          <div class="flex flex-wrap gap-2">
+            @for (skill of form().get('skills')?.value; track skill) {
+              <span class="rounded-full border border-blueprint/30 bg-blueprint/5 px-3 py-1 text-xs font-medium text-blueprint">
+                {{ skill }}
+              </span>
+            }
+          </div>
+        </div>
+      }
     </div>
   }
   @if (form().get('role')?.value === 'pro') {
@@ -63,6 +70,4 @@
     <input type="checkbox" class="mt-1 accent-blueprint" />
     <span class="text-sm text-ink-soft">موافق على الشروط والأحكام وسياسة الخصوصية.</span>
   </label>
-
-
 </div>

@@ -1,0 +1,54 @@
+<div class="al-page">
+
+  <!-- Header -->
+  <div class="al-header">
+    <div>
+      <h1 class="al-title">سجل نشاط الأدمن</h1>
+      <p class="al-subtitle">كل العمليات الحساسة اللي اتعملت من لوحة التحكم، مرتبة من الأحدث</p>
+    </div>
+    <div class="al-filter">
+      <app-admin-select
+        [options]="actionOptions"
+        [value]="actionFilter()"
+        placeholder="كل الأنواع"
+        (valueChange)="onActionFilterChange($event)"
+      />
+    </div>
+  </div>
+
+  <!-- List -->
+  @if (loading()) {
+    <div class="al-skeleton-list">
+      @for (s of [1,2,3,4,5]; track s) {
+        <div class="al-skeleton-row"></div>
+      }
+    </div>
+  } @else if (filteredLogs().length === 0) {
+    <div class="al-empty-state">
+      <p>مفيش عمليات مسجّلة لسه.</p>
+    </div>
+  } @else {
+    <div class="al-log-list">
+      @for (log of filteredLogs(); track log.id) {
+        <div class="al-log-row">
+          <span class="al-action-badge al-action-badge--{{ actionVariant(log.action) }}">
+            {{ actionLabel(log.action) }}
+          </span>
+
+          <div class="al-log-main">
+            <p class="al-log-desc">{{ describeLog(log) }}</p>
+            <p class="al-log-meta">
+              بواسطة <strong>{{ log.adminName ?? 'أدمن' }}</strong>
+              · {{ timeAgo(log.createdAt) }}
+            </p>
+          </div>
+
+          <span class="al-log-date" [title]="log.createdAt">
+            {{ log.createdAt | date: 'd MMM y، h:mm a' }}
+          </span>
+        </div>
+      }
+    </div>
+  }
+
+</div>
