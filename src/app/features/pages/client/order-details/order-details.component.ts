@@ -41,7 +41,7 @@ export class OrderDetailsComponent implements OnInit {
   isEditing = signal(false);
   isSaving  = signal(false);
 
-  // ⚠️ جديد: رقم تلفون الصنايعي — بيتجاب من endpoint محمي منفصل (مش من
+  //  جديد: رقم تلفون الصنايعي — بيتجاب من endpoint محمي منفصل (مش من
   // Worker model العام)، عشان يبان بس للعميل صاحب الحجز ده بالظبط.
   // null لحد ما يتحمّل، وممكن يفضل null لو الصنايعي مالوش رقم مسجل
   workerPhone = signal<string | null>(null);
@@ -99,7 +99,7 @@ export class OrderDetailsComponent implements OnInit {
     });
   }
 
-  // ⚠️ جديد: بيجيب رقم تلفون الصنايعي (والعميل، لو حبينا نستخدمه لاحقًا)
+  //  جديد: بيجيب رقم تلفون الصنايعي (والعميل، لو حبينا نستخدمه لاحقًا)
   // بتاعين الحجز ده بس. لو حصل أي خطأ (403 مثلاً لو مش من طرفي الحجز)،
   // بنسيب workerPhone على null من غير ما نكسر الصفحة كلها
   private loadContact(bookingId: string): void {

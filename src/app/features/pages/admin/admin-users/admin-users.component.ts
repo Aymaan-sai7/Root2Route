@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import Swal from 'sweetalert2';
 import { AdminService } from '../../../../core/services/admin.service';
 import { User, UserRole, UserStatus } from '../../../../core/models/user.model';
@@ -7,6 +8,9 @@ import { Worker } from '../../../../core/models/worker.model';
 import { timeAgo } from '../../../../core/utils/time.util';
 import { generateAvatarColor } from '../../../../core/utils/color.util';
 import { AdminSelectComponent, AdminSelectOption } from '../../../../shared/components/admin-select/admin-select.component';
+
+const VALID_ROLES: UserRole[] = ['client', 'pro', 'admin'];
+const VALID_STATUSES: UserStatus[] = ['pending', 'active', 'rejected', 'blocked'];
 
 @Component({
   selector: 'app-admin-users',
@@ -17,6 +21,7 @@ import { AdminSelectComponent, AdminSelectOption } from '../../../../shared/comp
 })
 export class AdminUsersComponent implements OnInit {
   private adminService = inject(AdminService);
+  private route = inject(ActivatedRoute);
 
   users = signal<User[]>([]);
   loading = signal(true);
@@ -45,6 +50,20 @@ export class AdminUsersComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    //  جديد: لو الصفحة اتفتحت من رابط فيه ?role= أو ?status= (زي
+    // اللي جاي من داشبورد الأدمن)، بنطبقهم كفلتر ابتدائي قبل أول تحميل.
+    // لو مفيش أو القيمة مش معروفة، بيفضل الفلتر فاضي زي ما كان
+    const params = this.route.snapshot.queryParamMap;
+    const role = params.get('role') as UserRole | null;
+    const status = params.get('status') as UserStatus | null;
+
+    if (role && VALID_ROLES.includes(role)) {
+      this.roleFilter.set(role);
+    }
+    if (status && VALID_STATUSES.includes(status)) {
+      this.statusFilter.set(status);
+    }
+
     this.load();
   }
 
@@ -91,7 +110,6 @@ export class AdminUsersComponent implements OnInit {
     }
     this.expandedId.set(user.id);
 
-    // لو صنايعي ومفيش تفاصيله متجابة قبل كده، اجيبها دلوقتي بس
     if (user.role === 'pro' && !(user.id in this.workerDetails())) {
       this.loadingDetail.set(user.id);
       this.adminService.getUserDetail(user.id).subscribe({

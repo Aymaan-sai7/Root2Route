@@ -61,7 +61,7 @@ export class LocationPickerComponent implements AfterViewInit, OnDestroy {
   resolvingAddress = signal(false);
 
 
-  // ⚠️ جديد: بحث يدوي بيتحكم فيه المستخدم نفسه
+  //  جديد: بحث يدوي بيتحكم فيه المستخدم نفسه
   manualQuery = signal('');
   manualSearching = signal(false);
   manualResults = signal<SearchResult[]>([]);
@@ -114,7 +114,7 @@ export class LocationPickerComponent implements AfterViewInit, OnDestroy {
       next: (results) => {
         const result = results[0];
 
-        // ⚠️ الفيكس الأساسي: نتحقق إن اسم المحافظة فعلًا موجود جوه النتيجة
+        //  الفيكس الأساسي: نتحقق إن اسم المحافظة فعلًا موجود جوه النتيجة
         // اللي رجعت، وإلا نعتبرها تطابق غلط ونروح لمحاولة أوسع بدل ما نثق
         // فيها عمياني. ده اللي كان بيخلي البلاد الصغيرة توصل لمكان بعيد تمامًا.
         const isPlausible = result && (
@@ -136,7 +136,7 @@ export class LocationPickerComponent implements AfterViewInit, OnDestroy {
   private initMap(lat: number, lng: number): void {
   this.selectedLat = lat;
   this.selectedLng = lng;
-  this.reverseGeocode(lat, lng); // ⚠️ جديد
+  this.reverseGeocode(lat, lng); //  جديد
 
   if (this.map) {
     this.map.setView([lat, lng], 16);
@@ -157,19 +157,19 @@ export class LocationPickerComponent implements AfterViewInit, OnDestroy {
     const pos = this.marker.getLatLng();
     this.selectedLat = pos.lat;
     this.selectedLng = pos.lng;
-    this.reverseGeocode(pos.lat, pos.lng); // ⚠️ جديد
+    this.reverseGeocode(pos.lat, pos.lng); //  جديد
   });
 
   this.map.on('click', (e: L.LeafletMouseEvent) => {
     this.marker.setLatLng(e.latlng);
     this.selectedLat = e.latlng.lat;
     this.selectedLng = e.latlng.lng;
-    this.reverseGeocode(e.latlng.lat, e.latlng.lng); // ⚠️ جديد
+    this.reverseGeocode(e.latlng.lat, e.latlng.lng); //  جديد
   });
 
   setTimeout(() => this.map.invalidateSize(), 150);
 }
-// ⚠️ جديد: اسم المكان الحقيقي بالعربي، بيتحدّث لحظيًا كل ما الدبوس يتحرك
+//  جديد: اسم المكان الحقيقي بالعربي، بيتحدّث لحظيًا كل ما الدبوس يتحرك
 private reverseGeocode(lat: number, lng: number): void {
   this.resolvingAddress.set(true);
   const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ar`;
@@ -203,7 +203,7 @@ private reverseGeocode(lat: number, lng: number): void {
   }
 
   /**
-   * ⚠️ جديد: بحث يدوي حقيقي — بيرجع لحد 5 نتائج، والمستخدم نفسه يختار
+   *  جديد: بحث يدوي حقيقي — بيرجع لحد 5 نتائج، والمستخدم نفسه يختار
    * الصح منهم بدل ما النظام يخمّن ويوديه لمكان غلط. ده الحل الأساسي
    * لمشكلة القرى الصغيرة اللي مش متغطية كويس في خرائط OSM.
    */

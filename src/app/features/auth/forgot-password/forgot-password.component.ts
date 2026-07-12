@@ -20,7 +20,7 @@ export class ForgotPasswordComponent {
   });
 
   loading   = signal(false);
-  // ⚠️ لما تتبعت الرسالة، مبقاش فيه رجوع للفورم — الرد من السيرفر عام دايمًا
+  //  لما تتبعت الرسالة، مبقاش فيه رجوع للفورم — الرد من السيرفر عام دايمًا
   // (سواء الإيميل موجود ولا لأ)، فمفيش داعي لمنطق "نجح/فشل" مختلف هنا
   submitted = signal(false);
   errorMessage = signal<string | null>(null);

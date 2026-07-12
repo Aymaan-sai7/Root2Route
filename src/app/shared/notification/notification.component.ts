@@ -25,7 +25,7 @@ export class NotificationComponent implements OnInit {
 
     @Input() variant: 'dropdown' | 'inline' = 'dropdown';
   @Input() label = 'الإشعارات';
-  
+
   isOpen = signal(false);
   notifications = signal<Notification[]>([]);
   loading = signal(false);
@@ -33,7 +33,7 @@ export class NotificationComponent implements OnInit {
   unreadCount = this.notificationsService.unreadCount;
 
   private get userId(): string | undefined {
-    // ⚠️ غيّرها لو الشكل الفعلي لـ currentUser() مختلف عندك
+    //  غيّرها لو الشكل الفعلي لـ currentUser() مختلف عندك
     return this.auth.currentUser()?.id;
   }
 

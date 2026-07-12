@@ -40,6 +40,16 @@
           </div>
         }
 
+        <!-- تنبيه تعديلات غير محفوظة -->
+        @if (form.dirty) {
+          <div class="ps-unsaved-banner">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            عندك تعديلات لسه ماتحفظتش
+          </div>
+        }
+
         <form [formGroup]="form" (ngSubmit)="save()">
 
           <!-- Section: البيانات الشخصية -->
@@ -78,26 +88,40 @@
           <!-- Section: بيانات المهنة -->
           <section class="ps-section">
             <h2 class="ps-section-title">بيانات المهنة</h2>
+
+            <!-- بيانات ثابتة — اتحددت وقت التسجيل، مش قابلة للتعديل من هنا -->
+            <div class="ps-locked-row">
+              <div class="ps-locked-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <div>
+                  <p class="ps-locked-label">التخصص</p>
+                  <p class="ps-locked-value">{{ getTradeLabel(worker()!.trade) }}</p>
+                </div>
+              </div>
+
+              <div class="ps-locked-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <div>
+                  <p class="ps-locked-label">المحافظة</p>
+                  <p class="ps-locked-value">{{ worker()!.city }}</p>
+                </div>
+              </div>
+            </div>
+            <p class="ps-locked-note">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+              <span>
+                التخصص والمحافظة بيتحددوا وقت التسجيل ومينفعش يتغيروا من هنا — لو محتاج تعديلهم
+                <a [href]="supportLink" class="ps-locked-link">تواصل مع الدعم</a>.
+              </span>
+            </p>
+
             <div class="ps-fields ps-fields--2col">
-
-              <div class="ps-field">
-                <label class="ps-label">التخصص</label>
-                <select title="التخصص" formControlName="trade" class="ps-select">
-                  @for (t of trades; track t.value) {
-                    <option [value]="t.value">{{ t.label }}</option>
-                  }
-                </select>
-              </div>
-
-              <div class="ps-field">
-                <label class="ps-label">المدينة</label>
-                <select title="المدينة" formControlName="city" class="ps-select">
-                  <option value="">اختار المدينة</option>
-                  @for (c of cities; track c) {
-                    <option [value]="c">{{ c }}</option>
-                  }
-                </select>
-              </div>
 
               <div class="ps-field">
                 <label class="ps-label">السعر (ج.م / ساعة)</label>
@@ -136,7 +160,7 @@
             </div>
           </section>
 
-          <!-- Section: المهارات (جديد) -->
+          <!-- Section: المهارات -->
           @if (availableSkills().length > 0) {
             <section class="ps-section">
               <h2 class="ps-section-title">مهاراتك</h2>
@@ -163,7 +187,7 @@
               <div
                 class="ps-toggle"
                 [class.ps-toggle--on]="form.get('isAvailable')?.value"
-                (click)="form.get('isAvailable')?.setValue(!form.get('isAvailable')?.value)"
+                (click)="form.get('isAvailable')?.setValue(!form.get('isAvailable')?.value); form.markAsDirty()"
               >
                 <div class="ps-toggle-thumb"></div>
               </div>
@@ -178,9 +202,17 @@
             </label>
           </section>
 
-          <!-- Save Button -->
+          <!-- Save + Reset -->
           <div class="ps-save-row">
-            <button type="submit" class="ps-save-btn" [disabled]="saving()">
+            @if (form.dirty) {
+              <button type="button" class="ps-reset-btn" (click)="resetForm()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>
+                </svg>
+                رجّع القيم الأصلية
+              </button>
+            }
+            <button type="submit" class="ps-save-btn" [disabled]="saving() || !form.dirty">
               @if (saving()) {
                 <span class="ps-btn-spinner"></span>
                 جاري الحفظ...
@@ -208,8 +240,7 @@
           </div>
           <p class="ps-preview-name">{{ form.get('fullName')?.value || worker()!.fullName }}</p>
           <p class="ps-preview-trade">
-            {{ getTradeLabel(form.get('trade')?.value) }}
-            @if (form.get('city')?.value) { · {{ form.get('city')?.value }} }
+            {{ getTradeLabel(worker()!.trade) }} · {{ worker()!.city }}
           </p>
 
           <div class="ps-preview-stats">

@@ -7,7 +7,7 @@
 
   @if (loading()) {
     <div class="ad-cards-grid">
-      @for (s of [1,2,3,4,5,6,7]; track s) {
+      @for (s of [1,2,3,4,5,6,7,8,9]; track s) {
         <div class="ad-skeleton"></div>
       }
     </div>
@@ -29,7 +29,7 @@
         </div>
       </div>
 
-      <div class="ad-card">
+      <div class="ad-card ad-card--clickable" (click)="navigateToUsers({role: 'client'})">
         <div class="ad-card-icon ad-card-icon--primary">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <circle cx="12" cy="8" r="4"/><path d="M6 21v-2a6 6 0 0 1 12 0v2"/>
@@ -41,7 +41,7 @@
         </div>
       </div>
 
-      <div class="ad-card">
+      <div class="ad-card ad-card--clickable" (click)="navigateToUsers({role: 'pro'})">
         <div class="ad-card-icon ad-card-icon--accent">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
@@ -66,7 +66,7 @@
         <a routerLink="/admin/registrations" class="ad-card-cta">راجعهم →</a>
       </div>
 
-      <div class="ad-card ad-card--danger">
+      <div class="ad-card ad-card--danger ad-card--clickable" (click)="navigateToUsers({status: 'blocked'})">
         <div class="ad-card-icon ad-card-icon--danger">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <circle cx="12" cy="12" r="10"/><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"/>
@@ -78,7 +78,7 @@
         </div>
       </div>
 
-      <div class="ad-card">
+      <div class="ad-card ad-card--clickable" (click)="navigateToBookings({})">
         <div class="ad-card-icon ad-card-icon--success">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
@@ -90,7 +90,7 @@
         </div>
       </div>
 
-      <div class="ad-card">
+      <div class="ad-card ad-card--clickable" (click)="navigateToReviews()">
         <div class="ad-card-icon ad-card-icon--warning">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="#F97316">
             <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
@@ -101,11 +101,69 @@
           <span class="ad-card-label">إجمالي التقييمات</span>
         </div>
       </div>
+
+      <div class="ad-card ad-card--clickable" (click)="navigateToBookings({status: 'completed'})">
+        <div class="ad-card-icon ad-card-icon--success">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div>
+          <span class="ad-card-value">{{ totalGmv() }} ج.م</span>
+          <span class="ad-card-label">إجمالي قيمة الحجوزات</span>
+        </div>
+      </div>
+
+      <div class="ad-card">
+        <div class="ad-card-icon ad-card-icon--primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/>
+          </svg>
+        </div>
+        <div>
+          <span class="ad-card-value">{{ avgBookingValue() }} ج.م</span>
+          <span class="ad-card-label">متوسط قيمة الحجز</span>
+        </div>
+      </div>
     </div>
 
-    <!-- Charts -->
+    <!-- Charts (Grid غير متماثل: 12 عمود، كل شارت مساحته حسب أهميته) -->
     <div class="ad-charts-grid">
-      <div class="ad-chart-card">
+
+      <!-- span 7: الأهم بصريًا -->
+      <div class="ad-chart-card ad-span-7">
+        <h3 class="ad-chart-title">إجمالي قيمة الحجوزات آخر 30 يوم</h3>
+        <apx-chart
+          [series]="gmvTrendSeries"
+          [chart]="gmvTrendOptions.chart"
+          [xaxis]="gmvTrendOptions.xaxis"
+          [yaxis]="gmvTrendOptions.yaxis"
+          [colors]="gmvTrendOptions.colors"
+          [stroke]="gmvTrendOptions.stroke"
+          [fill]="gmvTrendOptions.fill"
+          [dataLabels]="gmvTrendOptions.dataLabels"
+          [grid]="gmvTrendOptions.grid"
+          [responsive]="gmvTrendOptions.responsive"
+        ></apx-chart>
+      </div>
+
+      <!-- span 5 -->
+      <div class="ad-chart-card ad-span-5">
+        <h3 class="ad-chart-title">المستخدمين حسب الدور</h3>
+        <p class="ad-chart-hint">اضغط لتفلتر المستخدمين</p>
+        <apx-chart
+          [series]="rolesSeries"
+          [chart]="rolesOptions.chart"
+          [labels]="rolesOptions.labels"
+          [colors]="rolesOptions.colors"
+          [legend]="rolesOptions.legend"
+          [dataLabels]="rolesOptions.dataLabels"
+          [responsive]="rolesOptions.responsive"
+        ></apx-chart>
+      </div>
+
+      <!-- span 4 × 3 -->
+      <div class="ad-chart-card ad-span-4">
         <h3 class="ad-chart-title">تسجيلات جديدة (آخر 7 أيام)</h3>
         <apx-chart
           [series]="registrationsSeries"
@@ -119,20 +177,7 @@
         ></apx-chart>
       </div>
 
-      <div class="ad-chart-card">
-        <h3 class="ad-chart-title">المستخدمين حسب الدور</h3>
-        <apx-chart
-          [series]="rolesSeries"
-          [chart]="rolesOptions.chart"
-          [labels]="rolesOptions.labels"
-          [colors]="rolesOptions.colors"
-          [legend]="rolesOptions.legend"
-          [dataLabels]="rolesOptions.dataLabels"
-          [stroke]="rolesOptions.stroke"
-        ></apx-chart>
-      </div>
-
-      <div class="ad-chart-card">
+      <div class="ad-chart-card ad-span-4">
         <h3 class="ad-chart-title">الحسابات حسب الحالة</h3>
         <apx-chart
           [series]="statusSeries"
@@ -142,10 +187,25 @@
           [legend]="statusOptions.legend"
           [dataLabels]="statusOptions.dataLabels"
           [stroke]="statusOptions.stroke"
+          [responsive]="statusOptions.responsive"
         ></apx-chart>
       </div>
 
-      <div class="ad-chart-card">
+      <div class="ad-chart-card ad-span-4">
+        <h3 class="ad-chart-title">معدل قبول التسجيلات</h3>
+        <p class="ad-chart-hint">نشط مقابل مرفوض/محظور</p>
+        <apx-chart
+          [series]="approvalGaugeSeries"
+          [chart]="approvalGaugeOptions.chart"
+          [colors]="approvalGaugeOptions.colors"
+          [plotOptions]="approvalGaugeOptions.plotOptions"
+          [labels]="approvalGaugeOptions.labels"
+          [responsive]="approvalGaugeOptions.responsive"
+        ></apx-chart>
+      </div>
+
+      <!-- span 6 × 2 -->
+      <div class="ad-chart-card ad-span-6">
         <h3 class="ad-chart-title">الحجوزات حسب الحالة</h3>
         <apx-chart
           [series]="bookingsSeries"
@@ -156,8 +216,110 @@
           [grid]="bookingsOptions.grid"
           [xaxis]="bookingsOptions.xaxis"
           [legend]="bookingsOptions.legend"
+          [responsive]="bookingsOptions.responsive"
         ></apx-chart>
       </div>
+
+      <div class="ad-chart-card ad-span-6">
+        <h3 class="ad-chart-title">توزيع التقييمات بالنجوم</h3>
+        <p class="ad-chart-hint">اضغط لتفلتر التقييمات</p>
+        @if (allReviews().length > 0) {
+          <apx-chart
+            [series]="reviewStarsSeries"
+            [chart]="reviewStarsOptions.chart"
+            [labels]="reviewStarsOptions.labels"
+            [colors]="reviewStarsOptions.colors"
+            [legend]="reviewStarsOptions.legend"
+            [dataLabels]="reviewStarsOptions.dataLabels"
+            [stroke]="reviewStarsOptions.stroke"
+            [responsive]="reviewStarsOptions.responsive"
+          ></apx-chart>
+        } @else {
+          <p class="ad-empty">مفيش تقييمات لسه</p>
+        }
+      </div>
+
+      <!-- span 12: عرضه الكامل، فيه كذا تصنيف ممكن يطول -->
+      <div class="ad-chart-card ad-span-12">
+        <h3 class="ad-chart-title">أكتر التخصصات طلبًا</h3>
+        <apx-chart
+          [series]="topTradesSeries"
+          [chart]="topTradesOptions.chart"
+          [plotOptions]="topTradesOptions.plotOptions"
+          [colors]="topTradesOptions.colors"
+          [dataLabels]="topTradesOptions.dataLabels"
+          [grid]="topTradesOptions.grid"
+          [xaxis]="topTradesOptions.xaxis"
+          [responsive]="topTradesOptions.responsive"
+        ></apx-chart>
+      </div>
+
+    </div>
+
+    <!-- آخر الحجوزات (Table) + أكتر الصنايعية نشاطًا (List) -->
+    <div class="ad-bottom-grid">
+
+      <div class="ad-table-card">
+        <h3 class="ad-chart-title">آخر الحجوزات</h3>
+
+        @if (recentBookings().length === 0) {
+          <p class="ad-empty">مفيش حجوزات لسه.</p>
+        } @else {
+          <div class="ad-table-wrap">
+            <table class="ad-table">
+              <thead>
+                <tr>
+                  <th>العميل</th>
+                  <th>الصنايعي</th>
+                  <th>المبلغ</th>
+                  <th>الحالة</th>
+                  <th>التاريخ</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (b of recentBookings(); track b.id) {
+                  <tr (click)="navigateToBookingRow(b)">
+                    <td>
+                      <div class="ad-table-user">
+                        <div class="ad-table-avatar" [style.background]="getAvatarColor(b.clientName)">
+                          {{ (b.clientName || '؟').charAt(0) }}
+                        </div>
+                        <div><p class="ad-table-name">{{ b.clientName }}</p></div>
+                      </div>
+                    </td>
+                    <td class="ad-table-name">{{ b.workerName }}</td>
+                    <td class="ad-table-name">{{ b.totalAmount }} ج.م</td>
+                    <td><span class="ad-status-badge" [class]="getBookingStatusClass(b.status)">{{ getBookingStatusLabel(b.status) }}</span></td>
+                    <td class="ad-table-time">{{ timeAgo(b.createdAt) }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+
+      <div class="ad-list-card">
+        <h3 class="ad-chart-title">أكتر الصنايعية نشاطًا</h3>
+
+        @if (topWorkers().length === 0) {
+          <p class="ad-empty">مفيش بيانات كفاية</p>
+        } @else {
+          <div class="ad-rank-list">
+            @for (w of topWorkers(); track w.workerId; let i = $index) {
+              <div class="ad-rank-row">
+                <span class="ad-rank-badge" [class]="'ad-rank-badge--' + (i + 1)">{{ i + 1 }}</span>
+                <div class="ad-rank-info">
+                  <p class="ad-rank-name">{{ w.workerName }}</p>
+                  <p class="ad-rank-count">{{ w.count }} طلب مكتمل</p>
+                </div>
+                <p class="ad-rank-revenue">{{ w.revenue }} ج.م</p>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
     </div>
 
     <!-- Recent Registrations -->

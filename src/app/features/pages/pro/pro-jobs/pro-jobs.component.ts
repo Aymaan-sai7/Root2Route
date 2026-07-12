@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BookingsService } from '../../../../core/services/bookings.service';
 import { AuthService } from '../../../../core/services/Auth.service';
 import { WorkersService } from '../../../../core/services/workers.service';
@@ -10,6 +10,7 @@ import { switchMap } from 'rxjs';
 import { confirmDelete } from '../../../../core/utils/confirm.util';
 
 type TabFilter = 'active' | 'completed';
+const VALID_TABS: TabFilter[] = ['active', 'completed'];
 
 interface StageDef {
   id: WorkStage;
@@ -38,6 +39,7 @@ export class ProJobsComponent implements OnInit {
   private auth     = inject(AuthService);
   private workers  = inject(WorkersService);
   private router   = inject(Router);
+  private route    = inject(ActivatedRoute);
 
   allJobs   = signal<Booking[]>([]);
   activeTab = signal<TabFilter>('active');
@@ -70,6 +72,11 @@ export class ProJobsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const requestedTab = this.route.snapshot.queryParamMap.get('tab') as TabFilter | null;
+    if (requestedTab && VALID_TABS.includes(requestedTab)) {
+      this.activeTab.set(requestedTab);
+    }
+
     const user = this.auth.currentUser();
     if (!user) return;
 

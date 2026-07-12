@@ -21,7 +21,7 @@ export class TrustStripComponent {
     initialValue: null,
   });
 
-  // ⚠️ بنقرّب العدد لأسفل لأقرب 100 (مثلاً 2450 → 2400) عشان يفضل شكله
+  //  بنقرّب العدد لأسفل لأقرب 100 (مثلاً 2450 → 2400) عشان يفضل شكله
   // تسويقي "أكتر من X" ومايتغيّرش بشكل ملحوظ كل ما عميل جديد يتسجل
   private trustedCount = computed(() => {
     const total = this.stats()?.totalClients;
@@ -29,7 +29,7 @@ export class TrustStripComponent {
     return Math.floor(total / 100) * 100;
   });
 
-  // ⚠️ toLocaleString('ar-EG') بيحوّل الرقم لأرقام هندية عربية (٢٤٠٠ بدل 2400)
+  //  toLocaleString('ar-EG') بيحوّل الرقم لأرقام هندية عربية (٢٤٠٠ بدل 2400)
   // تلقائيًا، بالظبط زي الشكل الأصلي "٢٠٠٠" اللي كان متكتوب يدوي في الـ HTML
   trustedCountFormatted = computed(() => this.trustedCount().toLocaleString('ar-EG'));
 

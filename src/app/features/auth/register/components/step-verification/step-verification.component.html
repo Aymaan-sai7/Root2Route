@@ -40,7 +40,7 @@
         <span class="text-sm text-steel">المنطقة</span>
         <span class="text-sm font-medium text-ink">{{ form().get('city')?.value || '—' }}</span>
       </div>
-      <!-- ⚠️ جديد: عرض المهارات المختارة، لو اختار أي حاجة -->
+      <!--  جديد: عرض المهارات المختارة، لو اختار أي حاجة -->
       @if ((form().get('skills')?.value ?? []).length > 0) {
         <div>
           <span class="mb-2 block text-sm text-steel">المهارات</span>

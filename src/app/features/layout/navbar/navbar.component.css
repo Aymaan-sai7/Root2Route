@@ -141,12 +141,12 @@
   border: 1px solid #D9D2C3;
   color: #324653;
   background: transparent;
-  flex-shrink: 0; /* ⚠️ ده اللي بيمنعه ياخد عرض زيادة */
+  flex-shrink: 0; /*  ده اللي بيمنعه ياخد عرض زيادة */
 }
 .mnav-btn--outline:active { transform: scale(0.96); }
 
 .mnav-btn--filled {
-  flex: 1; /* ⚠️ ده اللي واخد المساحة الأكبر كـ CTA أساسي، مش كل الشاشة */
+  flex: 1; /*  ده اللي واخد المساحة الأكبر كـ CTA أساسي، مش كل الشاشة */
   background: #F97316;
   color: #fff;
   box-shadow: 0 4px 14px rgba(249, 115, 22, 0.3);

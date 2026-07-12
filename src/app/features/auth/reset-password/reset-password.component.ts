@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ScrollRevealDirective } from '../../../shared/directive/scroll-reveal.directive';
 import { AuthService } from '../../../core/services/Auth.service';
 
-// ⚠️ Validator بسيط للتأكد إن الباسورد وتأكيده متطابقين
+//  Validator بسيط للتأكد إن الباسورد وتأكيده متطابقين
 function passwordsMatch(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value;
   const confirm   = control.get('confirmPassword')?.value;
@@ -37,7 +37,7 @@ export class ResetPasswordComponent {
   showPassword = signal(false);
   errorMessage = signal<string | null>(null);
 
-  // ⚠️ التوكن والإيميل جايين من الـ query params في اللينك اللي وصل بالإيميل،
+  //  التوكن والإيميل جايين من الـ query params في اللينك اللي وصل بالإيميل،
   // مش من input المستخدم — لو مش موجودين، اللينك أصلاً باطل ومفيش داعي نعرض فورم
   private token = this.route.snapshot.queryParamMap.get('token');
   private email  = this.route.snapshot.queryParamMap.get('email');

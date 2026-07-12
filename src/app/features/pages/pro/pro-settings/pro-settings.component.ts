@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../../core/services/Auth.service';
 import { WorkersService } from '../../../../core/services/workers.service';
@@ -6,6 +6,10 @@ import { Worker } from '../../../../core/models/worker.model';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { getSkillsForTrade } from '../../../../core/constant/skills';
+import { ComponentCanDeactivate } from '../../../../core/guards/unsaved.guard';
+
+//  استبدلها بإيميل الدعم الحقيقي بتاعك
+const SUPPORT_EMAIL = 'support@sanaye3i.com';
 
 @Component({
   selector: 'app-pro-settings',
@@ -14,7 +18,7 @@ import { getSkillsForTrade } from '../../../../core/constant/skills';
   templateUrl: './pro-settings.component.html',
   styleUrl: './pro-settings.component.css',
 })
-export class ProSettingsComponent implements OnInit {
+export class ProSettingsComponent implements OnInit, ComponentCanDeactivate {
   private fb      = inject(FormBuilder);
   private auth    = inject(AuthService);
   private workers = inject(WorkersService);
@@ -26,6 +30,14 @@ export class ProSettingsComponent implements OnInit {
   saved        = signal(false);
   error        = signal<string | null>(null);
 
+  //  رابط "تواصل مع الدعم" — mailto بموضوع جاهز، أسهل من رقم واتساب
+  // وهمي ممكن يلخبط حد لو دوس عليه بجد
+  supportLink = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('طلب تعديل بيانات - صنايعي')}`;
+
+  //  بنخزن القيم الأصلية اللي جاية من السيرفر عشان زرار "رجّع القيم
+  // الأصلية" يقدر يرجّعها من غير ما يعمل reload كامل للصفحة
+  private originalFormValue: Record<string, unknown> = {};
+
   trades = [
     { value: 'electrical', label: 'كهربا' },
     { value: 'plumbing',   label: 'سباكة' },
@@ -35,53 +47,18 @@ export class ProSettingsComponent implements OnInit {
     { value: 'other',      label: 'خدمات أخرى' },
   ];
 
-cities = [
-  'القاهرة',
-  'الجيزة',
-  'الإسكندرية',
-  'القليوبية',
-  'الشرقية',
-  'الدقهلية',
-  'البحيرة',
-  'كفر الشيخ',
-  'الغربية',
-  'المنوفية',
-  'دمياط',
-  'بورسعيد',
-  'الإسماعيلية',
-  'السويس',
-  'شمال سيناء',
-  'جنوب سيناء',
-  'الفيوم',
-  'بني سويف',
-  'المنيا',
-  'أسيوط',
-  'سوهاج',
-  'قنا',
-  'الأقصر',
-  'أسوان',
-  'البحر الأحمر',
-  'الوادي الجديد',
-  'مطروح'
-];
   form: FormGroup = this.fb.group({
     fullName:          ['', [Validators.required, Validators.minLength(3)]],
-    trade:             ['', Validators.required],
-    city:              ['', Validators.required],
     hourlyRate:        [null, [Validators.required, Validators.min(1)]],
     yearsOfExperience: [null, [Validators.required, Validators.min(0)]],
     serviceRadius:     [null, [Validators.required, Validators.min(1)]],
     bio:               ['', Validators.maxLength(300)],
-    // ⚠️ جديد: مهارات قابلة للتعديل بعد التسجيل — نفس القايمة المستخدمة
-    // في خطوة step-pro-details وقت التسجيل بالظبط (مصدر واحد مشترك)
     skills:            [[] as string[]],
     isAvailable:       [true],
   });
 
-  // ⚠️ جديد: قايمة المهارات المتاحة تتغيّر تلقائيًا حسب التخصص الحالي في
-  // الفورم (حتى لو غيّره من نفس الصفحة)
   availableSkills = computed<string[]>(() => {
-    const trade = this.form.get('trade')?.value;
+    const trade = this.worker()?.trade;
     return trade && trade !== 'other' ? getSkillsForTrade(trade) : [];
   });
 
@@ -89,28 +66,26 @@ cities = [
     const user = this.auth.currentUser();
     if (!user) return;
 
-    // ⚠️ لو التخصص اتغيّر، نصفّر المهارات المختارة (زي ما بنعمل بالظبط
-    // في خطوة التسجيل — مهارات تخصص قديم مالهاش معنى مع تخصص جديد)
-    this.form.get('trade')?.valueChanges.subscribe(() => {
-      this.form.get('skills')?.setValue([]);
-    });
-
     this.workers.getByUserId(user.id).subscribe({
       next: (list) => {
         const w = list[0];
         if (!w) { this.error.set('مش لاقي بيانات الصنايعي.'); this.loading.set(false); return; }
         this.worker.set(w);
-        this.form.patchValue({
+
+        const patch = {
           fullName:          w.fullName,
-          trade:             w.trade,
-          city:              w.city,
           hourlyRate:        w.hourlyRate,
           yearsOfExperience: w.yearsOfExperience,
           serviceRadius:     w.serviceRadius,
           bio:               w.bio,
           skills:            w.skills ?? [],
           isAvailable:       w.isAvailable,
-        });
+        };
+        this.form.patchValue(patch);
+        //  نسخة منفصلة (مش reference) عشان لو skills اتعدلت في الفورم
+        // متلخبطش النسخة الأصلية المحفوظة هنا
+        this.originalFormValue = { ...patch, skills: [...(w.skills ?? [])] };
+
         this.loading.set(false);
       },
       error: () => {
@@ -118,6 +93,25 @@ cities = [
         this.loading.set(false);
       },
     });
+  }
+
+  // ── CanDeactivate ────────────────────────────────────────
+  hasUnsavedChanges(): boolean {
+    return this.form.dirty;
+  }
+
+  // بيغطي حالة قفل التاب/تحديث الصفحة (مش تنقل جوه الأنجولار روتر،
+  // ده الـ guard بيغطيه لوحده) — نفس فكرة الـ guard بالظبط
+  @HostListener('window:beforeunload', ['$event'])
+  beforeUnload(event: BeforeUnloadEvent): void {
+    if (this.hasUnsavedChanges()) {
+      event.preventDefault();
+    }
+  }
+
+  // ── Reset ────────────────────────────────────────────────
+  resetForm(): void {
+    this.form.reset(this.originalFormValue);
   }
 
   isSkillSelected(skill: string): boolean {
@@ -131,6 +125,7 @@ cities = [
       ? current.filter((s) => s !== skill)
       : [...current, skill];
     this.form.get('skills')?.setValue(updated);
+    this.form.markAsDirty();
   }
 
   save(): void {
@@ -149,6 +144,12 @@ cities = [
         this.worker.set(savedWorker);
         this.saving.set(false);
         this.saved.set(true);
+
+        //  بعد الحفظ بنجاح، القيم دي بقت "الأصل" الجديد — الفورم يرجع
+        // pristine (مفيش تعديلات معلقة) وزرار Reset يرجّع للنقطة دي بقى
+        this.originalFormValue = { ...this.form.value, skills: [...(this.form.value.skills ?? [])] };
+        this.form.markAsPristine();
+
         setTimeout(() => this.saved.set(false), 3000);
       },
       error: () => {
@@ -162,7 +163,8 @@ cities = [
     this.auth.logout();
   }
 
-  getTradeLabel(value: string): string {
+  getTradeLabel(value: string | undefined): string {
+    if (!value) return '';
     return this.trades.find((t) => t.value === value)?.label ?? value;
   }
 

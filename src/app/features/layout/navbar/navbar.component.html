@@ -37,7 +37,7 @@
   </nav>
 </header>
 
-<!-- ⚠️ بتتنقل لـ document.body في ngAfterViewInit، فمكانها هنا مش مهم بصريًا -->
+<!--  بتتنقل لـ document.body في ngAfterViewInit، فمكانها هنا مش مهم بصريًا -->
 <div #mobileMenuRoot class="mnav-portal">
   @if (mobileOpen()) {
     <div class="mnav-backdrop" [@overlayFade] (click)="closeMobile()" aria-hidden="true"></div>

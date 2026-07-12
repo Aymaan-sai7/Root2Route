@@ -85,7 +85,7 @@ export class NavbarComponent implements AfterViewInit, OnDestroy {
     this.lastScroll = current;
   }
 
-  // ⚠️ جديد: يقفل المنيو تلقائيًا لو الشاشة رجعت md+ وهو لسه فاتح
+  //  جديد: يقفل المنيو تلقائيًا لو الشاشة رجعت md+ وهو لسه فاتح
   @HostListener('window:resize')
   onResize(): void {
     if (window.innerWidth >= 768 && this.mobileOpen()) {
@@ -93,14 +93,14 @@ export class NavbarComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  // ⚠️ جديد: زرار Escape يقفل المنيو
+  //  جديد: زرار Escape يقفل المنيو
   @HostListener('document:keydown.escape')
   onEscape(): void {
     if (this.mobileOpen()) this.closeMobile();
   }
 
   ngAfterViewInit(): void {
-    // ⚠️ بننقل المنيو لـ document.body مرة واحدة — نفس مبدأ client-navbar
+    //  بننقل المنيو لـ document.body مرة واحدة — نفس مبدأ client-navbar
     // بتاع باقي المشروع، عشان الهيدر عليه transition-transform (لإخفائه
     // عند السكرول) وده بيعمل containing block لأي عنصر fixed جواه
     if (this.mobileMenuRoot) {

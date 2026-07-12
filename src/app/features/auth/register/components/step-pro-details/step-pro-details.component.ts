@@ -22,13 +22,13 @@ export class StepProDetailsComponent implements OnInit {
     { value: 'other', label: 'تخصص تاني / مش موجود' },
   ];
 
-  // ⚠️ الفيكس: signal عادي بنحدّثه يدويًا بدل toSignal في تعريف الحقل
+  //  الفيكس: signal عادي بنحدّثه يدويًا بدل toSignal في تعريف الحقل
   // (لأن form() مش متاحة وقت field initializers، لازم نستناها لحد ngOnInit)
   private tradeValue = signal<string>('');
 
   isOtherTrade = computed(() => this.tradeValue() === 'other');
 
-  // ⚠️ جديد: قايمة المهارات المتاحة تتغيّر تلقائيًا حسب التخصص المختار.
+  //  جديد: قايمة المهارات المتاحة تتغيّر تلقائيًا حسب التخصص المختار.
   // لو "أخرى"، مفيش قايمة محددة (مالهاش معنى) فبنسيب availableSkills فاضية
   // والسكشن بيتخفي في الـ HTML أصلاً
   availableSkills = computed<string[]>(() =>

@@ -29,7 +29,7 @@ export class AdminLogComponent implements OnInit {
     { value: 'admin_email_changed', label: 'تعديل إيميل أدمن' },
   ];
 
-  // ⚠️ نصوص عربية واضحة لكل نوع action + الأيقونة/اللون المناسب لتصنيفه
+  //  نصوص عربية واضحة لكل نوع action + الأيقونة/اللون المناسب لتصنيفه
   private actionMeta: Record<string, { label: string; variant: 'success' | 'danger' | 'primary' | 'steel' }> = {
     user_status_changed: { label: 'تغيير حالة مستخدم', variant: 'primary' },
     coupon_created:      { label: 'إنشاء كوبون',        variant: 'success' },
@@ -71,7 +71,7 @@ export class AdminLogComponent implements OnInit {
     return this.actionMeta[action]?.variant ?? 'steel';
   }
 
-  // ⚠️ بيبني جملة وصفية مختصرة لكل نوع log حسب details المخزّنة، عشان
+  //  بيبني جملة وصفية مختصرة لكل نوع log حسب details المخزّنة، عشان
   // العرض يبقى مفهوم من نظرة واحدة من غير ما تفتح JSON خام
   describeLog(log: AdminLog): string {
     const d = log.details ?? {};

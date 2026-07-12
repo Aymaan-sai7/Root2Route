@@ -34,7 +34,7 @@ export class AdminCouponsComponent implements OnInit {
     { value: 'fixed', label: 'مبلغ ثابت (ج.م)' },
   ];
 
-  // ⚠️ القيمة الفاضية '' بتترجم لـ null (يعني عام على كل التصنيفات) وقت الإرسال
+  //  القيمة الفاضية '' بتترجم لـ null (يعني عام على كل التصنيفات) وقت الإرسال
   tradeOptions: AdminSelectOption[] = [
     { value: '', label: 'كل التصنيفات' },
     { value: 'electrical', label: 'كهربا' },

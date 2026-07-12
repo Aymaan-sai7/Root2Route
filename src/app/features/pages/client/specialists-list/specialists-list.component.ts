@@ -34,7 +34,7 @@ export class SpecialistsListComponent implements OnInit {
   loading      = signal(true);
   currentTrade = signal<string>('');
 
-  // ⚠️ جديد: اسم التخصص المخصص المطلوب البحث عنه (جاي من ?q= في الرابط)،
+  //  جديد: اسم التخصص المخصص المطلوب البحث عنه (جاي من ?q= في الرابط)،
   // مستخدم بس لما currentTrade === 'other'
   searchLabel = signal<string>('');
 
@@ -78,7 +78,7 @@ export class SpecialistsListComponent implements OnInit {
     const search = this.searchLabel();
     let list = [...this.allWorkers()];
 
-    // ⚠️ جديد: لو جاي من بحث عن تخصص مخصص، فلتر إضافي على tradeLabel
+    //  جديد: لو جاي من بحث عن تخصص مخصص، فلتر إضافي على tradeLabel
     // الحقيقي (مش على enum trade الثابت)
     if (search) {
       const normalizedSearch = this.normalizeArabic(search);
@@ -108,7 +108,7 @@ export class SpecialistsListComponent implements OnInit {
       this.loadWorkers(trade);
     });
 
-    // ⚠️ جديد: بيقرأ ?q= لو موجود (بيتبعت من find-services لما البحث يطابق
+    //  جديد: بيقرأ ?q= لو موجود (بيتبعت من find-services لما البحث يطابق
     // تخصص مخصص حقيقي)
     this.route.queryParams.subscribe(qp => {
       this.searchLabel.set(qp['q'] ?? '');
@@ -117,7 +117,7 @@ export class SpecialistsListComponent implements OnInit {
 
   private loadWorkers(trade: string): void {
     this.loading.set(true);
-    // ⚠️ فيكس: كان فيه استثناء بيخلي trade === 'other' يجيب كل الصنايعية
+    //  فيكس: كان فيه استثناء بيخلي trade === 'other' يجيب كل الصنايعية
     // من غير فلترة خالص. دلوقتي بنفلتر دايمًا على التخصص الحقيقي المطلوب،
     // بما فيه 'other' — فصفحة "خدمات أخرى" بتعرض بس اللي تخصصهم فعلًا 'other'
     const filter: WorkersFilter = { trade: trade as TradeType };
@@ -167,7 +167,7 @@ export class SpecialistsListComponent implements OnInit {
     this.router.navigate(['/specialist', id]);
   }
 
-  // ⚠️ فيكس: لو جاي من بحث تخصص مخصص، نوري الاسم الحقيقي اللي بحث عنه
+  //  فيكس: لو جاي من بحث تخصص مخصص، نوري الاسم الحقيقي اللي بحث عنه
   // بدل "خدمات أخرى" العامة
   get tradeLabel(): string {
     if (this.currentTrade() === 'other' && this.searchLabel()) {

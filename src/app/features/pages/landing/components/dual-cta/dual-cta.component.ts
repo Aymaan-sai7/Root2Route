@@ -27,14 +27,14 @@ export class DualCtaComponent {
     { initial: 'ك', color: '#7A5FA0' },
   ];
 
-  // ⚠️ كل computed تحت بيرجع رقم احتياطي (نفس الأرقام الأصلية) لحد ما رد
+  //  كل computed تحت بيرجع رقم احتياطي (نفس الأرقام الأصلية) لحد ما رد
   // السيرفر يوصل، عشان appCountUp يبدأ بقيمة معقولة مش صفر
   clientsThisWeek = computed(() => this.stats()?.clientsThisWeek ?? 850);
   activeWorkersNow = computed(() => this.stats()?.activeWorkersNow ?? 146);
   totalWorkers = computed(() => this.stats()?.totalWorkers ?? 1400);
   avgMonthlyIncome = computed(() => this.stats()?.avgMonthlyIncome ?? 4200);
 
-  // ⚠️ "متوسط استجابة 45 دقيقة" سيبناه ثابت في الـ HTML عمدًا — مفيش حقل
+  //  "متوسط استجابة 45 دقيقة" سيبناه ثابت في الـ HTML عمدًا — مفيش حقل
   // في الـ Booking بيسجل وقت رد الصنايعي فعليًا (زي acceptedAt)، فمفيش
   // طريقة نحسبه من بيانات حقيقية دلوقتي. لو حابب رقم حقيقي هنا، محتاجين
   // نضيف tracking جديد في السيرفر الأول (تفاصيل في تعليق server.js).

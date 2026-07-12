@@ -8,7 +8,7 @@ export interface Review {
   comment: string;
   createdAt: string;
   updatedAt?: string;
-  // ⚠️ جديد: رد الصنايعي على التقييم — اختياري، بيظهر تحت التقييم للعميل
+  //  جديد: رد الصنايعي على التقييم — اختياري، بيظهر تحت التقييم للعميل
   // لما يتحط. workerReplyAt منفصل عن updatedAt عمدًا لأن ده رد الصنايعي
   // مش تعديل العميل لتقييمه
   workerReply?: string;

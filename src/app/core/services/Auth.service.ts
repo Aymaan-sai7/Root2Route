@@ -14,7 +14,7 @@ interface AuthResponse {
   worker?: any;
 }
 
-// ⚠️ payload التسجيل منفصل عن User model عمدًا — User بقى بيمثل "شكل البيانات
+//  payload التسجيل منفصل عن User model عمدًا — User بقى بيمثل "شكل البيانات
 // الراجعة من السيرفر" بس (وعشان كده مفيهوش password خالص)، لكن الفرونت إند
 // لازم يبعت password فعليًا وقت التسجيل، فمش منطقي نبني الـ payload بالـ
 // Omit<User, ...> زي الأول
@@ -24,10 +24,10 @@ export interface RegisterPayload {
   password: string;
   role: UserRole;
   nationalId: string;
-  mobileNumber: string; // ⚠️ جديد
+  mobileNumber: string; //  جديد
 }
 
-// ⚠️ التسجيل مبقاش بيرجع session token خالص — الحساب بيتعمل بـ status: 'pending' ولازم
+//  التسجيل مبقاش بيرجع session token خالص — الحساب بيتعمل بـ status: 'pending' ولازم
 // موافقة أدمن الأول قبل أي دخول فعلي، فمفيش "auto-login" بعد التسجيل تاني.
 // docsUploadToken (لو pro) توكن مؤقت قصير العمر لرفع مستندات التحقق بس — مش session，
 // لازم يتستخدم مرة واحدة هنا ويترمي، مش يتحفظ في أي storage
@@ -54,7 +54,7 @@ export class AuthService {
   // ── Login ────────────────────────────────────────────────────
   // keepSignedIn = true (افتراضي) → localStorage (تفضل الجلسة بعد إغلاق المتصفح)
   // keepSignedIn = false           → sessionStorage (بتتمسح لما يتقفل التاب)
-  // ⚠️ لو الحساب status !== 'active' (pending/blocked/rejected)، السيرفر بيرفض
+  //  لو الحساب status !== 'active' (pending/blocked/rejected)، السيرفر بيرفض
   // بـ 403 ورسالة مناسبة، وبتوصل هنا زي أي error عادي من خلال catchError تحت
   login(email: string, password: string, keepSignedIn: boolean = true): Observable<User> {
     return this.http
@@ -92,7 +92,7 @@ export class AuthService {
   }
 
   // ── Forgot / Reset Password ─────────────────────────────────
-  // ⚠️ الرد من السيرفر عام دايمًا (نفس الرسالة سواء الإيميل موجود ولا لأ)،
+  //  الرد من السيرفر عام دايمًا (نفس الرسالة سواء الإيميل موجود ولا لأ)،
   // عشان محدش يقدر يتأكد مين مسجل عندنا من غيره
   forgotPassword(email: string): Observable<{ message: string }> {
     return this.http

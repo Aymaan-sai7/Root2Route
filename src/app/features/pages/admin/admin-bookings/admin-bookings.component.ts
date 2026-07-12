@@ -1,9 +1,12 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { AdminService } from '../../../../core/services/admin.service';
 import { Booking, BookingStatus } from '../../../../core/models/booking.model';
 import { timeAgo } from '../../../../core/utils/time.util';
 import { AdminSelectComponent, AdminSelectOption } from '../../../../shared/components/admin-select/admin-select.component';
+
+const VALID_STATUSES: BookingStatus[] = ['pending', 'active', 'completed', 'cancelled'];
 
 @Component({
   selector: 'app-admin-bookings',
@@ -14,6 +17,7 @@ import { AdminSelectComponent, AdminSelectOption } from '../../../../shared/comp
 })
 export class AdminBookingsComponent implements OnInit {
   private adminService = inject(AdminService);
+  private route = inject(ActivatedRoute);
 
   bookings = signal<Booking[]>([]);
   loading = signal(true);
@@ -60,6 +64,15 @@ export class AdminBookingsComponent implements OnInit {
   activeCount = computed(() => this.bookings().filter((b) => b.status === 'active').length);
 
   ngOnInit(): void {
+    //  جديد: لو جاي من رابط فيه ?status= (زي اللي بيتبعت من charts
+    // داشبورد الأدمن)، بنطبقه كفلتر ابتدائي. filteredBookings computed
+    // بتاعتنا هتعيد الحساب تلقائي أول ما statusFilter تتغيّر، فمفيش داعي
+    // نستنى نتيجة الـ http call الأول
+    const status = this.route.snapshot.queryParamMap.get('status') as BookingStatus | null;
+    if (status && VALID_STATUSES.includes(status)) {
+      this.statusFilter.set(status);
+    }
+
     this.adminService.getAllBookings().subscribe({
       next: (list) => {
         this.bookings.set(list);

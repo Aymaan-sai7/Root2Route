@@ -1,4 +1,4 @@
-// ⚠️ لازم يبقى مطابق تمامًا لشكل الرد بتاع GET /stats/public في server.js
+//  لازم يبقى مطابق تمامًا لشكل الرد بتاع GET /stats/public في server.js
 // (شوف دالة computePublicStats هناك)
 export interface PublicStats {
   totalWorkers: number;

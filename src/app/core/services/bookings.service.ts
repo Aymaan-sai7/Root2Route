@@ -122,7 +122,7 @@ export class BookingsService {
 
   /**
    * تحديث status حجز — بعد التحديث، بنبلّغ الـ client بالتغيير
-   * ⚠️ لما الطلب يتقبل وينقل لـ active، بيبدأ من أول مرحلة شغل تلقائي
+   *  لما الطلب يتقبل وينقل لـ active، بيبدأ من أول مرحلة شغل تلقائي
    * ("في الطريق") — عشان صفحة "الشغل الجاري" تلاقي مرحلة واضحة من أول لحظة
    */
   updateStatus(id: string, status: BookingStatus): Observable<Booking> {
@@ -146,7 +146,7 @@ export class BookingsService {
 
   /**
    * تحديث مرحلة الشغل (في الطريق / بدأ الشغل / خلّص) لحجز جاري
-   * ⚠️ بينادي endpoint محمي مخصص (مش PATCH عام) — السيرفر بيتحقق إن
+   *  بينادي endpoint محمي مخصص (مش PATCH عام) — السيرفر بيتحقق إن
    * الصنايعي صاحب الحجز ده بالظبط هو اللي بيحرّك المرحلة
    */
   updateWorkStage(id: string, workStage: WorkStage): Observable<Booking> {

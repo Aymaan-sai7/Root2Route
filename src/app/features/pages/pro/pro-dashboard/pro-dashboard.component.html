@@ -3,7 +3,7 @@
   <!-- Header -->
   <div class="pd-header">
     <h1 class="pd-title">أهلاً، {{ worker()?.fullName }} </h1>
-    <p class="pd-subtitle">نظرة عامة على شغلك النهاردة</p>
+    <p class="pd-subtitle">نظرة عامة على شغلك</p>
   </div>
 
   @if (loading()) {
@@ -34,6 +34,18 @@
       </div>
 
       <div class="pd-stat-card">
+        <div class="pd-stat-icon pd-stat-icon--primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/>
+          </svg>
+        </div>
+        <div>
+          <p class="pd-stat-value">{{ avgOrderValue() }} ج.م</p>
+          <p class="pd-stat-label">متوسط قيمة الطلب</p>
+        </div>
+      </div>
+
+      <div class="pd-stat-card pd-stat-card--clickable" (click)="navigateToRequestsTab('pending')">
         <div class="pd-stat-icon pd-stat-icon--accent">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
@@ -45,7 +57,7 @@
         </div>
       </div>
 
-      <div class="pd-stat-card">
+      <div class="pd-stat-card pd-stat-card--clickable" (click)="navigateToJobsTab('active')">
         <div class="pd-stat-icon pd-stat-icon--primary">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
@@ -54,6 +66,18 @@
         <div>
           <p class="pd-stat-value">{{ activeCount() }}</p>
           <p class="pd-stat-label">شغل جاري</p>
+        </div>
+      </div>
+
+      <div class="pd-stat-card">
+        <div class="pd-stat-icon pd-stat-icon--success">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/>
+          </svg>
+        </div>
+        <div>
+          <p class="pd-stat-value">{{ completionRate() }}%</p>
+          <p class="pd-stat-label">معدل الإنجاز</p>
         </div>
       </div>
 
@@ -72,6 +96,7 @@
 
     <!-- Charts -->
     <div class="pd-charts-grid">
+
       <div class="pd-chart-card">
         <h3 class="pd-chart-title">الأرباح آخر 7 أيام</h3>
         <apx-chart
@@ -87,7 +112,23 @@
       </div>
 
       <div class="pd-chart-card">
-        <h3 class="pd-chart-title">توزيع الحجوزات</h3>
+        <h3 class="pd-chart-title">اتجاه الأرباح آخر 30 يوم</h3>
+        <apx-chart
+          [series]="trendChartSeries"
+          [chart]="trendChartOptions.chart"
+          [xaxis]="trendChartOptions.xaxis"
+          [colors]="trendChartOptions.colors"
+          [stroke]="trendChartOptions.stroke"
+          [dataLabels]="trendChartOptions.dataLabels"
+          [grid]="trendChartOptions.grid"
+          [markers]="trendChartOptions.markers"
+          [responsive]="trendChartOptions.responsive"
+        ></apx-chart>
+      </div>
+
+      <div class="pd-chart-card">
+        <h3 class="pd-chart-title">توزيع حالات الطلبات</h3>
+        <p class="pd-chart-hint">اضغط على أي جزء عشان تشوف الطلبات دي</p>
         @if (allJobs().length > 0) {
           <apx-chart
             [series]="statusChartSeries"
@@ -103,38 +144,125 @@
           <p class="pd-chart-empty">مفيش بيانات كفاية لعرض الرسم</p>
         }
       </div>
+
+      <div class="pd-chart-card">
+        <h3 class="pd-chart-title">الطلبات بخصم كوبون</h3>
+        @if (allJobs().length > 0) {
+          <apx-chart
+            [series]="couponChartSeries"
+            [chart]="couponChartOptions.chart"
+            [labels]="couponChartOptions.labels"
+            [colors]="couponChartOptions.colors"
+            [legend]="couponChartOptions.legend"
+            [dataLabels]="couponChartOptions.dataLabels"
+            [responsive]="couponChartOptions.responsive"
+          ></apx-chart>
+        } @else {
+          <p class="pd-chart-empty">مفيش بيانات كفاية لعرض الرسم</p>
+        }
+      </div>
+
+      <div class="pd-chart-card">
+        <h3 class="pd-chart-title">معدل إتمام الطلبات</h3>
+        <p class="pd-chart-hint">مكتملة مقابل ملغية</p>
+        <apx-chart
+          [series]="gaugeChartSeries"
+          [chart]="gaugeChartOptions.chart"
+          [colors]="gaugeChartOptions.colors"
+          [plotOptions]="gaugeChartOptions.plotOptions"
+          [labels]="gaugeChartOptions.labels"
+          [responsive]="gaugeChartOptions.responsive"
+        ></apx-chart>
+      </div>
+
+      <div class="pd-chart-card">
+        <h3 class="pd-chart-title">الطلبات حسب يوم الأسبوع</h3>
+        <apx-chart
+          [series]="weekdayChartSeries"
+          [chart]="weekdayChartOptions.chart"
+          [xaxis]="weekdayChartOptions.xaxis"
+          [colors]="weekdayChartOptions.colors"
+          [plotOptions]="weekdayChartOptions.plotOptions"
+          [dataLabels]="weekdayChartOptions.dataLabels"
+          [grid]="weekdayChartOptions.grid"
+          [responsive]="weekdayChartOptions.responsive"
+        ></apx-chart>
+      </div>
+
     </div>
 
-    <!-- Recent Activity -->
-    <div class="pd-recent">
-      <h3 class="pd-chart-title">آخر النشاطات</h3>
+    <!-- Table + List -->
+    <div class="pd-bottom-grid">
 
-      @if (recentJobs().length === 0) {
-        <p class="pd-chart-empty">مفيش طلبات لسه</p>
-      } @else {
-        <div class="pd-recent-list">
-          @for (job of recentJobs(); track job.id) {
-            <div class="pd-recent-card">
-              <div class="pd-avatar" [style.background]="getAvatarColor(job.clientName)">
-                {{ (job.clientName || '؟').charAt(0) }}
-              </div>
-              <div class="pd-recent-info">
-                <div class="pd-recent-top">
-                  <p class="pd-recent-name">{{ job.clientName }}</p>
-                  <span class="status-badge" [class]="getStatusClass(job.status)">
-                    {{ getStatusLabel(job.status) }}
-                  </span>
+      <!-- آخر الطلبات (Table) -->
+      <div class="pd-table-card">
+        <h3 class="pd-chart-title">آخر الطلبات</h3>
+
+        @if (recentJobs().length === 0) {
+          <p class="pd-chart-empty">مفيش طلبات لسه</p>
+        } @else {
+          <div class="pd-table-scroll">
+            <table class="pd-table">
+              <thead>
+                <tr>
+                  <th>العميل</th>
+                  <th>الوصف</th>
+                  <th>المبلغ</th>
+                  <th>الحالة</th>
+                  <th>التاريخ</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (job of recentJobs(); track job.id) {
+                  <tr (click)="navigateToBookingRow(job)">
+                    <td>
+                      <div class="pd-table-client">
+                        <span class="pd-avatar pd-avatar--sm" [style.background]="getAvatarColor(job.clientName)">
+                          {{ (job.clientName || '؟').charAt(0) }}
+                        </span>
+                        {{ job.clientName }}
+                      </div>
+                    </td>
+                    <td class="pd-table-desc">{{ job.description }}</td>
+                    <td class="pd-table-amount">{{ job.totalAmount }} ج.م</td>
+                    <td>
+                      <span class="status-badge" [class]="getStatusClass(job.status)">
+                        {{ getStatusLabel(job.status) }}
+                      </span>
+                    </td>
+                    <td class="pd-table-date">{{ job.createdAt | date: 'd MMM' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+
+      <!-- أفضل العملاء (List) -->
+      <div class="pd-list-card">
+        <h3 class="pd-chart-title">أفضل العملاء</h3>
+
+        @if (topClients().length === 0) {
+          <p class="pd-chart-empty">مفيش بيانات كفاية</p>
+        } @else {
+          <div class="pd-client-list">
+            @for (client of topClients(); track client.clientId) {
+              <div class="pd-client-row" (click)="openChatWithClient(client)">
+                <span class="pd-avatar" [style.background]="getAvatarColor(client.clientName)">
+                  {{ client.clientName.charAt(0) }}
+                </span>
+                <div class="pd-client-info">
+                  <p class="pd-client-name">{{ client.clientName }}</p>
+                  <p class="pd-client-count">{{ client.count }} طلب</p>
                 </div>
-                <p class="pd-recent-desc">{{ job.description }}</p>
+                <p class="pd-client-total">{{ client.total }} ج.م</p>
               </div>
-              <div class="pd-recent-right">
-                <p class="pd-recent-amount">{{ job.totalAmount }} ج.م</p>
-                <p class="pd-recent-date">{{ job.createdAt | date: 'd MMM' }}</p>
-              </div>
-            </div>
-          }
-        </div>
-      }
+            }
+          </div>
+        }
+      </div>
+
     </div>
 
   }

@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BookingsService } from '../../../../core/services/bookings.service';
 import { AuthService } from '../../../../core/services/Auth.service';
 import { WorkersService } from '../../../../core/services/workers.service';
@@ -11,6 +11,7 @@ import { confirmDelete } from '../../../../core/utils/confirm.util';
 
 // جارية اتشالت من هنا خالص — دلوقتي مكانها الوحيد صفحة "الشغل الجاري"
 type TabFilter = 'pending' | 'completed' | 'cancelled';
+const VALID_TABS: TabFilter[] = ['pending', 'completed', 'cancelled'];
 
 @Component({
   selector: 'app-pro-requests',
@@ -24,6 +25,7 @@ export class ProRequestsComponent implements OnInit {
   private auth     = inject(AuthService);
   private workers  = inject(WorkersService);
   private router   = inject(Router);
+  private route    = inject(ActivatedRoute);
 
   private workerId: string | null = null;
 
@@ -47,6 +49,11 @@ export class ProRequestsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const requestedTab = this.route.snapshot.queryParamMap.get('tab') as TabFilter | null;
+    if (requestedTab && VALID_TABS.includes(requestedTab)) {
+      this.activeTab.set(requestedTab);
+    }
+
     const user = this.auth.currentUser();
     if (!user) return;
 

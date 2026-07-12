@@ -43,16 +43,16 @@ export class RegisterComponent implements OnInit {
     fullName:         ['', [Validators.required, Validators.minLength(3)]],
     email:            ['', [Validators.required, Validators.email]],
     password:         ['', [Validators.required, Validators.minLength(8)]],
-    // ⚠️ جديد: رقم موبايل مصري (01 + 0/1/2/5 + 8 أرقام = 11 رقم بالظبط)
+    //  جديد: رقم موبايل مصري (01 + 0/1/2/5 + 8 أرقام = 11 رقم بالظبط)
     mobileNumber:     ['', [Validators.required, Validators.pattern(/^01[0125]\d{8}$/)]],
-    // ⚠️ مطلوب لكل الأدوار — بيتفحص وقت التسجيل إنه مش مكرر (لأي role)
+    //  مطلوب لكل الأدوار — بيتفحص وقت التسجيل إنه مش مكرر (لأي role)
     // عشان يمنع نفس الشخص يسجل كـ client وpro مع بعض
     nationalId:       ['', [Validators.required, Validators.pattern(/^\d{14}$/)]],
     role:             ['', Validators.required],
     trade:            [''],
-    // ⚠️ جديد: يتفعّل بس لو اختار "other" في التخصص
+    //  جديد: يتفعّل بس لو اختار "other" في التخصص
     customTrade:      [''],
-    // ⚠️ جديد: مهارات الصنايعي — array من النصوص، بتتغير قائمتها المتاحة
+    //  جديد: مهارات الصنايعي — array من النصوص، بتتغير قائمتها المتاحة
     // حسب التخصص المختار (شوف step-pro-details)
     skills:           [[] as string[]],
     hourlyRate:       [null],
@@ -94,7 +94,7 @@ export class RegisterComponent implements OnInit {
     }
     this.syncProValidators();
 
-    // ⚠️ جديد: أي تغيير في التخصص يعيد ضبط فاليديشن customTrade فورًا
+    //  جديد: أي تغيير في التخصص يعيد ضبط فاليديشن customTrade فورًا
     // (عشان لو اختار "أخرى" يبقى الحقل مطلوب على طول من غير ما ينتقل خطوة)
     // وكمان بيصفّر skills المختارة — عشان مهارات تخصص قديم متفضلش متحطة
     // على تخصص جديد اختاره (مثلاً اختار سباكة بعد ما كان مختار كهربا)
@@ -145,7 +145,7 @@ export class RegisterComponent implements OnInit {
     const workerData = role === 'pro' ? {
       fullName:          v.fullName,
       trade:             v.trade,
-      // ⚠️ لو "أخرى" استخدم النص اللي كتبه بدل الماب الثابت
+      //  لو "أخرى" استخدم النص اللي كتبه بدل الماب الثابت
       tradeLabel:        isOtherTrade ? v.customTrade : this.getTradeLabel(v.trade),
       city:              v.city,
       hourlyRate:        Number(v.hourlyRate),
@@ -153,7 +153,7 @@ export class RegisterComponent implements OnInit {
       serviceRadius:     Number(v.serviceRadius) || 15,
       bio:               '',
       avatarColor:       this.randomColor(),
-      // ⚠️ جديد
+      //  جديد
       skills:            v.skills ?? [],
     } : undefined;
 

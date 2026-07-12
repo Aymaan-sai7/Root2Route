@@ -52,7 +52,7 @@ export class NotificationsService {
    *
    * مثال (لما الـ client يعمل حجز جديد -> نبلّغ الصنايعي):
    *   this.notificationsService.create({
-   *     userId: worker.userId,               // ⚠️ لازم يكون user id الحقيقي، مش worker.id
+   *     userId: worker.userId,               //  لازم يكون user id الحقيقي، مش worker.id
    *     type: 'booking_created',
    *     title: 'طلب جديد',
    *     message: `${booking.clientName} طلب خدمتك`,

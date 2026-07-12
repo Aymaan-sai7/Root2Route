@@ -6,7 +6,7 @@ import { ScrollRevealDirective } from '../../../../../shared/directive/scroll-re
 import { ReviewsService } from '../../../../../core/services/review.service';
 import { BookingsService } from '../../../../../core/services/bookings.service';
 import { generateAvatarColor } from '../../../../../core/utils/color.util';
-// ⚠️ لو اسم الملف/المسار مختلف عندك، عدّل السطر اللي فوق ده بس
+//  لو اسم الملف/المسار مختلف عندك، عدّل السطر اللي فوق ده بس
 
 interface DisplayTestimonial {
   name: string;
@@ -45,7 +45,7 @@ export class TestimonialsComponent implements OnInit, OnDestroy {
   private reviewsService = inject(ReviewsService);
   private bookingsService = inject(BookingsService);
 
-  /** ⚠️ تقييمات حقيقية بس — بتتجاب من السيرفر، مفيش أي داتا وهمية هنا خالص */
+  /**  تقييمات حقيقية بس — بتتجاب من السيرفر، مفيش أي داتا وهمية هنا خالص */
   testimonials = signal<DisplayTestimonial[]>([]);
   loading = signal(true);
 
@@ -77,7 +77,7 @@ export class TestimonialsComponent implements OnInit, OnDestroy {
       switchMap((reviews) => {
         if (reviews.length === 0) return of([] as (DisplayTestimonial | null)[]);
 
-        // ⚠️ الـ Review مفيهوش اسم التخصص مباشرة، فبنجيبه من الحجز المرتبط بيه
+        //  الـ Review مفيهوش اسم التخصص مباشرة، فبنجيبه من الحجز المرتبط بيه
         // (Booking.workerTrade متسجلة وقت إنشاء الحجز أصلًا)
         const requests = reviews.map((r) =>
           this.bookingsService.getById(r.bookingId).pipe(

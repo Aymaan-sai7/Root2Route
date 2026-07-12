@@ -15,7 +15,7 @@ interface ServiceCategory {
   featured?: boolean;
 }
 
-// ⚠️ أرقام احتياطية بتظهر بس وقت اللودينج أو لو حصل خطأ في طلب الإحصائيات —
+//  أرقام احتياطية بتظهر بس وقت اللودينج أو لو حصل خطأ في طلب الإحصائيات —
 // مش أرقام وهمية بتتعرض دايمًا، مجرد fallback عشان السكشن ميبانش فاضي
 const FALLBACK_COUNTS: Record<string, number> = {
   electrical: 320,
@@ -49,7 +49,7 @@ export class ServicesGridComponent {
     { id: 'more', icon: 'more', title: 'وكمان...', desc: 'نقل عفش، تنظيف، وصيانة عامة.' },
   ];
 
-  // ⚠️ كارت "وكمان..." بيمثل تخصصات مجمّعة (تنظيف + نقل عفش + حدادة وألوميتال
+  //  كارت "وكمان..." بيمثل تخصصات مجمّعة (تنظيف + نقل عفش + حدادة وألوميتال
   // + أي تخصص مخصص "other") مش trade واحد له slug مباشر، فبنجمعهم يدويًا هنا
   private countForCategory(id: string): number {
     const byTrade = this.stats()?.workersByTrade;

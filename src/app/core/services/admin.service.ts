@@ -28,7 +28,7 @@ export interface AdminUserDetail {
   worker: any | null;
 }
 
-// ⚠️ سجل نشاط الأدمن — كل عملية حساسة (قبول/رفض/حظر مستخدم، كوبونات،
+//  سجل نشاط الأدمن — كل عملية حساسة (قبول/رفض/حظر مستخدم، كوبونات،
 // تعديل إيميل الأدمن) بتتسجل هنا تلقائيًا من الباك اند
 export interface AdminLog {
   id: string;
@@ -46,7 +46,7 @@ export class AdminService {
   private http = inject(HttpClient);
   private base = `${environment.apiUrl}/admin`;
 
-  // ⚠️ جديد: مصدر واحد للحقيقة لعدد الطلبات المعلّقة، بيتشارك بين الصايدبار
+  //  جديد: مصدر واحد للحقيقة لعدد الطلبات المعلّقة، بيتشارك بين الصايدبار
   // وصفحة admin-registrations من غير ما محدش يحتاج يعمل refresh يدوي أو
   // request جديد لـ getStats() كل مرة يتغيّر فيها الرقم
   pendingApprovals = signal(0);
@@ -73,12 +73,21 @@ export class AdminService {
 
   /** كل المستخدمين مع فلاتر اختيارية (role, status, search) */
   getUsers(filter?: AdminUsersFilter): Observable<User[]> {
-    const params: Record<string, string> = {};
-    if (filter?.role) params['role'] = filter.role;
-    if (filter?.status) params['status'] = filter.status;
-    if (filter?.search) params['search'] = filter.search;
-    return this.http.get<User[]>(`${this.base}/users`, { params });
-  }
+  const params: Record<string, string> = {};
+
+  if (filter?.role) params['role'] = filter.role;
+  if (filter?.status) params['status'] = filter.status;
+  if (filter?.search) params['search'] = filter.search;
+
+  return this.http.get<User[]>(`${this.base}/users`, { params }).pipe(
+    map((list) =>
+      list.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )
+    )
+  );
+}
 
   /** تفاصيل مستخدم واحد + بروفايل الصنايعي (لو pro) */
   getUserDetail(id: string): Observable<AdminUserDetail> {
@@ -92,7 +101,7 @@ export class AdminService {
 
   /**
    * كل الحجوزات في المنصة — للرقابة (read-only حاليًا).
-   * ⚠️ ملاحظة: GET /bookings مش محمي بـ verifyAdmin على السيرفر حاليًا (endpoint عام
+   *  ملاحظة: GET /bookings مش محمي بـ verifyAdmin على السيرفر حاليًا (endpoint عام
    * أصلاً مستخدم من صفحات الـ client/pro)، فمفيش فرق أمني حقيقي هنا لسه، بس منطقيًا
    * هي "بوابة الأدمن" للبيانات دي من ناحية الفرونت إند
    */
@@ -113,7 +122,7 @@ export class AdminService {
     );
   }
 
-  // ⚠️ جديد: بتتحدث من الـ WebSocket — رقم حقيقي جاي من السيرفر مباشرة
+  //  جديد: بتتحدث من الـ WebSocket — رقم حقيقي جاي من السيرفر مباشرة
   setPendingApprovals(count: number): void {
     this.pendingApprovals.set(count);
   }

@@ -1,7 +1,6 @@
 export type UserRole = 'client' | 'pro' | 'admin';
 export type UserStatus = 'pending' | 'active' | 'rejected' | 'blocked';
 
-// ⚠️ ملاحظتين على النسخة السابقة:
 // 1. مفيش password هنا خالص — السيرفر بيشيلها فعليًا من أي response (sanitizeUser)،
 //    فمستحيل يوصل أي User object للفرونت إند فيه password فعلي. تركها هنا كـ
 //    required كانت بتخلي الـ type غير دقيق (بيوعد بحاجة مستحيل توجد فعليًا).

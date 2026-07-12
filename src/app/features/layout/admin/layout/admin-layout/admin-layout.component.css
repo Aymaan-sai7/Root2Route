@@ -1,8 +1,6 @@
 .admin-layout {
-  display: grid;
-  grid-template-columns: 260px 1fr;
   min-height: 100vh;
-  background: #F7F9FC; /* surface-alt */
+  background: #F7F9FC;
 }
 @media (max-width: 860px) {
   .admin-layout {
@@ -11,7 +9,14 @@
 }
 
 .admin-content {
+  margin-inline-start: 260px;
   min-height: 100vh;
+  min-width: 0;
   overflow-y: auto;
-  min-width: 0; /* يمنع overflow أفقي لو محتوى جوه الصفحة (زي جداول) أعرض من المساحة */
+}
+
+@media (max-width: 860px) {
+  .admin-content {
+    margin-inline-start: 0;
+  }
 }

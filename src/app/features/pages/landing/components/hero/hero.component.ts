@@ -15,7 +15,7 @@ import { PublicStats } from '../../../../../core/models/stats.model';
 export class HeroComponent {
   private statsService = inject(StatsService);
 
-  // ⚠️ initialValue = null لحد ما رد السيرفر يوصل. الأرقام الاحتياطية (220،
+  //  initialValue = null لحد ما رد السيرفر يوصل. الأرقام الاحتياطية (220،
   // 1500، 4.9) بتتعرض في الـ getters تحت بس وقت اللودينج، مش قيم مزيفة دايمة
   private stats = toSignal<PublicStats | null>(this.statsService.getPublicStats(), {
     initialValue: null,

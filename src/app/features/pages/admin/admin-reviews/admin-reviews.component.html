@@ -11,11 +11,11 @@
         <div class="arv-skeleton"></div>
       }
     </div>
-  } @else if (reviews().length === 0) {
-    <p class="arv-empty">مفيش تقييمات لسه.</p>
+  } @else if (filteredReviews().length === 0) {
+    <p class="arv-empty">مفيش تقييمات تطابق الفلتر.</p>
   } @else {
     <div class="arv-list">
-      @for (r of reviews(); track r.id) {
+      @for (r of filteredReviews(); track r.id) {
         <div class="arv-card">
 
           <div class="arv-card-top">

@@ -61,7 +61,7 @@ export class StepVerificationDocsComponent {
         this.certificateFileName.set(file.name);
       }
 
-      // ⚠️ نحفظ الـ File الحقيقي بس جوه الفورم (مش object ملفوف) —
+      //  نحفظ الـ File الحقيقي بس جوه الفورم (مش object ملفوف) —
       // ده اللي بيتبعت فعليًا لـ workers.uploadVerificationDocs() بعد كده
       this.form().get(controlName)?.setValue(file);
       this.form().get(controlName)?.markAsTouched();

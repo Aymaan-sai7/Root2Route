@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
-
+import { unsavedChangesGuard } from './core/guards/unsaved.guard';
 // Layouts
 import { ClientLayoutComponent } from './features/layout/client-layout/client-layout.component';
 import { ProLayoutComponent } from './features/layout/pro-layout/pro-layout.component';
@@ -149,6 +149,7 @@ export const routes: Routes = [
     {
       path: 'settings',
       component: ProSettingsComponent,
+      canDeactivate: [unsavedChangesGuard], 
       title: 'Sanaye3i — إعدادات الحساب',
     },{
   path: 'messages',

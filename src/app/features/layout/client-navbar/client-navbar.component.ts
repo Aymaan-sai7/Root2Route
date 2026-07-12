@@ -48,7 +48,7 @@ export class ClientNavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    // ⚠️ الخطوة الأساسية: ننقل الـ backdrop + الـ drawer عشان يبقوا أطفال
+    //  الخطوة الأساسية: ننقل الـ backdrop + الـ drawer عشان يبقوا أطفال
     // مباشرين لـ <body> بره أي جد ممكن يكون عنده transform/will-change/filter
     // وبيكسر containing block بتاعة position:fixed (السبب الحقيقي لمشكلة
     // ظهور الـ drawer في نص الصفحة بدل ما يبقى ثابت بالنسبة للشاشة كلها)

@@ -65,13 +65,13 @@ export class AdminAnalyticsComponent implements OnInit {
     return Math.round(this.totalRevenue() / list.length);
   });
 
-  // ⚠️ إجمالي الخصومات الممنوحة عبر كل الحجوزات (مش الـ completed بس) —
+  //  إجمالي الخصومات الممنوحة عبر كل الحجوزات (مش الـ completed بس) —
   // بيعرض "الأثر الفعلي" لنظام الكوبونات على المنصة ككل
   totalDiscountsGiven = computed(() =>
     this.bookings().reduce((sum, b) => sum + (b.discountAmount ?? 0), 0)
   );
 
-  // ⚠️ معدل التحويل: من كل العملاء الموافق عليهم (active)، كام واحد
+  //  معدل التحويل: من كل العملاء الموافق عليهم (active)، كام واحد
   // عمل حجز فعلي واحد على الأقل
   conversionRate = computed(() => {
     const activeClients = this.users().filter((u) => u.role === 'client' && u.status === 'active');

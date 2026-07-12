@@ -94,7 +94,7 @@ export class BookingComponent implements OnInit {
   // ─── Step 2: Address (محافظة / مدينة / بلد / شارع / رقم عقار) ──
   governorates: GovernorateData[] = EGYPT_GOVERNORATES;
 
-  // ⚠️ شيل buildingNumber من الفورم
+  //  شيل buildingNumber من الفورم
 addressForm: FormGroup = this.fb.group({
   governorate: ['', Validators.required],
   city: ['', Validators.required],
@@ -109,7 +109,7 @@ get governorateControl() { return this.addressForm.get('governorate'); }
 get cityControl() { return this.addressForm.get('city'); }
 get villageControl() { return this.addressForm.get('village'); }
 get streetControl() { return this.addressForm.get('street'); }
-// ⚠️ get buildingNumberControl() اتشالت
+//  get buildingNumberControl() اتشالت
 
 private governorateValue = toSignal(this.addressForm.get('governorate')!.valueChanges, {
   initialValue: this.addressForm.get('governorate')!.value,
@@ -120,7 +120,7 @@ availableCities = computed(() => {
   return this.governorates.find((g) => g.name === gov)?.cities ?? [];
 });
 
-// ⚠️ اتشال رقم العقار من التنسيق
+//  اتشال رقم العقار من التنسيق
 formattedAddress = computed(() => {
   const { governorate, city, village, street } = this.addressForm.value;
   if (!governorate || !city || !village || !street) return '';
@@ -175,12 +175,12 @@ closeLocationPicker(): void {
     }));
   });
 
-  // ⚠️ الوقت المختار كـ signal حقيقي عشان الـ chips تعرف تتلوّن reactive
+  //  الوقت المختار كـ signal حقيقي عشان الـ chips تعرف تتلوّن reactive
   private selectedTimeValue = toSignal(this.scheduleForm.get('scheduledTime')!.valueChanges, {
     initialValue: this.scheduleForm.get('scheduledTime')!.value,
   });
 
-  // ⚠️ مواعيد فعليًا مشغولة عند نفس الصنايعي في نفس اليوم المختار — بناءً
+  //  مواعيد فعليًا مشغولة عند نفس الصنايعي في نفس اليوم المختار — بناءً
   // على حجوزاته الحقيقية (pending/active)، مش تخمين. مفيش عندنا نظام
   // "جدول عمل" منفصل للصنايعي في الباك إند، فده أدق تفسير عملي متاح
   occupiedSlots = signal<Set<string>>(new Set());
@@ -209,7 +209,7 @@ closeLocationPicker(): void {
       this.addressForm.get('city')?.setValue('', { emitEvent: false });
     });
 
-    // ⚠️ لما التاريخ يتغيّر: نصفّر الوقت المختار (ممكن يبقى مشغول في اليوم
+    //  لما التاريخ يتغيّر: نصفّر الوقت المختار (ممكن يبقى مشغول في اليوم
     // الجديد) ونعيد فحص المواعيد المشغولة للصنايعي في اليوم ده
     this.scheduleForm.get('scheduledDate')?.valueChanges.subscribe((date) => {
       this.scheduleForm.get('scheduledTime')?.setValue('');

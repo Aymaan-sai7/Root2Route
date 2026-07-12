@@ -22,7 +22,7 @@
 
 .ad-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%,220px),1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%,200px),1fr));
   gap: 14px;
   margin-bottom: 24px;
   align-items: stretch;
@@ -50,6 +50,10 @@
 .ad-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(37,99,235,.08);
+}
+
+.ad-card--clickable {
+  cursor: pointer;
 }
 
 .ad-card-icon {
@@ -98,11 +102,12 @@
   display:block;
 
   font-family: var(--font-display, inherit);
-  font-size: clamp(1.35rem,1vw + 1rem,1.6rem);
+  font-size: clamp(1.2rem,.9vw + .9rem,1.5rem);
   font-weight:700;
 
   color:#0F172A;
   line-height:1.2;
+  white-space: nowrap;
 }
 
 .ad-card-label {
@@ -110,7 +115,7 @@
 
   margin-top:2px;
 
-  font-size:clamp(.72rem,.3vw + .65rem,.82rem);
+  font-size:clamp(.7rem,.3vw + .62rem,.8rem);
   font-weight:500;
 
   color:#64748B;
@@ -150,11 +155,36 @@
   text-decoration:underline;
 }
 
-.ad-charts-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));
-  gap:16px;
-  margin-bottom:24px;
+/* ═══ Charts: Grid غير متماثل — 12 عمود ═══════════════════
+   كل شارت ليه span بيحدد أهميته البصرية:
+   span-7 = الأكبر (اتجاه/line)، span-5 = متوسط (pie)،
+   span-4 = ثلاثي متساوي، span-6 = نصين، span-12 = عرض كامل */
+.ad-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.ad-span-7  { grid-column: span 7; }
+.ad-span-5  { grid-column: span 5; }
+.ad-span-4  { grid-column: span 4; }
+.ad-span-6  { grid-column: span 6; }
+.ad-span-12 { grid-column: span 12; }
+
+/* تابلت: كل الـ spans المختلفة تتحول لعمودين متساويين، ما عدا اللي عرضه كامل أصلاً */
+@media (max-width: 900px) {
+  .ad-span-7, .ad-span-5, .ad-span-4, .ad-span-6 {
+    grid-column: span 6;
+  }
+}
+
+/* موبايل: عمود واحد بس، كل شارت ياخد العرض كامل */
+@media (max-width: 640px) {
+  .ad-charts-grid { grid-template-columns: 1fr; gap: 12px; }
+  .ad-span-7, .ad-span-5, .ad-span-4, .ad-span-6, .ad-span-12 {
+    grid-column: 1 / -1;
+  }
 }
 
 .ad-chart-card{
@@ -169,11 +199,17 @@
 }
 
 .ad-chart-title{
-  margin-bottom:12px;
+  margin-bottom:4px;
 
   color:#0F172A;
   font-size:clamp(.9rem,.5vw + .75rem,1rem);
   font-weight:600;
+}
+
+.ad-chart-hint {
+  font-size: 11px;
+  color: #94A3B8;
+  margin-bottom: 10px;
 }
 
 apx-chart{
@@ -188,6 +224,86 @@ apx-chart{
 svg.apexcharts-svg{
   max-width:100%!important;
 }
+
+/* ═══ Table + List (آخر الحجوزات / أكتر الصنايعية نشاطًا) ══ */
+.ad-bottom-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+@media (max-width: 900px) {
+  .ad-bottom-grid { grid-template-columns: 1fr; }
+}
+
+.ad-table-card,
+.ad-list-card {
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 18px 20px;
+  min-width: 0;
+}
+
+.ad-table-card .ad-table tbody tr {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.ad-table-card .ad-table tbody tr:hover {
+  background: rgba(37,99,235,0.04);
+}
+
+/* ── Rank list ─────────────────────────────────────────── */
+.ad-rank-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.ad-rank-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 6px;
+  border-radius: 10px;
+}
+
+.ad-rank-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  background: #F1F5F9;
+  color: #64748B;
+}
+.ad-rank-badge--1 { background: rgba(234,179,8,0.18); color: #CA8A04; }
+.ad-rank-badge--2 { background: rgba(148,163,184,0.25); color: #475569; }
+.ad-rank-badge--3 { background: rgba(249,115,22,0.15); color: #C2410C; }
+
+.ad-rank-info { flex: 1; min-width: 0; }
+.ad-rank-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0F172A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ad-rank-count { font-size: 11px; color: #94A3B8; margin-top: 1px; }
+.ad-rank-revenue {
+  font-size: 13px;
+  font-weight: 700;
+  color: #16A34A;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .ad-recent{
   background:#fff;
   border:1px solid #E2E8F0;
@@ -276,15 +392,13 @@ svg.apexcharts-svg{
 .ad-table-avatar{
   width:32px;
   height:32px;
-
   border-radius:50%;
-
   display:flex;
   align-items:center;
   justify-content:center;
-
   flex-shrink:0;
-
+  flex-grow:0;
+  flex-basis:32px;
   color:#fff;
   font-size:13px;
   font-weight:700;
@@ -293,21 +407,6 @@ svg.apexcharts-svg{
 .ad-table-user div:not(.ad-table-avatar){
   min-width:0;
   flex:1;
-}
-
-.ad-table-avatar{
-  width:32px;
-  height:32px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-shrink:0;
-  flex-grow:0;   /* ← جديد، تأكيد إضافي */
-  flex-basis:32px; /* ← جديد، تأكيد إضافي */
-  color:#fff;
-  font-size:13px;
-  font-weight:700;
 }
 
 .ad-table-name{
@@ -384,6 +483,16 @@ svg.apexcharts-svg{
   color:#DC2626;
 }
 
+/*  جديد: حالات الحجوزات (مختلفة عن حالات الحسابات فوق) */
+.ad-status-badge--completed{
+  background:rgba(22,163,74,.12);
+  color:#16A34A;
+}
+.ad-status-badge--cancelled{
+  background:rgba(220,38,38,.10);
+  color:#DC2626;
+}
+
 .ad-skeleton{
   height:92px;
 
@@ -447,31 +556,31 @@ svg.apexcharts-svg{
   }
 
   .ad-cards-grid{
-    grid-template-columns:1fr;
-    gap:12px;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
   }
 
   .ad-card{
 
-    padding:16px;
+    padding:14px;
 
-    gap:12px;
+    gap:10px;
 
     align-items:center;
   }
 
   .ad-card-icon{
 
-    width:36px;
-    height:36px;
+    width:34px;
+    height:34px;
 
-    border-radius:10px;
+    border-radius:9px;
   }
 
   .ad-card-icon svg{
 
-    width:16px;
-    height:16px;
+    width:15px;
+    height:15px;
   }
 
   .ad-card-cta{
@@ -483,20 +592,18 @@ svg.apexcharts-svg{
     display:inline-block;
   }
 
-  .ad-charts-grid{
-
-    grid-template-columns:1fr;
-  }
-
   .ad-chart-card{
 
-    padding:16px;
+    padding:14px;
   }
 
   .ad-chart-title{
 
-    margin-bottom:10px;
+    margin-bottom:8px;
+    font-size: 13px;
   }
+
+  .ad-table-card, .ad-list-card { padding: 14px; }
 
   /* Apex Charts */
 
@@ -515,11 +622,9 @@ svg.apexcharts-svg{
     justify-content:center !important;
   }
 
-  /* يقلل ارتفاع الدونات */
-
   apx-chart{
 
-    min-height:200px;
+    min-height:190px;
   }
 
   /* Table */
@@ -531,20 +636,25 @@ svg.apexcharts-svg{
 
 }
 
-@media (max-width:480px){
+@media (max-width:380px){
 
   .ad-page{
-
-    padding:14px 12px 22px;
+    padding:12px 10px 20px;
   }
 
-  .ad-card{
+  .ad-cards-grid{
+    grid-template-columns:1fr;
+  }
 
-    padding:14px;
+  .ad-card-value {
+    font-size: 15px;
+  }
+
+  .ad-card-label {
+    font-size: 10px;
   }
 
   .ad-table{
-
     min-width:420px;
   }
 
@@ -565,7 +675,9 @@ svg{
 
 .ad-chart-card,
 .ad-card,
-.ad-recent{
+.ad-recent,
+.ad-table-card,
+.ad-list-card{
 
   width:100%;
 }
@@ -573,7 +685,9 @@ svg{
 .ad-page,
 .ad-chart-card,
 .ad-card,
-.ad-recent{
+.ad-recent,
+.ad-table-card,
+.ad-list-card{
 
   overflow-wrap:break-word;
 }

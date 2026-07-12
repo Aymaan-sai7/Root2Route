@@ -24,7 +24,7 @@ export class SpecialistProfileComponent implements OnInit {
   loading = signal(true);
   error   = signal<string | null>(null);
 
-  // ⚠️ اتشالت القايمة الثابتة والـ getSkills() القديمة — دلوقتي المهارات
+  //  اتشالت القايمة الثابتة والـ getSkills() القديمة — دلوقتي المهارات
   // بتيجي من w.skills الحقيقية (اللي الصنايعي اختارها بنفسه وقت التسجيل
   // أو من صفحة الإعدادات)، مش نص ثابت لكل التخصصات. شوف الـ HTML.
 

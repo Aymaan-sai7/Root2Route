@@ -22,7 +22,7 @@ interface FooterColumn {
 export class FooterComponent {
   currentYear = new Date().getFullYear();
 
-  // ⚠️ كل اللينكات دي حقيقية 100% ومطابقة لـ app.routes.ts
+  //  كل اللينكات دي حقيقية 100% ومطابقة لـ app.routes.ts
   columns: FooterColumn[] = [
     {
       title: 'استكشف',

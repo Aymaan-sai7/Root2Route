@@ -52,7 +52,7 @@
   color: #64748B;
 }
 
-/* ⚠️ جديد: زرار GPS */
+/*  جديد: زرار GPS */
 .lp-gps-btn {
   display: flex;
   align-items: center;
@@ -89,7 +89,7 @@
   border: 1px solid #E2E8F0;
 }
 
-/* ⚠️ خريطة أكبر عشان يبقى التفاعل أسهل */
+/*  خريطة أكبر عشان يبقى التفاعل أسهل */
 .lp-map {
   width: 100%;
   height: 420px;
@@ -107,7 +107,7 @@
   box-shadow: 0 20px 60px rgba(0,0,0,0.3);
 }
 
-/* ⚠️ جديد: صندوق معاينة اسم الموقع */
+/*  جديد: صندوق معاينة اسم الموقع */
 .lp-address-preview {
   margin-top: 10px;
   padding: 10px 12px;
@@ -156,7 +156,7 @@
 }
 @keyframes lp-spin { to { transform: rotate(360deg); } }
 
-/* ⚠️ جديد: ملاحظة توضيحية لما الموقع يكون تقريبي (متطابق على مستوى مدينة/محافظة بس) */
+/*  جديد: ملاحظة توضيحية لما الموقع يكون تقريبي (متطابق على مستوى مدينة/محافظة بس) */
 .lp-approx-note {
   margin-top: 10px;
   padding: 8px 12px;
