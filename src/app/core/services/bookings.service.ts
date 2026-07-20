@@ -70,6 +70,14 @@ export class BookingsService {
     return this.http.get<Booking>(`${this.base}/${id}`);
   }
 
+  // ⚠️ مختلفة عن getById() — دي endpoint عام (مفيهوش توكن) بترجع اسم
+// التخصص بس، مستخدمة في السكشنات العامة زي التيستيمونيالز في اللاندنج
+// بيدج اللي بتظهر لزوار مش مسجلين دخول
+getBookingTradeLabel(bookingId: string): Observable<{ workerTrade: string | null }> {
+  return this.http.get<{ workerTrade: string | null }>(
+    `${environment.apiUrl}/bookings/${bookingId}/trade-label`
+  );
+}
   /** جيب أحدث الحجوزات */
   getRecent(limit = 4): Observable<Booking[]> {
     return this.http.get<Booking[]>(this.base).pipe(

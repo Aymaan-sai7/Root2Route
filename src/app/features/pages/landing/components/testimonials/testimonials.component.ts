@@ -80,18 +80,17 @@ export class TestimonialsComponent implements OnInit, OnDestroy {
         //  الـ Review مفيهوش اسم التخصص مباشرة، فبنجيبه من الحجز المرتبط بيه
         // (Booking.workerTrade متسجلة وقت إنشاء الحجز أصلًا)
         const requests = reviews.map((r) =>
-          this.bookingsService.getById(r.bookingId).pipe(
-            map((booking) => ({
-              name: r.clientName,
-              initial: r.clientName.charAt(0),
-              color: generateAvatarColor(r.clientName),
-              service: booking.workerTrade,
-              rating: r.rating,
-              quote: r.comment,
-            })),
-            // لو الحجز اتمسح لأي سبب، نتجاهل التقييم ده بس بدل ما يكسر الباقي
-            catchError(() => of(null))
-          )
+          this.bookingsService.getBookingTradeLabel(r.bookingId).pipe(
+  map((result) => ({
+    name: r.clientName,
+    initial: r.clientName.charAt(0),
+    color: generateAvatarColor(r.clientName),
+    service: result.workerTrade ?? '',
+    rating: r.rating,
+    quote: r.comment,
+  })),
+  catchError(() => of(null))
+)
         );
 
         return forkJoin(requests);

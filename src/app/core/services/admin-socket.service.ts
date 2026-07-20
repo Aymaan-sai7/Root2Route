@@ -14,12 +14,18 @@ export class AdminSocketService {
     if (this.socket?.connected) return;
 
     const token = this.auth.getToken();
-    if (!token) return;
-
-    this.socket = io(environment.apiUrl, {
-      auth: { token },
-      transports: ['websocket'],
-    });
+    if (!token) {
+      this.socket = io(environment.apiUrl, {
+        withCredentials: true,
+        transports: ['websocket'],
+      });
+    } else {
+      this.socket = io(environment.apiUrl, {
+        auth: { token },
+        withCredentials: true,
+        transports: ['websocket'],
+      });
+    }
 
     this.socket.on('admin:pendingApprovalsChanged', (payload: { pendingApprovals: number }) => {
       this.adminService.setPendingApprovals(payload.pendingApprovals);

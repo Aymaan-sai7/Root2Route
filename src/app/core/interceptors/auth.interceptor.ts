@@ -7,21 +7,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const token = auth.getToken();
 
-  const authReq = token
-    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
-    : req;
+  const isAuthRoute = req.url.includes('/auth/') || req.url.includes('/login') || req.url.includes('/register');
+  const authReq = token && !isAuthRoute
+    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` }, withCredentials: true })
+    : req.clone({ withCredentials: true });
 
   return next(authReq).pipe(
     catchError((err: HttpErrorResponse) => {
-      //  لو الطلب ده كان معاه توكن فعليًا (يعني كان طلب لمستخدم مسجل دخول)
-      // والسيرفر برضو رفضه بـ 401، معناها التوكن انتهى أو بقى باطل (مثلاً
-      // الأدمن حظر الحساب فجأة) — نسجّل خروج تلقائي ونوديه /login فورًا
-      // بدل ما نسيب الصفحة واقفة أو فاضية من غير أي توضيح.
-      //
-      // لاحظ الشرط `&& token`: طلبات /auth/login نفسها بترجع 401 لو الباسورد
-      // غلط، بس ده طلب من غير Authorization header خالص (مفيش token وقتها)،
-      // فمش هيدخل هنا ويعمل logout غلط وسط محاولة تسجيل دخول عادية.
-      if (err.status === 401 && token) {
+      if (err.status === 401 && token && !isAuthRoute) {
         auth.logout();
       }
       return throwError(() => err);

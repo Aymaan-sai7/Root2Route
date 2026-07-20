@@ -1,12 +1,11 @@
 import { inject, Injectable, signal, computed } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap, map, catchError, throwError } from 'rxjs';
+import { Observable, tap, map, catchError, throwError, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { User, UserRole } from '../models/user.model';
 
 const STORAGE_KEY = 'sanaye3i_user';
-const TOKEN_KEY = 'sanaye3i_token';
 
 interface AuthResponse {
   user: User;
@@ -45,6 +44,10 @@ export class AuthService {
 
   private currentUserSignal = signal<User | null>(this.loadFromStorage());
 
+  constructor() {
+    this.restoreSession();
+  }
+
   currentUser = this.currentUserSignal.asReadonly();
   isLoggedIn  = computed(() => !!this.currentUserSignal());
   isClient    = computed(() => this.currentUserSignal()?.role === 'client');
@@ -58,9 +61,9 @@ export class AuthService {
   // بـ 403 ورسالة مناسبة، وبتوصل هنا زي أي error عادي من خلال catchError تحت
   login(email: string, password: string, keepSignedIn: boolean = true): Observable<User> {
     return this.http
-      .post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password })
+      .post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password }, { withCredentials: true })
       .pipe(
-        tap((res) => this.setSession(res, keepSignedIn)),
+        tap((res) => this.setSession(res)),
         map((res) => res.user),
         catchError((err: HttpErrorResponse) => {
           const msg = err.error?.message ?? 'حصل خطأ، حاول تاني.';
@@ -82,7 +85,7 @@ export class AuthService {
       .post<RegisterPendingResponse>(`${environment.apiUrl}/auth/register`, {
         ...data,
         workerData,
-      })
+      }, { withCredentials: true })
       .pipe(
         catchError((err: HttpErrorResponse) => {
           const msg = err.error?.message ?? 'حصل خطأ، حاول تاني.';
@@ -96,7 +99,7 @@ export class AuthService {
   // عشان محدش يقدر يتأكد مين مسجل عندنا من غيره
   forgotPassword(email: string): Observable<{ message: string }> {
     return this.http
-      .post<{ message: string }>(`${environment.apiUrl}/auth/forgot-password`, { email })
+      .post<{ message: string }>(`${environment.apiUrl}/auth/forgot-password`, { email }, { withCredentials: true })
       .pipe(
         catchError((err: HttpErrorResponse) => {
           const msg = err.error?.message ?? 'حصل خطأ، حاول تاني.';
@@ -112,7 +115,7 @@ export class AuthService {
         email,
         token,
         newPassword,
-      })
+      }, { withCredentials: true })
       .pipe(
         catchError((err: HttpErrorResponse) => {
           const msg = err.error?.message ?? 'حصل خطأ، حاول تاني.';
@@ -124,16 +127,16 @@ export class AuthService {
   // ── Logout ───────────────────────────────────────────────────
   logout(): void {
     this.currentUserSignal.set(null);
-    // بنمسح من المكانين مع بعض عشان نضمن مسح كامل بغض النظر فين كانت متخزنة
     localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(TOKEN_KEY);
     sessionStorage.removeItem(STORAGE_KEY);
-    sessionStorage.removeItem(TOKEN_KEY);
+    this.http.post(`${environment.apiUrl}/auth/logout`, {}, { withCredentials: true }).subscribe({
+      error: () => undefined,
+    });
     this.router.navigate(['/login']);
   }
 
   getToken(): string | null {
-    return localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY);
+    return null;
   }
 
   // ── Redirect بعد login حسب الـ role ─────────────────────────
@@ -148,11 +151,35 @@ export class AuthService {
   }
 
   // ── Private helpers ──────────────────────────────────────────
-  private setSession(res: AuthResponse, keepSignedIn: boolean): void {
-    const storage = keepSignedIn ? localStorage : sessionStorage;
+  private setSession(res: AuthResponse): void {
     this.currentUserSignal.set(res.user);
-    storage.setItem(STORAGE_KEY, JSON.stringify(res.user));
-    storage.setItem(TOKEN_KEY, res.token);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(res.user));
+  }
+
+  private restoreSession(): void {
+    const cachedUser = this.loadFromStorage();
+    if (cachedUser) {
+      this.currentUserSignal.set(cachedUser);
+    }
+
+    this.http.get<{ user: User }>(`${environment.apiUrl}/auth/me`, { withCredentials: true }).pipe(
+      map((res) => res.user),
+      catchError(() => {
+        this.clearClientSession();
+        return of(null);
+      })
+    ).subscribe((user) => {
+      if (user) {
+        this.currentUserSignal.set(user);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+      }
+    });
+  }
+
+  private clearClientSession(): void {
+    this.currentUserSignal.set(null);
+    localStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem(STORAGE_KEY);
   }
 
   private loadFromStorage(): User | null {
